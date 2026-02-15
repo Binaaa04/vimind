@@ -1,0 +1,25 @@
+# Binaries for programs and plugins
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Dependency directories
+node_modules/
+vendor/
+
+# Build and temp folders
+.next/
+out/
+dist/
+bin/
+
+# Environment variables (PENTING: Biar API Key lu gak bocor)
+.env
+.env.local
+.env.*.local
+
+# OS files
+.DS_Store
+Thumbs.db
