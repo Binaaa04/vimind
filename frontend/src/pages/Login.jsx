@@ -1,5 +1,5 @@
 import "../App.css";
-import illustration from "../assets/illustration.png";
+import illustration from "/src/assets/logovimind.png";
 
 const Login = () => {
   return (
