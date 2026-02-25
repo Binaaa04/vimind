@@ -1,0 +1,67 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body, #root {
+  height: 100%;
+  width: 100%;
+}
+
+/* background */
+body {
+  font-family: sans-serif;
+  background: #cdb4f6;
+}
+
+/* CENTER CONTAINER */
+.page-wrapper {
+  min-height: 100vh;
+  width: 100%;
+  display: grid;
+  place-items: center;
+}
+
+/* CARD */
+.card {
+  width: 900px;
+  max-width: 95%;
+  height: 550px;
+  background: #e5d7fb;
+  border-radius: 20px;
+  display: flex;
+  padding: 40px;
+  gap: 60px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+}
+
+/* kiri */
+.card-left {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.card-left img {
+  width: 80%;
+  max-width: 350px;
+}
+
+/* kanan */
+.card-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* input */
+.input-field {
+  width: 100%;
+  padding: 12px;
+  margin-top: 12px;
+  border-radius: 8px;
+  border: none;
+}
