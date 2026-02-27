@@ -1,15 +1,16 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import illustration from "../assets/logovimind.png";
 import logo from "../assets/logovimind2.png";
-import { Link, useNavigate } from "react-router-dom";
+import "../App.css";
 
-const Register = () => {
+const ResetPassword = () => {
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
-    name: "",
     email: "",
-    password: ""
+    password: "",
+    confirm: ""
   });
 
   const handleChange = (e) => {
@@ -22,50 +23,39 @@ const Register = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // VALIDASI SEDERHANA
-    if (!form.name || !form.email || !form.password) {
+    if (!form.email || !form.password || !form.confirm) {
       alert("Semua field wajib diisi");
       return;
     }
 
-    // SIMULASI REGISTER SUCCESS
-    console.log("Register data:", form);
+    if (form.password !== form.confirm) {
+      alert("Password tidak sama");
+      return;
+    }
 
-    // redirect ke success page
-    navigate("/success");
+    console.log("Reset password:", form);
+
+    // simulasi success
+    navigate("/reset-success");
   };
 
   return (
     <div className="page-wrapper">
       <div className="card">
 
-        {/* LEFT */}
+        {/* LEFT IMAGE */}
         <div className="card-left">
           <img src={illustration} alt="illustration" />
         </div>
 
-        {/* RIGHT */}
+        {/* RIGHT FORM */}
         <div className="card-right">
 
-          <div className="logo-container">
-            <img src={logo} alt="Vimind Logo" className="logo-img" />
-          </div>
+          <img src={logo} alt="logo" className="reset-logo"/>
 
-          <div className="subtitle">
-            Butuh akun baru? mari kita buat
-          </div>
+          <h3 className="reset-title">Reset password</h3>
 
-          {/* FORM */}
           <form onSubmit={handleSubmit}>
-
-            <input
-              type="text"
-              name="name"
-              placeholder="Full Name"
-              className="input-field"
-              value={form.name}
-              onChange={handleChange}
-            />
 
             <input
               type="email"
@@ -79,21 +69,26 @@ const Register = () => {
             <input
               type="password"
               name="password"
-              placeholder="Password"
+              placeholder="Password baru"
               className="input-field"
               value={form.password}
               onChange={handleChange}
             />
 
+            <input
+              type="password"
+              name="confirm"
+              placeholder="Konfirmasi password baru"
+              className="input-field"
+              value={form.confirm}
+              onChange={handleChange}
+            />
+
             <button type="submit" className="primary-btn">
-              Daftar
+              Kembali ke Halaman Login
             </button>
 
           </form>
-
-          <div className="small-text">
-            Sudah punya akun? <Link to="/login">Login sekarang</Link>
-          </div>
 
         </div>
       </div>
@@ -101,4 +96,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default ResetPassword;

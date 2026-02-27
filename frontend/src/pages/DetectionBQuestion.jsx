@@ -20,9 +20,7 @@ export default function Detection() {
   if (currentIndex < questions.length - 1) {
     setCurrentIndex(currentIndex + 1);
   } else {
-  setTimeout(() => {
-    navigate("/login");
-  }, 800);
+  navigate("/selesai");
 }};
 
   const progressPercent = ((currentIndex + 1) / questions.length) * 100;
