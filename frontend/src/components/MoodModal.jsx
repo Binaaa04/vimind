@@ -1,47 +1,30 @@
-import React from "react";
-
-const MoodModal = ({ onClose }) => {
+const MoodModal = ({ onSelect, onClose }) => {
   const moods = ["😭", "☹️", "😐", "🙂", "😁"];
 
   const handleSelect = (mood) => {
-    console.log("Mood:", mood);
-    if (onClose) onClose();
-  };
-
-  const handleOverlayClick = () => {
-    if (onClose) onClose();
-  };
-
-  const stopClick = (e) => {
-    e.stopPropagation();
+    localStorage.setItem("mood", mood);
+    onSelect?.(mood);
+    onClose();
   };
 
   return (
-    <div
-      className="modal-overlay"
-      onClick={handleOverlayClick}
-      role="dialog"
-    >
-      <div className="mood-card" onClick={stopClick}>
-
+    <div className="modal-overlay">
+      <div className="mood-card">
         <h2>Bagaimana Perasaanmu Hari ini ?</h2>
 
         <div className="emoji-row">
-          {moods.map((mood, i) => (
+          {moods.map((mood,i)=>(
             <span
               key={i}
               className="emoji"
-              onClick={() => handleSelect(mood)}
+              onClick={()=>handleSelect(mood)}
             >
               {mood}
             </span>
           ))}
         </div>
 
-        <p className="skip" onClick={handleOverlayClick}>
-          Lewati
-        </p>
-
+        <p className="skip" onClick={onClose}>Lewati</p>
       </div>
     </div>
   );

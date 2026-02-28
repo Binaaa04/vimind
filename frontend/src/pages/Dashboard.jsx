@@ -1,47 +1,61 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
+import SummaryModal from "../components/SummaryModal";
+import MoodResultModal from "../components/MoodResultModal";
+import { useNavigate } from "react-router-dom";
 import MoodModal from "../components/MoodModal";
 import logo from "../assets/logovimind2.png";
 
 const Dashboard = () => {
   const [showMood, setShowMood] = useState(true);
-
+  const navigate = useNavigate();
+  const [showSummary, setShowSummary] = useState(false);
+  const [showResult, setShowResult] = useState(false);
+  const mood = localStorage.getItem("mood");
   return (
     <div className="dashboard-page">
 
       {/* NAVBAR */}
       <div className="dashboard-navbar">
         <div className="nav-left">
-          <img src={logo} alt="logo" className="nav-logo"/>
-          <div className="divider"/>
+          <img src={logo} alt="logo" className="nav-logo" />
+          <div className="divider" />
           <span className="nav-menu">Artikel Kesehatan Mental ▾</span>
         </div>
       </div>
 
-
       {/* HERO */}
       <div className="dashboard-hero">
-        <div className="hero-big"/>
-        <div className="hero-small"/>
+        <div className="hero-big" />
+        <div className="hero-small" />
       </div>
 
-      {/* SLIDER DOT */}
+      {/* DOTS */}
       <div className="dots">
-        <span/>
-        <span className="active"/>
-        <span/>
+        <span />
+        <span className="active" />
+        <span />
       </div>
 
-
-      {/* FEATURE SECTION */}
+      {/* FEATURE */}
       <div className="bottom-section">
 
         <div className="bottom-left">
-          <h2>Mari cek dan coba <br/>beberapa manfaat Vimind</h2>
+          <h2>Mari cek dan coba <br />beberapa manfaat Vimind</h2>
         </div>
 
         <div className="bottom-cards">
 
-          <div className="feature-card">
+          {/* MOOD RESULT */}
+          <div
+            className="feature-card"
+            onClick={() => {
+              if (!mood) {
+                alert("Isi mood dulu ya 🙂");
+                return;
+              }
+              setShowResult(true);
+            }}
+          >
             <div className="icon">🙂</div>
             <div>
               <h4>Rangkuman Kondisi Mood</h4>
@@ -49,7 +63,14 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="feature-card">
+          {/* QUIZ BUTTON */}
+          <div
+            className="feature-card"
+            onClick={() => {
+              localStorage.setItem("quizFrom", "dashboard");
+              navigate("/deteksi");
+            }}
+          >
             <div className="icon">🧠</div>
             <div>
               <h4>Cek Kondisi Mentalmu</h4>
@@ -57,7 +78,11 @@ const Dashboard = () => {
             </div>
           </div>
 
-          <div className="feature-card">
+          {/* SUMMARY */}
+          <div
+            className="feature-card"
+            onClick={() => setShowSummary(true)}
+          >
             <div className="icon">📊</div>
             <div>
               <h4>Lihat Rangkuman</h4>
@@ -68,12 +93,23 @@ const Dashboard = () => {
         </div>
       </div>
 
-
-      {/* MODAL */}
+      {/* MOOD MODAL */}
       {showMood && (
         <MoodModal onClose={() => setShowMood(false)} />
       )}
 
+      {/* RESULT MODAL */}
+      {showResult && (
+        <MoodResultModal
+          mood={mood}
+          onClose={() => setShowResult(false)}
+        />
+      )}
+
+      {/* SUMMARY */}
+      {showSummary && (
+        <SummaryModal onClose={() => setShowSummary(false)} />
+      )}
     </div>
   );
 };

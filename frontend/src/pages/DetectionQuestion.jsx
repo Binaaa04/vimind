@@ -1,8 +1,9 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useState } from "react";
 
 export default function Detection() {
   const navigate = useNavigate();
+  const location = useLocation(); // ← TAMBAH INI
 
   const questions = [
     "Apakah anda sering merasa sedih,kosong dan putus asa",
@@ -14,23 +15,25 @@ export default function Detection() {
   const [selected, setSelected] = useState(null);
 
   const nextQuestion = () => {
-  if (selected === null) return;
+    if (selected === null) return;
 
-  setSelected(null);
+    setSelected(null);
 
-  if (currentIndex < questions.length - 1) {
-    setCurrentIndex(currentIndex + 1);
-  } else {
-    navigate("/deteksi/b"); // pindah ke point B
-  }
-};
+    if (currentIndex < questions.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+    } else {
+      // ← TERUSKAN STATE KE POINT B
+      navigate("/deteksi/b", {
+        state: location.state
+      });
+    }
+  };
 
   const progressPercent = ((currentIndex + 1) / questions.length) * 100;
 
   return (
     <div className="question-page">
 
-      {/* Progress Bar */}
       <div className="progress-bar">
         <div 
           className="progress-fill"

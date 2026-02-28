@@ -85,7 +85,7 @@ export default function Detection() {
             cursor: selected === null ? "not-allowed" : "pointer"
           }}
         >
-          Lanjutkan
+          Lajutkan
         </button>
 
       </div>

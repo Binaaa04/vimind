@@ -823,3 +823,208 @@ body {
     opacity:1;
   }
 }
+/*SUMMARY */
+/* OVERLAY */
+.modal-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.3);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+  z-index:1000;
+}
+
+/* CONTAINER UNGU */
+.summary-container{
+  position: relative;
+  background:linear-gradient(135deg,#7a5cff,#6b5cff);
+  padding:80px;
+  border-radius:25px;
+  display:flex;
+  gap:30px;
+  align-items:stretch;
+}
+
+/* CARD UMUM */
+.summary-card{
+  background:white;
+  border-radius:20px;
+  padding:25px;
+  box-shadow:0 10px 25px rgba(0,0,0,0.1);
+}
+
+.summary-card.large{
+  width:420px;
+}
+
+.summary-card.small{
+  width:340px;
+  text-align:center;
+}
+
+/* HEADER GRAFIK */
+.card-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
+}
+
+.card-header h3{
+  color:#2e1c6b;
+  font-weight:600;
+}
+
+/* EXPORT BUTTON */
+.export-btn{
+  background:#7a5cff;
+  border:none;
+  color:white;
+  padding:6px 16px;
+  border-radius:10px;
+  cursor:pointer;
+  font-size:13px;
+  transition:0.2s;
+}
+
+.export-btn:hover{
+  opacity:0.85;
+}
+
+/* CHART BOX */
+.chart-box{
+  background:#f3f1fb;
+  border-radius:15px;
+  height:220px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.chart-svg{
+  width:100%;
+  height:100%;
+}
+
+/* GAUGE */
+.gauge{
+  position:relative;
+  width:220px;
+  height:110px;
+  margin:20px auto;
+  border-radius:220px 220px 0 0;
+  background:#ddd;
+  overflow:hidden;
+}
+
+.gauge-fill{
+  position:absolute;
+  bottom:0;
+  width:100%;
+  height:100%;
+  background:linear-gradient(90deg,#7a5cff,#9c84ff);
+  transform:rotate(120deg);
+  transform-origin:bottom center;
+}
+
+.gauge-center{
+  position:absolute;
+  bottom:0;
+  width:100%;
+  height:85%;
+  background:white;
+  border-radius:220px 220px 0 0;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  padding:15px;
+  text-align:center;
+}
+
+.gauge-center h2{
+  margin:5px 0;
+  font-size:24px;
+}
+
+.gauge-center h4{
+  color:#2e1c6b;
+  margin:5px 0;
+}
+
+/* CLOSE */
+.close-btn{
+  margin-top:18px;
+  color:white;
+  font-weight:500;
+  cursor:pointer;
+  transition:0.2s;
+}
+.summary-footer{
+  position:absolute;
+  bottom:18px;
+  left:0;
+  width:100%;
+  display:flex;
+  justify-content:center;
+}
+
+.summary-footer button{
+  background:transparent;
+  border:none;
+  color:white;
+  font-size:16px;
+  cursor:pointer;
+  font-weight:500;
+}
+
+.summary-footer button:hover{
+  opacity:0.8;
+}
+.close-btn:hover{
+  opacity:0.8;
+}
+/*MOOD RESULT*/
+.result-wrapper{
+  background:linear-gradient(135deg,#7a5cff,#8f79ff);
+  padding:40px 50px;
+  border-radius:25px;
+  text-align:center;
+}
+
+.result-card{
+  background:white;
+  border-radius:20px;
+  padding:40px;
+  width:420px;
+  margin-bottom:20px;
+}
+
+.result-card h2{
+  color:#2e1c6b;
+  margin-bottom:30px;
+}
+
+.gauge{
+  height:20px;
+  background:#ddd;
+  border-radius:50px;
+  overflow:hidden;
+  margin-bottom:25px;
+}
+
+.gauge-fill{
+  height:100%;
+  background:linear-gradient(90deg,#7a5cff,#a88cff);
+  border-radius:50px;
+}
+
+.close-btn{
+  background:transparent;
+  border:none;
+  color:white;
+  font-size:16px;
+  cursor:pointer;
+}
