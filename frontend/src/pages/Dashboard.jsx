@@ -3,16 +3,19 @@ import SummaryModal from "../components/SummaryModal";
 import MoodResultModal from "../components/MoodResultModal";
 import { useNavigate } from "react-router-dom";
 import MoodModal from "../components/MoodModal";
+import ProfileSidebar from "../components/ProfileSidebar";
 import logo from "../assets/logovimind2.png";
 
 const Dashboard = () => {
   const [showMood, setShowMood] = useState(true);
-  const navigate = useNavigate();
   const [showSummary, setShowSummary] = useState(false);
   const [showResult, setShowResult] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(false);
+  const navigate = useNavigate();
   const mood = localStorage.getItem("mood");
   return (
     <div className="dashboard-page">
+      <div className="dashboard-main">
 
       {/* NAVBAR */}
       <div className="dashboard-navbar">
@@ -20,6 +23,26 @@ const Dashboard = () => {
           <img src={logo} alt="logo" className="nav-logo" />
           <div className="divider" />
           <span className="nav-menu">Artikel Kesehatan Mental ▾</span>
+        </div>
+        {/* PROFILE AREA */}
+        <div className="nav-profile-area">
+          <button
+            className={`profile-trigger ${showSidebar ? "active" : ""}`}
+            onClick={() => setShowSidebar(!showSidebar)}
+          >   
+            <span>Profile</span>
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/4140/4140048.png"
+              alt="Profile"
+              className="profile-trigger-avatar"
+            />
+          </button>
+
+          {/* SIDEBAR */}
+          <ProfileSidebar 
+            isOpen={showSidebar}
+            onClose={() => setShowSidebar(false)} 
+          />
         </div>
       </div>
 
@@ -89,8 +112,8 @@ const Dashboard = () => {
               <p>Rangkuman dan perkembangan pengujian mentalmu selama ini.</p>
             </div>
           </div>
-
         </div>
+      </div>
       </div>
 
       {/* MOOD MODAL */}
