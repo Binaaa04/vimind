@@ -4,6 +4,7 @@ import MoodResultModal from "../components/MoodResultModal";
 import { useNavigate } from "react-router-dom";
 import MoodModal from "../components/MoodModal";
 import ProfileSidebar from "../components/ProfileSidebar";
+import NicknameModal from "../components/NicknameModal";
 import logo from "../assets/logovimind2.png";
 
 const Dashboard = () => {
@@ -11,8 +12,20 @@ const Dashboard = () => {
   const [showSummary, setShowSummary] = useState(false);
   const [showResult, setShowResult] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
+  const [showNicknameModal, setShowNicknameModal] = useState(false);
+  const [nickname, setNickname] = useState(
+    localStorage.getItem("nickname") || "Udean"
+  );
+
   const navigate = useNavigate();
   const mood = localStorage.getItem("mood");
+
+  const handleSaveNickname = (newNickname) => {
+    const finalNickname = newNickname?.trim() || "Udean";
+    setNickname(finalNickname);
+    localStorage.setItem("nickname", finalNickname);
+  };
+
   return (
     <div className="dashboard-page">
       <div className="dashboard-main">
@@ -42,6 +55,8 @@ const Dashboard = () => {
           <ProfileSidebar 
             isOpen={showSidebar}
             onClose={() => setShowSidebar(false)} 
+            onOpenNicknameModal={() => setShowNicknameModal(true)}
+            nickname={nickname}
           />
         </div>
       </div>
@@ -115,6 +130,13 @@ const Dashboard = () => {
         </div>
       </div>
       </div>
+
+      {/* NICKNAME MODAL */}
+      <NicknameModal
+        isOpen={showNicknameModal}
+        onClose={() => setShowNicknameModal(false)}
+        onSave={handleSaveNickname}
+      />
 
       {/* MOOD MODAL */}
       {showMood && (

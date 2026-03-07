@@ -1,7 +1,7 @@
 import "./ProfileSidebar.css";
 import logo from "../assets/logovimind2.png";
 
-const ProfileSidebar = ({ isOpen, onClose }) => {
+const ProfileSidebar = ({ isOpen, onClose, onOpenNicknameModal,nickname }) => {
   return (
     <>
       <div
@@ -12,7 +12,7 @@ const ProfileSidebar = ({ isOpen, onClose }) => {
       <aside className={`profile-sidebar ${isOpen ? "open" : ""}`}>
         <div className="profile-top">
           <div className="profile-header">
-            <h3>Hai, Udean</h3>
+            <h3>Hai, {nickname}</h3>
           </div>
 
           <div className="profile-avatar-wrap">
@@ -26,7 +26,16 @@ const ProfileSidebar = ({ isOpen, onClose }) => {
           <button className="profile-photo-btn">Ubah Foto</button>
 
           <div className="profile-menu">
-            <button className="profile-menu-btn">Change Nickname</button>
+            <button
+              className="profile-menu-btn"
+              onClick={() => {
+                onClose();
+                onOpenNicknameModal();
+              }}
+            >
+              Change Nickname
+            </button>
+
             <button className="profile-menu-btn">Forgot Password</button>
           </div>
         </div>

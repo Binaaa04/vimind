@@ -653,7 +653,7 @@ body {
 /* BACKGROUND BARU */
 .dashboard-page {
   min-height: 100vh;
-  padding: 30px 70px;
+  padding: 18px 24px 40px;
   background: #f5f3fa;
   position: relative;
   overflow: visible;
@@ -664,6 +664,9 @@ body {
 .dashboard-main {
   position: relative;
   z-index: 5;
+  max-width: 1300px;
+  margin: 0 auto;
+  overflow: visible;
 }
 
 .profile-trigger {
