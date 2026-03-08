@@ -1,0 +1,57 @@
+.success-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.14);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5000;
+}
+
+.success-modal {
+  width: 340px;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 28px 24px 22px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.14);
+  text-align: center;
+}
+
+.success-icon {
+  width: 54px;
+  height: 54px;
+  margin: 0 auto 14px;
+  border-radius: 50%;
+  background: #a98bff;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.success-modal h2 {
+  color: #2e1c6b;
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+.success-modal p {
+  color: #2e1c6b;
+  font-size: 13px;
+  margin-bottom: 26px;
+}
+
+.success-modal button {
+  width: 100%;
+  height: 38px;
+  border: none;
+  border-radius: 8px;
+  background: #b595ff;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}

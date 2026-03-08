@@ -3,16 +3,48 @@ import SummaryModal from "../components/SummaryModal";
 import MoodResultModal from "../components/MoodResultModal";
 import { useNavigate } from "react-router-dom";
 import MoodModal from "../components/MoodModal";
+import ProfileSidebar from "../components/ProfileSidebar";
+import NicknameModal from "../components/NicknameModal";
+import NicknameSuccessModal from "../components/NicknameSuccessModal";
+import LogoutModal from "../components/LogoutModal";
 import logo from "../assets/logovimind2.png";
 
 const Dashboard = () => {
   const [showMood, setShowMood] = useState(true);
-  const navigate = useNavigate();
   const [showSummary, setShowSummary] = useState(false);
   const [showResult, setShowResult] = useState(false);
+  const [showSidebar, setShowSidebar] = useState(false);
+  const [showNicknameModal, setShowNicknameModal] = useState(false);
+  const [showNicknameSuccessModal, setShowNicknameSuccessModal] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [nickname, setNickname] = useState(
+    localStorage.getItem("nickname") || "Udean"
+  );
+
+  const navigate = useNavigate();
   const mood = localStorage.getItem("mood");
+
+  const handleSaveNickname = (newNickname) => {
+    const finalNickname = newNickname?.trim() || "Udean";
+    setNickname(finalNickname);
+    localStorage.setItem("nickname", finalNickname);
+    setShowNicknameModal(false);
+    setShowNicknameSuccessModal(true);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("nickname");
+    localStorage.removeItem("mood");
+    localStorage.removeItem("quizFrom");
+
+    setShowLogoutModal(false);
+
+    navigate("/login");
+  };
+
   return (
     <div className="dashboard-page">
+      <div className="dashboard-main">
 
       {/* NAVBAR */}
       <div className="dashboard-navbar">
@@ -20,6 +52,29 @@ const Dashboard = () => {
           <img src={logo} alt="logo" className="nav-logo" />
           <div className="divider" />
           <span className="nav-menu">Artikel Kesehatan Mental ▾</span>
+        </div>
+        {/* PROFILE AREA */}
+        <div className="nav-profile-area">
+          <button
+            className={`profile-trigger ${showSidebar ? "active" : ""}`}
+            onClick={() => setShowSidebar(!showSidebar)}
+          >   
+            <span>Profile</span>
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/4140/4140048.png"
+              alt="Profile"
+              className="profile-trigger-avatar"
+            />
+          </button>
+
+          {/* SIDEBAR */}
+          <ProfileSidebar 
+            isOpen={showSidebar}
+            onClose={() => setShowSidebar(false)} 
+            onOpenNicknameModal={() => setShowNicknameModal(true)}
+            onOpenLogoutModal={() => setShowLogoutModal(true)}
+            nickname={nickname}
+          />
         </div>
       </div>
 
@@ -89,10 +144,30 @@ const Dashboard = () => {
               <p>Rangkuman dan perkembangan pengujian mentalmu selama ini.</p>
             </div>
           </div>
-
         </div>
       </div>
+      </div>
 
+      {/* NICKNAME MODAL */}
+      <NicknameModal
+        isOpen={showNicknameModal}
+        onClose={() => setShowNicknameModal(false)}
+        onSave={handleSaveNickname}
+      />
+
+      {/* NICKNAME SUCCESS MODAL */}
+      <NicknameSuccessModal
+        isOpen={showNicknameSuccessModal}
+        onClose={() => setShowNicknameSuccessModal(false)}
+      />
+      
+      {/* LOGOUT MODAL */}
+      <LogoutModal
+        isOpen={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        onConfirm={handleLogout}
+      />
+      
       {/* MOOD MODAL */}
       {showMood && (
         <MoodModal onClose={() => setShowMood(false)} />

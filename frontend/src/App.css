@@ -653,10 +653,63 @@ body {
 /* BACKGROUND BARU */
 .dashboard-page {
   min-height: 100vh;
-  padding: 30px 70px;
+  padding: 18px 24px 40px;
   background: #f5f3fa;
   position: relative;
-  overflow: hidden;
+  overflow: visible;
+  max-width: 1440px;
+  margin: 0 auto;
+}
+
+.dashboard-main {
+  position: relative;
+  z-index: 5;
+  max-width: 1300px;
+  margin: 0 auto;
+  overflow: visible;
+}
+
+.profile-trigger {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  color: #2e1c6b;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+}
+
+.profile-trigger:hover {
+  background: transparent;
+  border: none;
+  outline: none;
+  box-shadow: none;
+}
+
+.profile-trigger:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.profile-trigger-avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  object-fit: cover;
+  transition: transform 0.2s ease;
+}
+
+.profile-trigger:hover .profile-trigger-avatar {
+  transform: scale(1.05);
+}
+
+.profile-trigger.active .profile-trigger-avatar {
+  transform: rotate(6deg) scale(1.05);
 }
 
 /* WAVE BACKGROUND */
@@ -683,29 +736,58 @@ body {
 /* NAVBAR */
 .dashboard-navbar {
   display: flex;
+  position: relative;
+  z-index: 1600;
   justify-content: space-between;
-  margin-bottom: 40px;
+  align-items: center;
+  width: 100%;              /* mengikuti container */
+  max-width: 1250px;       /* sama dengan area abu2 */
+  margin: 0px auto 40px;
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 6px 18px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+}
+
+.nav-profile-area {
+  position: relative;
+  z-index: 2000;
 }
 
 .nav-left {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap:10px;
+  flex-shrink:0;  
 }
 
 .nav-logo {
-  height: 45px;
+  height: 60px;   
+  width: auto;
+  object-fit: contain;
 }
 
 .divider {
   width: 1px;
-  height: 25px;
+  height: 22px;
   background: #cfc6f5;
+  margin: 0 4px;
 }
 
 .nav-menu {
+  display: inline-flex;
+  align-items: center;
+  height: 30px;
+  padding: 0 12px;
+
+  border: 1px solid #ddd3ff;
+  border-radius: 6px;
+
+  background: #ffffff;
   color: #5e47c8;
+  font-size: 12px;
   font-weight: 600;
+  cursor: pointer;
 }
 
 /* ===== CONTAINER WIDTH ===== */
