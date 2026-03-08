@@ -12,7 +12,6 @@ export default function Landing() {
       <div className="landing-content">
         <div className="logo">
           <img src={logo} alt="Vimind Logo" />
-          <h2>Vimind</h2>
         </div>
 
         <h1>SELAMAT DATANG!</h1>

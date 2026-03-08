@@ -7,6 +7,8 @@ import ProfileSidebar from "../components/ProfileSidebar";
 import NicknameModal from "../components/NicknameModal";
 import NicknameSuccessModal from "../components/NicknameSuccessModal";
 import LogoutModal from "../components/LogoutModal";
+import ArticleModal from "../components/ArticleModal";
+import { articlesList } from "../data/articlesData";
 import logo from "../assets/logovimind2.png";
 
 const Dashboard = () => {
@@ -14,6 +16,9 @@ const Dashboard = () => {
   const [showSummary, setShowSummary] = useState(false);
   const [showResult, setShowResult] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
+  const [showArticleMenu, setShowArticleMenu] = useState(false);
+  const [showArticleModal, setShowArticleModal] = useState(false);
+  const [selectedArticle, setSelectedArticle] = useState(null);
   const [showNicknameModal, setShowNicknameModal] = useState(false);
   const [showNicknameSuccessModal, setShowNicknameSuccessModal] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
@@ -30,6 +35,13 @@ const Dashboard = () => {
     localStorage.setItem("nickname", finalNickname);
     setShowNicknameModal(false);
     setShowNicknameSuccessModal(true);
+  };
+
+  const handleArticleClick = (articleId) => {
+    const article = articlesList.find(a => a.id === articleId);
+    setSelectedArticle(article);
+    setShowArticleModal(true);
+    setShowArticleMenu(false); // Tutup dropdown setelah klik
   };
 
   const handleLogout = () => {
@@ -51,7 +63,38 @@ const Dashboard = () => {
         <div className="nav-left">
           <img src={logo} alt="logo" className="nav-logo" />
           <div className="divider" />
-          <span className="nav-menu">Artikel Kesehatan Mental ▾</span>
+          <div className="article-menu-wrapper">
+          <button 
+            className="nav-menu"
+            onClick={() => setShowArticleMenu(!showArticleMenu)}
+          >
+            Artikel Kesehatan Mental ▾
+          </button>
+          
+          {/* DROPDOWN MENU */}
+          {showArticleMenu && (
+            <div className="article-menu-dropdown">
+              <div 
+                className="article-menu-item"
+                onClick={() => handleArticleClick(1)}
+              >
+                Kesehatan mental - Gejala, penyebab, pencegahan
+              </div>
+              <div 
+                className="article-menu-item"
+                onClick={() => handleArticleClick(2)}
+              >
+                Pentingnya kesehatan mental bagi remaja
+              </div>
+              <div 
+                className="article-menu-item"
+                onClick={() => handleArticleClick(3)}
+              >
+                Pentingnya kesehatan mental untuk pengalaman hidup
+              </div>
+            </div>
+          )}
+          </div>
         </div>
         {/* PROFILE AREA */}
         <div className="nav-profile-area">
@@ -185,6 +228,13 @@ const Dashboard = () => {
       {showSummary && (
         <SummaryModal onClose={() => setShowSummary(false)} />
       )}
+
+      {/* ARTICLE MODAL */}
+      <ArticleModal
+        isOpen={showArticleModal}
+        article={selectedArticle}
+        onClose={() => setShowArticleModal(false)}
+      />
     </div>
   );
 };
