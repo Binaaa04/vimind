@@ -1,8 +1,11 @@
 import "./ProfileSidebar.css";
 import logo from "../assets/logovimind2.png";
+import { useNavigate } from "react-router-dom";
 
 const ProfileSidebar = ({ isOpen, onClose, onOpenNicknameModal, onOpenLogoutModal, nickname }) => {
-  return (
+ const navigate = useNavigate();
+  
+ return (
     <>
       <div
         className={`profile-overlay ${isOpen ? "show" : ""}`}
@@ -36,7 +39,15 @@ const ProfileSidebar = ({ isOpen, onClose, onOpenNicknameModal, onOpenLogoutModa
               Change Nickname
             </button>
 
-            <button className="profile-menu-btn">Forgot Password</button>
+            <button
+              className="profile-menu-btn"
+              onClick={() => {
+                onClose();
+                navigate("/forgot-password");
+              }}
+            >
+              Forgot Password
+            </button>
           </div>
         </div>
 
