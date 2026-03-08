@@ -97,11 +97,11 @@ body {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  margin-bottom: 40px;
+  margin-bottom: 20px;
 }
 
 .logo img {
-  width: 40px;
+  width: 200px;
 }
 
 .logo h2 {
@@ -653,63 +653,10 @@ body {
 /* BACKGROUND BARU */
 .dashboard-page {
   min-height: 100vh;
-  padding: 18px 24px 40px;
+  padding: 30px 70px;
   background: #f5f3fa;
   position: relative;
-  overflow: visible;
-  max-width: 1440px;
-  margin: 0 auto;
-}
-
-.dashboard-main {
-  position: relative;
-  z-index: 5;
-  max-width: 1300px;
-  margin: 0 auto;
-  overflow: visible;
-}
-
-.profile-trigger {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  background: transparent;
-  border: none;
-  outline: none;
-  box-shadow: none;
-  color: #2e1c6b;
-  font-size: 11px;
-  font-weight: 600;
-  cursor: pointer;
-  padding: 0;
-}
-
-.profile-trigger:hover {
-  background: transparent;
-  border: none;
-  outline: none;
-  box-shadow: none;
-}
-
-.profile-trigger:focus {
-  outline: none;
-  box-shadow: none;
-}
-
-.profile-trigger-avatar {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  object-fit: cover;
-  transition: transform 0.2s ease;
-}
-
-.profile-trigger:hover .profile-trigger-avatar {
-  transform: scale(1.05);
-}
-
-.profile-trigger.active .profile-trigger-avatar {
-  transform: rotate(6deg) scale(1.05);
+  overflow: hidden;
 }
 
 /* WAVE BACKGROUND */
@@ -726,68 +673,114 @@ body {
 }
 
 /* konten tetap di depan */
-.dashboard-navbar,
 .dashboard-hero,
 .feature-section {
   position: relative;
   z-index: 1;
 }
 
+.dashboard-navbar {
+  position: relative;
+  z-index: 50;
+}
+
 /* NAVBAR */
 .dashboard-navbar {
   display: flex;
-  position: relative;
-  z-index: 1600;
   justify-content: space-between;
   align-items: center;
-  width: 100%;              /* mengikuti container */
-  max-width: 1250px;       /* sama dengan area abu2 */
-  margin: 0px auto 40px;
-  background: #ffffff;
-  border-radius: 12px;
-  padding: 6px 18px;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.08);
-}
-
-.nav-profile-area {
-  position: relative;
-  z-index: 2000;
+  margin-bottom: 40px;
+  overflow: visible;
 }
 
 .nav-left {
   display: flex;
   align-items: center;
-  gap:10px;
-  flex-shrink:0;  
+  gap: 20px;
+  position: relative;
+  z-index: 100;
 }
 
 .nav-logo {
-  height: 60px;   
-  width: auto;
-  object-fit: contain;
+  height: 60px;
 }
 
 .divider {
   width: 1px;
-  height: 22px;
+  height: 25px;
   background: #cfc6f5;
-  margin: 0 4px;
 }
 
 .nav-menu {
-  display: inline-flex;
-  align-items: center;
-  height: 30px;
-  padding: 0 12px;
-
-  border: 1px solid #ddd3ff;
-  border-radius: 6px;
-
-  background: #ffffff;
   color: #5e47c8;
-  font-size: 12px;
   font-weight: 600;
+  background: none;
+  border: none;
+  font-size: 15px;
   cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.nav-menu:hover {
+  color: #7c3aed;
+  background-color: #f0e6f6;
+}
+
+.nav-menu:focus {
+  outline: none;
+}
+
+.nav-menu:active {
+  background-color: #e6d5ff;
+}
+
+.nav-profile-area {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.profile-trigger {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 8px 12px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+  color: #333;
+  outline: none;
+}
+
+.profile-trigger:hover {
+  background-color: #f0e6f6;
+  color: #5e47c8;
+}
+
+.profile-trigger:focus {
+  outline: none;
+}
+
+.profile-trigger:active {
+  background-color: #e6d5ff;
+}
+
+.profile-trigger.active {
+  background-color: #f0e6f6;
+  color: #5e47c8;
+}
+
+.profile-trigger-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
 }
 
 /* ===== CONTAINER WIDTH ===== */
@@ -890,6 +883,42 @@ body {
 /* FEATURE POSITION */
 .feature-section {
   margin-top: 120px;
+}
+
+.article-menu-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 8px;
+  background: white;
+  border-radius: 8px;
+  padding: 12px 0;
+  min-width: 320px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  z-index: 3000;
+}
+
+.article-menu-wrapper {
+  position: relative;
+  display: inline-block;
+  z-index: 100;
+}
+
+.article-menu-item {
+  padding: 14px 16px;
+  background: white;
+  color: #5a5a5a;
+  border-radius: 4px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.5;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.article-menu-item:hover {
+  background-color: #f5f0ff;
+  color: #7c3aed;
 }
 
 /* FEATURE CARD STYLE */
