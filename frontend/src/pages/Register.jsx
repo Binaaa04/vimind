@@ -3,8 +3,11 @@ import illustration from "../assets/logovimind.png";
 import logo from "../assets/logovimind2.png";
 import { Link, useNavigate } from "react-router-dom";
 
+import { supabase } from "../services/supabaseClient";
+
 const Register = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
     name: "",
@@ -19,20 +22,37 @@ const Register = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // VALIDASI SEDERHANA
     if (!form.name || !form.email || !form.password) {
       alert("Semua field wajib diisi");
       return;
     }
 
-    // SIMULASI REGISTER SUCCESS
-    console.log("Register data:", form);
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: form.email,
+        password: form.password,
+        options: {
+          data: {
+            full_name: form.name,
+          },
+        },
+      });
 
-    // redirect ke success page
-    navigate("/success");
+      if (error) throw error;
+
+      console.log("Register success:", data);
+      alert("Pendaftaran berhasil! Silakan cek email kamu untuk verifikasi.");
+      navigate("/success");
+    } catch (error) {
+      console.error("Register error:", error.message);
+      alert("Gagal mendaftar: " + error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

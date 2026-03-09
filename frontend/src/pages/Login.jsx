@@ -13,6 +13,7 @@ const Login = () => {
     email: "",
     password: ""
   });
+  const [loading, setLoading] = useState(false);
 
   const handleGoogleLogin = async () => {
     try {
@@ -36,15 +37,32 @@ const Login = () => {
     });
   };
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
 
     if (!form.email || !form.password) {
       alert("Email dan password wajib diisi");
       return;
     }
-    localStorage.setItem("isLogin", "true");
-    navigate("/dashboard");
+
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: form.email,
+        password: form.password,
+      });
+
+      if (error) throw error;
+
+      console.log("Login success:", data);
+      localStorage.setItem("isLogin", "true");
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Login error:", error.message);
+      alert("Gagal login: " + error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

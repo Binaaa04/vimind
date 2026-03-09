@@ -4,11 +4,14 @@ import illustration from "../assets/logovimind.png";
 import logo from "../assets/logovimind2.png";
 import "../App.css";
 
+import { supabase } from "../services/supabaseClient";
+
 const ForgotPassword = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!email) {
@@ -16,12 +19,22 @@ const ForgotPassword = () => {
       return;
     }
 
-    console.log("Reset password untuk:", email);
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: window.location.origin + "/reset-password",
+      });
 
-    // simulasi berhasil kirim email reset
-    alert("Link reset password telah dikirim ke email kamu");
+      if (error) throw error;
 
-    navigate("/reset-sent");
+      alert("Link reset password telah dikirim ke email kamu! Silakan cek inbox.");
+      navigate("/reset-sent");
+    } catch (error) {
+      console.error("Reset error:", error.message);
+      alert("Gagal mengirim link reset: " + error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -36,9 +49,9 @@ const ForgotPassword = () => {
         {/* RIGHT SIDE */}
         <div className="card-right forgot-content">
 
-          <img 
-            src={logo} 
-            alt="Vimind Logo" 
+          <img
+            src={logo}
+            alt="Vimind Logo"
             className="forgot-logo"
           />
 

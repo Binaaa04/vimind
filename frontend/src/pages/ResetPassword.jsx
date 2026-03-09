@@ -4,11 +4,13 @@ import illustration from "../assets/logovimind.png";
 import logo from "../assets/logovimind2.png";
 import "../App.css";
 
+import { supabase } from "../services/supabaseClient";
+
 const ResetPassword = () => {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const [form, setForm] = useState({
-    email: "",
     password: "",
     confirm: ""
   });
@@ -20,10 +22,10 @@ const ResetPassword = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!form.email || !form.password || !form.confirm) {
+    if (!form.password || !form.confirm) {
       alert("Semua field wajib diisi");
       return;
     }
@@ -33,10 +35,22 @@ const ResetPassword = () => {
       return;
     }
 
-    console.log("Reset password:", form);
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: form.password,
+      });
 
-    // simulasi success
-    navigate("/reset-success");
+      if (error) throw error;
+
+      alert("Password berhasil diubah! Silakan login kembali.");
+      navigate("/reset-success");
+    } catch (error) {
+      console.error("Update password error:", error.message);
+      alert("Gagal mengubah password: " + error.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -51,7 +65,7 @@ const ResetPassword = () => {
         {/* RIGHT FORM */}
         <div className="card-right">
 
-          <img src={logo} alt="logo" className="reset-logo"/>
+          <img src={logo} alt="logo" className="reset-logo" />
 
           <h3 className="reset-title">Reset password</h3>
 

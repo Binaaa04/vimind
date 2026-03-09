@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { supabase } from "../services/supabaseClient";
 import SummaryModal from "../components/SummaryModal";
 import MoodResultModal from "../components/MoodResultModal";
 import { useNavigate } from "react-router-dom";
@@ -44,151 +45,155 @@ const Dashboard = () => {
     setShowArticleMenu(false); // Tutup dropdown setelah klik
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("nickname");
-    localStorage.removeItem("mood");
-    localStorage.removeItem("quizFrom");
-
-    setShowLogoutModal(false);
-
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      localStorage.removeItem("nickname");
+      localStorage.removeItem("mood");
+      localStorage.removeItem("quizFrom");
+      setShowLogoutModal(false);
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout error:", error.message);
+      alert("Gagal logout: " + error.message);
+    }
   };
 
   return (
     <div className="dashboard-page">
       <div className="dashboard-main">
 
-      {/* NAVBAR */}
-      <div className="dashboard-navbar">
-        <div className="nav-left">
-          <img src={logo} alt="logo" className="nav-logo" />
-          <div className="divider" />
-          <div className="article-menu-wrapper">
-          <button 
-            className="nav-menu"
-            onClick={() => setShowArticleMenu(!showArticleMenu)}
-          >
-            Artikel Kesehatan Mental ▾
-          </button>
-          
-          {/* DROPDOWN MENU */}
-          {showArticleMenu && (
-            <div className="article-menu-dropdown">
-              <div 
-                className="article-menu-item"
-                onClick={() => handleArticleClick(1)}
+        {/* NAVBAR */}
+        <div className="dashboard-navbar">
+          <div className="nav-left">
+            <img src={logo} alt="logo" className="nav-logo" />
+            <div className="divider" />
+            <div className="article-menu-wrapper">
+              <button
+                className="nav-menu"
+                onClick={() => setShowArticleMenu(!showArticleMenu)}
               >
-                Kesehatan mental - Gejala, penyebab, pencegahan
-              </div>
-              <div 
-                className="article-menu-item"
-                onClick={() => handleArticleClick(2)}
-              >
-                Pentingnya kesehatan mental bagi remaja
-              </div>
-              <div 
-                className="article-menu-item"
-                onClick={() => handleArticleClick(3)}
-              >
-                Pentingnya kesehatan mental untuk pengalaman hidup
-              </div>
+                Artikel Kesehatan Mental ▾
+              </button>
+
+              {/* DROPDOWN MENU */}
+              {showArticleMenu && (
+                <div className="article-menu-dropdown">
+                  <div
+                    className="article-menu-item"
+                    onClick={() => handleArticleClick(1)}
+                  >
+                    Kesehatan mental - Gejala, penyebab, pencegahan
+                  </div>
+                  <div
+                    className="article-menu-item"
+                    onClick={() => handleArticleClick(2)}
+                  >
+                    Pentingnya kesehatan mental bagi remaja
+                  </div>
+                  <div
+                    className="article-menu-item"
+                    onClick={() => handleArticleClick(3)}
+                  >
+                    Pentingnya kesehatan mental untuk pengalaman hidup
+                  </div>
+                </div>
+              )}
             </div>
-          )}
           </div>
-        </div>
-        {/* PROFILE AREA */}
-        <div className="nav-profile-area">
-          <button
-            className={`profile-trigger ${showSidebar ? "active" : ""}`}
-            onClick={() => setShowSidebar(!showSidebar)}
-          >   
-            <span>Profile</span>
-            <img
-              src="https://cdn-icons-png.flaticon.com/512/4140/4140048.png"
-              alt="Profile"
-              className="profile-trigger-avatar"
+          {/* PROFILE AREA */}
+          <div className="nav-profile-area">
+            <button
+              className={`profile-trigger ${showSidebar ? "active" : ""}`}
+              onClick={() => setShowSidebar(!showSidebar)}
+            >
+              <span>Profile</span>
+              <img
+                src="https://cdn-icons-png.flaticon.com/512/4140/4140048.png"
+                alt="Profile"
+                className="profile-trigger-avatar"
+              />
+            </button>
+
+            {/* SIDEBAR */}
+            <ProfileSidebar
+              isOpen={showSidebar}
+              onClose={() => setShowSidebar(false)}
+              onOpenNicknameModal={() => setShowNicknameModal(true)}
+              onOpenLogoutModal={() => setShowLogoutModal(true)}
+              nickname={nickname}
             />
-          </button>
-
-          {/* SIDEBAR */}
-          <ProfileSidebar 
-            isOpen={showSidebar}
-            onClose={() => setShowSidebar(false)} 
-            onOpenNicknameModal={() => setShowNicknameModal(true)}
-            onOpenLogoutModal={() => setShowLogoutModal(true)}
-            nickname={nickname}
-          />
-        </div>
-      </div>
-
-      {/* HERO */}
-      <div className="dashboard-hero">
-        <div className="hero-big" />
-        <div className="hero-small" />
-      </div>
-
-      {/* DOTS */}
-      <div className="dots">
-        <span />
-        <span className="active" />
-        <span />
-      </div>
-
-      {/* FEATURE */}
-      <div className="bottom-section">
-
-        <div className="bottom-left">
-          <h2>Mari cek dan coba <br />beberapa manfaat Vimind</h2>
+          </div>
         </div>
 
-        <div className="bottom-cards">
+        {/* HERO */}
+        <div className="dashboard-hero">
+          <div className="hero-big" />
+          <div className="hero-small" />
+        </div>
 
-          {/* MOOD RESULT */}
-          <div
-            className="feature-card"
-            onClick={() => {
-              if (!mood) {
-                alert("Isi mood dulu ya 🙂");
-                return;
-              }
-              setShowResult(true);
-            }}
-          >
-            <div className="icon">🙂</div>
-            <div>
-              <h4>Rangkuman Kondisi Mood</h4>
-              <p>Berikut hasil rangkuman mood bulanan kamu.</p>
-            </div>
+        {/* DOTS */}
+        <div className="dots">
+          <span />
+          <span className="active" />
+          <span />
+        </div>
+
+        {/* FEATURE */}
+        <div className="bottom-section">
+
+          <div className="bottom-left">
+            <h2>Mari cek dan coba <br />beberapa manfaat Vimind</h2>
           </div>
 
-          {/* QUIZ BUTTON */}
-          <div
-            className="feature-card"
-            onClick={() => {
-              localStorage.setItem("quizFrom", "dashboard");
-              navigate("/deteksi");
-            }}
-          >
-            <div className="icon">🧠</div>
-            <div>
-              <h4>Cek Kondisi Mentalmu</h4>
-              <p>Pengujian untuk mencari tau bagaimana kondisi mentalmu.</p>
-            </div>
-          </div>
+          <div className="bottom-cards">
 
-          {/* SUMMARY */}
-          <div
-            className="feature-card"
-            onClick={() => setShowSummary(true)}
-          >
-            <div className="icon">📊</div>
-            <div>
-              <h4>Lihat Rangkuman</h4>
-              <p>Rangkuman dan perkembangan pengujian mentalmu selama ini.</p>
+            {/* MOOD RESULT */}
+            <div
+              className="feature-card"
+              onClick={() => {
+                if (!mood) {
+                  alert("Isi mood dulu ya 🙂");
+                  return;
+                }
+                setShowResult(true);
+              }}
+            >
+              <div className="icon">🙂</div>
+              <div>
+                <h4>Rangkuman Kondisi Mood</h4>
+                <p>Berikut hasil rangkuman mood bulanan kamu.</p>
+              </div>
+            </div>
+
+            {/* QUIZ BUTTON */}
+            <div
+              className="feature-card"
+              onClick={() => {
+                localStorage.setItem("quizFrom", "dashboard");
+                navigate("/deteksi");
+              }}
+            >
+              <div className="icon">🧠</div>
+              <div>
+                <h4>Cek Kondisi Mentalmu</h4>
+                <p>Pengujian untuk mencari tau bagaimana kondisi mentalmu.</p>
+              </div>
+            </div>
+
+            {/* SUMMARY */}
+            <div
+              className="feature-card"
+              onClick={() => setShowSummary(true)}
+            >
+              <div className="icon">📊</div>
+              <div>
+                <h4>Lihat Rangkuman</h4>
+                <p>Rangkuman dan perkembangan pengujian mentalmu selama ini.</p>
+              </div>
             </div>
           </div>
         </div>
-      </div>
       </div>
 
       {/* NICKNAME MODAL */}
@@ -203,14 +208,14 @@ const Dashboard = () => {
         isOpen={showNicknameSuccessModal}
         onClose={() => setShowNicknameSuccessModal(false)}
       />
-      
+
       {/* LOGOUT MODAL */}
       <LogoutModal
         isOpen={showLogoutModal}
         onClose={() => setShowLogoutModal(false)}
         onConfirm={handleLogout}
       />
-      
+
       {/* MOOD MODAL */}
       {showMood && (
         <MoodModal onClose={() => setShowMood(false)} />

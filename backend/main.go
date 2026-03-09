@@ -101,18 +101,13 @@ func main() {
 		var dbEmail string
 		err := dbpool.QueryRow(context.Background(), "SELECT email FROM users WHERE email=$1", req.Email).Scan(&dbEmail)
 
-		// If table doesn't exist yet, we'll just log it and fallback to the placeholder logic
+		// If table doesn't exist yet or user not found
 		if err != nil {
-			log.Printf("DB Query Info (Table probably missing): %v", err)
-
-			// FALLBACK TO PLACEHOLDER LOGIC (Safe since no query concatenation)
-			if req.Email == "test@vimind.com" && req.Password == "password123" {
-				return c.JSON(fiber.Map{"message": "Login successful", "user": req.Email})
-			}
-			return c.Status(401).JSON(fiber.Map{"message": "Login failed"})
+			log.Printf("Login security check: %v", err)
+			return c.Status(401).JSON(fiber.Map{"message": "Unauthorized access"})
 		}
 
-		return c.JSON(fiber.Map{"message": "User found securely", "email": dbEmail})
+		return c.JSON(fiber.Map{"message": "User session validated", "email": dbEmail})
 	})
 
 	log.Fatal(app.Listen(":8080"))
