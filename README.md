@@ -59,12 +59,29 @@ npm run dev
 
 Open `http://localhost:5173` in your browser.
 
-## Security Features
-This project includes several security hardeining measures:
-- **Rate Limiting**: Maximum 100 requests every 15 minutes per IP to prevent brute-force and DDoS.
-- **SQL Injection Protection**: Uses parameterized queries for all database interactions.
-- **Security Headers**: Integrated with Helmet middleware.
-
 ## Google Authentication
 Google Login integration is powered by Supabase Auth. Ensure the Redirect URI in the Google Cloud Console is set to:
 `https://ujhyykkpfrizkgmtyvee.supabase.co/auth/v1/callback`
+
+## Core Features Implemented (March 10, 2026)
+
+### 1. Certainty Factor (CF) Diagnosis
+The application now uses a data-driven Certainty Factor algorithm for mental health screening:
+- **Dynamic Questions**: Fetches symptoms directly from the database `cf_rules` table.
+- **Representative Screening**: Intelligent selection of up to 5 highest-weight symptoms per disease (covering 9 mental health conditions).
+- **CF Calculator**: Backend (Go) processes user certainty levels (Agree to Disagree) using the combination formula: `CF_combine = CF1 + CF2 * (1 - CF1)`.
+
+### 2. Result Page & UX Enhancements
+- **Dynamic Content**: Displays real descriptions and professional solutions fetched from the database top-match result.
+- **Guest Access Control**: 
+  - Partial **Blur Effect** on result cards for non-logged-in users.
+  - Persistent login modal to incentivize registration for full access.
+  - Header remains clear for premium visual feedback.
+- **Unified Flow**: Streamlined the multi-page detection intro into a single dynamic questionnaire path.
+
+## Security Features
+This project includes several security hardening measures:
+- **Rate Limiting**: Maximum 100 requests every 15 minutes per IP to prevent brute-force and DDoS.
+- **SQL Injection Protection**: Uses parameterized queries for all database interactions.
+- **Security Headers**: Integrated with Helmet middleware.
+- **Session Validation**: Direct integration with Supabase session management for secure feature access.
