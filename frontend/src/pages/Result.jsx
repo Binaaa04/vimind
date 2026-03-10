@@ -9,6 +9,8 @@ export default function Result() {
     const [showLogin, setShowLogin] = useState(false);
     const [loading, setLoading] = useState(false);
 
+    const [diagnosis, setDiagnosis] = useState(null);
+
     useEffect(() => {
         const checkLogin = async () => {
             const { data: { session } } = await supabase.auth.getSession();
@@ -17,7 +19,15 @@ export default function Result() {
             setShowLogin(!loggedIn);
         };
         checkLogin();
+
+        // Load latest diagnosis
+        const stored = localStorage.getItem("latest_diagnosis");
+        if (stored) {
+            setDiagnosis(JSON.parse(stored));
+        }
     }, []);
+
+    const result = diagnosis?.top_result;
 
     return (
         <div className="result-page">
@@ -26,8 +36,14 @@ export default function Result() {
                 <div>
                     <h1>Mari Kita Lihat Hasil Tesmu</h1>
                     <p>
-                        anda sedang mengalami <b>Depresi Ringan</b><br />
-                        Dengan Presentasi <b>66%</b>
+                        {result ? (
+                            <>
+                                anda sedang mengalami <b>{result.disease_name}</b><br />
+                                Dengan Persentase <b>{(result.percentage).toFixed(0)}%</b>
+                            </>
+                        ) : (
+                            "Data hasil tes tidak ditemukan."
+                        )}
                     </p>
                 </div>
 
@@ -39,17 +55,15 @@ export default function Result() {
                 <h2>Hasil Skrining Kesehatan Mental</h2>
 
                 <p>
-                    Berdasarkan jawaban kuesioner yang telah diisi, kondisi Anda menunjukkan
-                    indikasi depresi ringan.
+                    {result?.description || "Berdasarkan jawaban kuesioner yang telah diisi, sistem sedang menganalisis kondisi Anda."}
                 </p>
 
                 <h3>Saran Perbaikan Kondisi</h3>
-                <ul>
-                    <li>Jaga pola tidur</li>
-                    <li>Olahraga ringan</li>
-                    <li>Kurangi stres</li>
-                    <li>Berbicara dengan orang terdekat</li>
-                </ul>
+                <div style={{ whiteSpace: "pre-line", color: "#555", fontSize: "14px" }}>
+                    {result?.recommendations?.split(",").map((s, i) => (
+                        <li key={i}>{s.trim()}</li>
+                    )) || "Tetap jaga kesehatan mental Anda."}
+                </div>
 
                 <h3>Saran Rujukan Profesional</h3>
                 <p>

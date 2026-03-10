@@ -80,34 +80,158 @@ func main() {
 		})
 	})
 
-	app.Post("/login", func(c *fiber.Ctx) error {
-		type LoginRequest struct {
-			Email    string `json:"email"`
-			Password string `json:"password"`
-		}
-		var req LoginRequest
-		if err := c.BodyParser(&req); err != nil {
-			return c.Status(400).JSON(fiber.Map{"message": "Invalid request body"})
-		}
+	// --- CERTAINTY FACTOR MODELS ---
+	type Question struct {
+		ID   int    `json:"id"`
+		Code string `json:"code"`
+		Name string `json:"name"`
+	}
 
-		// Basic Validation (Pre-SQL)
-		if req.Email == "" || req.Password == "" {
-			return c.Status(400).JSON(fiber.Map{"message": "Email and password are required"})
-		}
+	type Answer struct {
+		SymptomID int     `json:"symptom_id"`
+		Value     float64 `json:"value"` // 0.0 to 1.0
+	}
 
-		// SECURE SQL PATTERN (Anti SQL Injection)
-		// Instead of "SELECT * FROM users WHERE email = '"+req.Email+"'"
-		// We use placeholders ($1, $2, etc.)
-		var dbEmail string
-		err := dbpool.QueryRow(context.Background(), "SELECT email FROM users WHERE email=$1", req.Email).Scan(&dbEmail)
+	type DiagnosisRequest struct {
+		Answers []Answer `json:"answers"`
+	}
 
-		// If table doesn't exist yet or user not found
+	type DiagnosisResult struct {
+		DiseaseName     string  `json:"disease_name"`
+		Description     string  `json:"description"`
+		CFValue         float64 `json:"cf_value"`
+		Percentage      float64 `json:"percentage"`
+		Recommendations string  `json:"recommendations"`
+	}
+
+	// --- CERTAINTY FACTOR ENDPOINTS ---
+
+	// GET /api/questions - Fetch up to 5 representative symptoms for each of the 9 diseases
+	app.Get("/api/questions", func(c *fiber.Ctx) error {
+		query := `
+			WITH RankedSymptoms AS (
+				SELECT 
+					s.symptoms_id, 
+					s.symptoms_code, 
+					s.symptoms_name,
+					r.disease_id,
+					ROW_NUMBER() OVER(PARTITION BY r.disease_id ORDER BY r.expert_cf_value DESC) as rank
+				FROM symptoms s
+				JOIN cf_rules r ON s.symptoms_id = r.symptoms_id
+			)
+			SELECT DISTINCT symptoms_id, symptoms_code, symptoms_name
+			FROM RankedSymptoms
+			WHERE rank <= 5
+			ORDER BY symptoms_id ASC;
+		`
+		rows, err := dbpool.Query(context.Background(), query)
 		if err != nil {
-			log.Printf("Login security check: %v", err)
-			return c.Status(401).JSON(fiber.Map{"message": "Unauthorized access"})
+			return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch questions"})
+		}
+		defer rows.Close()
+
+		var questions []Question
+		for rows.Next() {
+			var q Question
+			if err := rows.Scan(&q.ID, &q.Code, &q.Name); err != nil {
+				continue
+			}
+			questions = append(questions, q)
 		}
 
-		return c.JSON(fiber.Map{"message": "User session validated", "email": dbEmail})
+		return c.JSON(questions)
+	})
+
+	// POST /api/diagnose - Calculate CF based on user answers
+	app.Post("/api/diagnose", func(c *fiber.Ctx) error {
+		var req DiagnosisRequest
+		if err := c.BodyParser(&req); err != nil {
+			return c.Status(400).JSON(fiber.Map{"error": "Invalid request body"})
+		}
+
+		if len(req.Answers) == 0 {
+			return c.Status(400).JSON(fiber.Map{"error": "No answers provided"})
+		}
+
+		// Map answers for quick lookup
+		userAnswers := make(map[int]float64)
+		for _, ans := range req.Answers {
+			userAnswers[ans.SymptomID] = ans.Value
+		}
+
+		// Fetch all rules
+		rows, err := dbpool.Query(context.Background(), `
+			SELECT r.disease_id, d.disease_name, d.description, r.symptoms_id, r.expert_cf_value, d.general_solutions
+			FROM cf_rules r
+			JOIN disease d ON r.disease_id = d.disease_id
+		`)
+		if err != nil {
+			return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch diagnostic rules"})
+		}
+		defer rows.Close()
+
+		type DiseaseCF struct {
+			Name        string
+			Description string
+			Solutions   string
+			CF          float64
+		}
+		resultsMap := make(map[int]*DiseaseCF)
+
+		for rows.Next() {
+			var disID, symID int
+			var disName, disDesc, disSol string
+			var expertCF float64
+			if err := rows.Scan(&disID, &disName, &disDesc, &symID, &expertCF, &disSol); err != nil {
+				continue
+			}
+
+			if _, ok := resultsMap[disID]; !ok {
+				resultsMap[disID] = &DiseaseCF{Name: disName, Description: disDesc, Solutions: disSol, CF: 0}
+			}
+
+			// If user answered this symptom
+			if userVal, answered := userAnswers[symID]; answered {
+				cfEntry := userVal * expertCF
+
+				// CF Combine formula: CF_comb = CF_old + CF_new * (1 - CF_old)
+				currentCF := resultsMap[disID].CF
+				resultsMap[disID].CF = currentCF + cfEntry*(1-currentCF)
+			}
+		}
+
+		// Sort and find top result
+		var finalResults []DiagnosisResult
+		for _, res := range resultsMap {
+			if res.CF > 0 {
+				finalResults = append(finalResults, DiagnosisResult{
+					DiseaseName:     res.Name,
+					Description:     res.Description,
+					CFValue:         res.CF,
+					Percentage:      res.CF * 100,
+					Recommendations: res.Solutions,
+				})
+			}
+		}
+
+		// Sort by CFValue descending
+		for i := 0; i < len(finalResults); i++ {
+			for j := i + 1; j < len(finalResults); j++ {
+				if finalResults[i].CFValue < finalResults[j].CFValue {
+					finalResults[i], finalResults[j] = finalResults[j], finalResults[i]
+				}
+			}
+		}
+
+		if len(finalResults) == 0 {
+			return c.JSON(fiber.Map{"message": "No specific condition detected based on answers.", "results": []string{}})
+		}
+
+		// For now, return the top result
+		return c.JSON(fiber.Map{
+			"top_result":  finalResults[0],
+			"all_results": finalResults,
+		})
 	})
 
 	log.Fatal(app.Listen(":8080"))

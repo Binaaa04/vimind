@@ -1,33 +1,64 @@
-import { useNavigate, useLocation } from "react-router-dom";
-import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { getQuestions, diagnose } from "../services/api";
 
 export default function Detection() {
   const navigate = useNavigate();
-  const location = useLocation(); // ← TAMBAH INI
 
-  const questions = [
-    "Apakah anda sering merasa sedih,kosong dan putus asa",
-    "Apakah anda kehilangan minat pada sesuatu yang biasanya menyenangkan",
-    "Apakah anda merasa tidaka berharga atau meras bersalah berlebihan"
-  ];
-
+  const [questions, setQuestions] = useState([]);
+  const [answers, setAnswers] = useState([]); // Array of {symptom_id, value}
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selected, setSelected] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
 
-  const nextQuestion = () => {
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      try {
+        const response = await getQuestions();
+        setQuestions(response.data);
+      } catch (err) {
+        console.error("Failed to load questions:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchQuestions();
+  }, []);
+
+  const nextQuestion = async () => {
     if (selected === null) return;
 
+    // Mapping weights: Circle 1 (Left) = 1.0, Circle 4 (Right) = 0.0
+    const weights = { 1: 1.0, 2: 0.7, 3: 0.4, 4: 0.0 };
+    const currentAnswer = {
+      symptom_id: questions[currentIndex].id,
+      value: weights[selected]
+    };
+
+    const newAnswers = [...answers, currentAnswer];
+    setAnswers(newAnswers);
     setSelected(null);
 
     if (currentIndex < questions.length - 1) {
       setCurrentIndex(currentIndex + 1);
     } else {
-      // ← TERUSKAN STATE KE POINT B
-      navigate("/deteksi/b", {
-        state: location.state
-      });
+      // FINISHED -> DIAGNOSE
+      setSubmitting(true);
+      try {
+        const result = await diagnose(newAnswers);
+        // Save to state or localstorage for Result page
+        localStorage.setItem("latest_diagnosis", JSON.stringify(result.data));
+        navigate("/selesai");
+      } catch (err) {
+        console.error("Diagnosis failed:", err);
+        alert("Terjadi kesalahan saat mengolah data. Silahkan coba lagi.");
+        setSubmitting(false);
+      }
     }
   };
+
+  if (loading) return <div className="question-page"><h1>Memuat Pertanyaan...</h1></div>;
 
   const progressPercent = ((currentIndex + 1) / questions.length) * 100;
 
@@ -35,7 +66,7 @@ export default function Detection() {
     <div className="question-page">
 
       <div className="progress-bar">
-        <div 
+        <div
           className="progress-fill"
           style={{ width: `${progressPercent}%` }}
         ></div>
@@ -44,7 +75,7 @@ export default function Detection() {
       <div className="question-container">
 
         <h1>
-          {currentIndex + 1}. {questions[currentIndex]}
+          {currentIndex + 1}. {questions[currentIndex]?.name}
         </h1>
 
         <div className="options-wrapper">
@@ -81,16 +112,16 @@ export default function Detection() {
 
         </div>
 
-        <button 
+        <button
           className="next-btn"
           onClick={nextQuestion}
-          disabled={selected === null}
+          disabled={selected === null || submitting}
           style={{
-            opacity: selected === null ? 0.5 : 1,
-            cursor: selected === null ? "not-allowed" : "pointer"
+            opacity: selected === null || submitting ? 0.5 : 1,
+            cursor: selected === null || submitting ? "not-allowed" : "pointer"
           }}
         >
-          Lanjutkan
+          {submitting ? "Mengolah..." : (currentIndex < questions.length - 1 ? "Lanjutkan" : "Selesai")}
         </button>
 
       </div>

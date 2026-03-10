@@ -319,35 +319,41 @@ body {
 
 /* OPTIONS */
 .options-wrapper {
-  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  /* Jarak antara label dan grup lingkaran */
+  margin: 60px 0;
   width: 100%;
-  margin: 50px 0;
 }
 
 .label-left {
   text-align: right;
-  font-size: 20px;
-  color: #555;
-  position: absolute;
-  left: 0%;
-  top: 50%;
-  transform: translateY(-50%);
+  font-size: 18px;
+  font-weight: 600;
+  color: #7a5cff;
+  flex: 1;
+  max-width: 100px;
+  /* Supaya gak terlalu lebar */
 }
 
 .label-right {
   text-align: left;
-  font-size: 20px;
-  color: #555;
-  position: absolute;
-  right: 0%;
-  top: 50%;
-  transform: translateY(-50%);
+  font-size: 18px;
+  font-weight: 600;
+  color: #7a5cff;
+  flex: 1;
+  max-width: 100px;
 }
 
 .circles {
   display: flex;
   justify-content: center;
-  gap: 35px;
+  align-items: center;
+  gap: 30px;
+  flex: 2;
+  /* Biar grup lingkaran punya ruang lebih tengah */
 }
 
 .circle {
