@@ -258,25 +258,32 @@ func main() {
 				levelID = 1
 			}
 
-			// 3. Insert track_progress
-			var trackID int
+			// Find top disease ID
+			var topDiseaseID int
+			err = dbpool.QueryRow(context.Background(), "SELECT disease_id FROM disease WHERE disease_name=$1", top.DiseaseName).Scan(&topDiseaseID)
+			if err != nil {
+				log.Printf("Error finding disease_id for %s: %v", top.DiseaseName, err)
+			}
+
+			// 3. Insert into diagnosis
+			var diagnosisID int
 			err = dbpool.QueryRow(context.Background(), `
-				INSERT INTO track_progress (user_id, level_id, total_cf_value, persentase, created_at, updated_at)
-				VALUES ($1, $2, $3, $4, NOW(), NOW())
-				RETURNING track_id
-			`, internalUserID, levelID, top.CFValue, top.Percentage).Scan(&trackID)
+				INSERT INTO diagnosis (user_id, disease_id, level_id, date_of_diagnosis, total_cf_value, persentase)
+				VALUES ($1, $2, $3, NOW(), $4, $5)
+				RETURNING diagnosis_id
+			`, internalUserID, topDiseaseID, levelID, top.CFValue, top.Percentage).Scan(&diagnosisID)
 
 			if err != nil {
-				log.Printf("Error saving track_progress: %v", err)
+				log.Printf("Error saving to diagnosis table: %v", err)
 			} else {
-				// 4. Insert track_detail (answers)
+				// 4. Insert into diagnosis_detail (answers)
 				for _, ans := range req.Answers {
 					_, err = dbpool.Exec(context.Background(), `
-						INSERT INTO track_detail (track_id, symptoms_id, intensity_value)
+						INSERT INTO diagnosis_detail (diagnosis_id, symptoms_id, user_cf_value)
 						VALUES ($1, $2, $3)
-					`, trackID, ans.SymptomID, ans.Value)
+					`, diagnosisID, ans.SymptomID, ans.Value)
 					if err != nil {
-						log.Printf("Error saving track_detail (sym %d): %v", ans.SymptomID, err)
+						log.Printf("Error saving diagnosis_detail: %v", err)
 					}
 				}
 			}
@@ -286,6 +293,62 @@ func main() {
 			"top_result":  top,
 			"all_results": finalResults,
 		})
+	})
+
+	// GET /api/history - Fetch diagnosis history for a user
+	app.Get("/api/history", func(c *fiber.Ctx) error {
+		email := c.Query("email")
+		if email == "" {
+			return c.Status(400).JSON(fiber.Map{"error": "Email is required"})
+		}
+
+		// 1. Get user_id
+		var uid int
+		err := dbpool.QueryRow(context.Background(), "SELECT user_id FROM users WHERE email=$1", email).Scan(&uid)
+		if err != nil {
+			return c.Status(404).JSON(fiber.Map{"error": "User not found"})
+		}
+
+		// 2. Fetch history with JOINs
+		query := `
+			SELECT 
+				d.diagnosis_id, 
+				dis.disease_name, 
+				lc.level_name, 
+				d.persentase, 
+				d.date_of_diagnosis
+			FROM diagnosis d
+			JOIN disease dis ON d.disease_id = dis.disease_id
+			JOIN level_category lc ON d.level_id = lc.level_id
+			WHERE d.user_id = $1
+			ORDER BY d.date_of_diagnosis DESC
+			LIMIT 10
+		`
+		rows, err := dbpool.Query(context.Background(), query, uid)
+		if err != nil {
+			log.Printf("Error fetching history: %v", err)
+			return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch history"})
+		}
+		defer rows.Close()
+
+		type HistoryItem struct {
+			ID         int       `json:"id"`
+			Disease    string    `json:"disease"`
+			Level      string    `json:"level"`
+			Percentage float64   `json:"percentage"`
+			Date       time.Time `json:"date"`
+		}
+
+		var history []HistoryItem
+		for rows.Next() {
+			var hi HistoryItem
+			if err := rows.Scan(&hi.ID, &hi.Disease, &hi.Level, &hi.Percentage, &hi.Date); err != nil {
+				continue
+			}
+			history = append(history, hi)
+		}
+
+		return c.JSON(history)
 	})
 
 	log.Fatal(app.Listen(":8080"))

@@ -5,6 +5,7 @@ const api = axios.create({
 });
 
 export const getQuestions = () => api.get("/api/questions");
-export const diagnose = (answers, userId = null) => api.post("/api/diagnose", { answers, user_id: userId });
+export const diagnose = (answers, userEmail = "") => api.post("/api/diagnose", { answers, user_email: userEmail });
+export const getHistory = (email) => api.get(`/api/history?email=${email}`);
 
 export default api;
