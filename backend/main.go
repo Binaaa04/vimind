@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"os"
+	"strings"
 
 	"time"
 
@@ -26,6 +27,13 @@ func main() {
 	connStr := os.Getenv("DATABASE_URL")
 	if connStr == "" {
 		log.Fatal("DATABASE_URL environment variable is not set")
+	}
+
+	// Fix for "prepared statement already exists" errors in pooled/Supabase environments
+	if !strings.Contains(connStr, "?") {
+		connStr += "?default_query_exec_mode=exec"
+	} else {
+		connStr += "&default_query_exec_mode=exec"
 	}
 
 	// Initialize database connection pool
@@ -93,7 +101,8 @@ func main() {
 	}
 
 	type DiagnosisRequest struct {
-		Answers []Answer `json:"answers"`
+		Answers   []Answer `json:"answers"`
+		UserEmail string   `json:"user_email"`
 	}
 
 	type DiagnosisResult struct {
@@ -142,7 +151,7 @@ func main() {
 		return c.JSON(questions)
 	})
 
-	// POST /api/diagnose - Calculate CF based on user answers
+	// POST /api/diagnose - Calculate CF based on user answers & SAVE TO DB
 	app.Post("/api/diagnose", func(c *fiber.Ctx) error {
 		var req DiagnosisRequest
 		if err := c.BodyParser(&req); err != nil {
@@ -166,6 +175,7 @@ func main() {
 			JOIN disease d ON r.disease_id = d.disease_id
 		`)
 		if err != nil {
+			log.Printf("Error fetching diagnostic rules: %v", err)
 			return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch diagnostic rules"})
 		}
 		defer rows.Close()
@@ -227,9 +237,53 @@ func main() {
 			return c.JSON(fiber.Map{"message": "No specific condition detected based on answers.", "results": []string{}})
 		}
 
-		// For now, return the top result
+		// --- SAVE HISTORY TO DB (Only if Logged In) ---
+		top := finalResults[0]
+
+		var internalUserID *int
+		if req.UserEmail != "" {
+			var uid int
+			err := dbpool.QueryRow(context.Background(), "SELECT user_id FROM users WHERE email=$1", req.UserEmail).Scan(&uid)
+			if err == nil {
+				internalUserID = &uid
+			}
+		}
+
+		if internalUserID != nil {
+			// 2. Map CF level
+			levelID := 1
+			if top.Percentage > 70 {
+				levelID = 3
+			} else if top.Percentage > 40 {
+				levelID = 1
+			}
+
+			// 3. Insert track_progress
+			var trackID int
+			err = dbpool.QueryRow(context.Background(), `
+				INSERT INTO track_progress (user_id, level_id, total_cf_value, persentase, created_at, updated_at)
+				VALUES ($1, $2, $3, $4, NOW(), NOW())
+				RETURNING track_id
+			`, internalUserID, levelID, top.CFValue, top.Percentage).Scan(&trackID)
+
+			if err != nil {
+				log.Printf("Error saving track_progress: %v", err)
+			} else {
+				// 4. Insert track_detail (answers)
+				for _, ans := range req.Answers {
+					_, err = dbpool.Exec(context.Background(), `
+						INSERT INTO track_detail (track_id, symptoms_id, intensity_value)
+						VALUES ($1, $2, $3)
+					`, trackID, ans.SymptomID, ans.Value)
+					if err != nil {
+						log.Printf("Error saving track_detail (sym %d): %v", ans.SymptomID, err)
+					}
+				}
+			}
+		}
+
 		return c.JSON(fiber.Map{
-			"top_result":  finalResults[0],
+			"top_result":  top,
 			"all_results": finalResults,
 		})
 	})

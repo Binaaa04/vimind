@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { getQuestions, diagnose } from "../services/api";
+import { supabase } from "../services/supabaseClient";
 
 export default function Detection() {
   const navigate = useNavigate();
@@ -11,19 +12,29 @@ export default function Detection() {
   const [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [userEmail, setUserEmail] = useState(null);
 
   useEffect(() => {
-    const fetchQuestions = async () => {
+    const init = async () => {
       try {
+        // Fetch User Info
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          // You might need to map Supabase UUID to your DB integer ID
+          // However, assuming you might be using UUID or handle mapping in backend
+          // For now, let's pass the email or a placeholder if mapping is complex
+          setUserEmail(session.user.email);
+        }
+
         const response = await getQuestions();
         setQuestions(response.data);
       } catch (err) {
-        console.error("Failed to load questions:", err);
+        console.error("Initialization failed:", err);
       } finally {
         setLoading(false);
       }
     };
-    fetchQuestions();
+    init();
   }, []);
 
   const nextQuestion = async () => {
@@ -46,10 +57,21 @@ export default function Detection() {
       // FINISHED -> DIAGNOSE
       setSubmitting(true);
       try {
-        const result = await diagnose(newAnswers);
-        // Save to state or localstorage for Result page
-        localStorage.setItem("latest_diagnosis", JSON.stringify(result.data));
-        navigate("/selesai");
+        const result = await diagnose(newAnswers, userEmail);
+
+        if (userEmail) {
+          localStorage.setItem("latest_diagnosis", JSON.stringify(result.data));
+        } else {
+          // GUEST: Save to sessionStorage (Temporary) or just pass via state
+          // sessionStorage survives refresh but dies on tab close.
+          // React location state survives refresh too.
+          // To make it disappear ON REFRESH, we can use a temporary global state, 
+          // or just explicitly clear it. For now, let's use sessionStorage as it's 'temporary' enough,
+          // OR just don't save it anywhere except the navigate state.
+          localStorage.removeItem("latest_diagnosis"); // Clear old data
+        }
+
+        navigate("/selesai", { state: { diagnosis: result.data, isGuest: !userEmail } });
       } catch (err) {
         console.error("Diagnosis failed:", err);
         alert("Terjadi kesalahan saat mengolah data. Silahkan coba lagi.");

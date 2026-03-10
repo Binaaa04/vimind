@@ -1,30 +1,30 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "../services/supabaseClient";
 
 export default function Result() {
     const navigate = useNavigate();
-
-    const [isLogin, setIsLogin] = useState(true); // Default true biar gak flicker pas loading
-    const [showLogin, setShowLogin] = useState(false);
+    const location = useLocation();
+    const [isLoggedIn, setIsLoggedIn] = useState(true); // Default true to avoid flicker
+    const [showModal, setShowModal] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    const [diagnosis, setDiagnosis] = useState(null);
+    // Get data from location state (Passed from DetectionQuestion)
+    // Fallback to localStorage (for members who refresh)
+    const stateDiagnosis = location.state?.diagnosis;
+
+    // We only read from localStorage if the user is a member OR we don't have state
+    const storedDiagnosis = JSON.parse(localStorage.getItem("latest_diagnosis"));
+    const diagnosis = stateDiagnosis || storedDiagnosis;
 
     useEffect(() => {
-        const checkLogin = async () => {
+        const checkAuth = async () => {
             const { data: { session } } = await supabase.auth.getSession();
-            const loggedIn = !!session;
-            setIsLogin(loggedIn);
-            setShowLogin(!loggedIn);
+            const authed = !!session;
+            setIsLoggedIn(authed);
+            setShowModal(!authed);
         };
-        checkLogin();
-
-        // Load latest diagnosis
-        const stored = localStorage.getItem("latest_diagnosis");
-        if (stored) {
-            setDiagnosis(JSON.parse(stored));
-        }
+        checkAuth();
     }, []);
 
     const result = diagnosis?.top_result;
@@ -51,7 +51,7 @@ export default function Result() {
             </div>
 
             {/* CARD */}
-            <div className={`result-card ${!isLogin ? "content-blur" : ""}`}>
+            <div className={`result-card ${!isLoggedIn ? "content-blur" : ""}`}>
                 <h2>Hasil Skrining Kesehatan Mental</h2>
 
                 <p>
@@ -59,7 +59,7 @@ export default function Result() {
                 </p>
 
                 <h3>Saran Perbaikan Kondisi</h3>
-                <div style={{ whiteSpace: "pre-line", color: "#555", fontSize: "14px" }}>
+                <div className="recommendations-list" style={{ whiteSpace: "pre-line", color: "#555", fontSize: "14px" }}>
                     {result?.recommendations?.split(",").map((s, i) => (
                         <li key={i}>{s.trim()}</li>
                     )) || "Tetap jaga kesehatan mental Anda."}
@@ -73,7 +73,7 @@ export default function Result() {
             </div>
 
             {/* LOGIN POPUP */}
-            {showLogin && (
+            {showModal && (
                 <div className="overlay">
                     <div className="login-modal">
                         <h2>Silahkan Login</h2>
@@ -85,7 +85,7 @@ export default function Result() {
                                 setLoading(true);
                                 setTimeout(() => {
                                     navigate("/login");
-                                }, 1500);
+                                }, 1000);
                             }}
                         >
                             {loading ? "Mengalihkan..." : "Login"}
@@ -94,7 +94,7 @@ export default function Result() {
                 </div>
             )}
 
-            {isLogin && (
+            {isLoggedIn && (
                 <div style={{ textAlign: "center", marginTop: "30px" }}>
                     <button
                         className="next-btn"
@@ -107,4 +107,3 @@ export default function Result() {
         </div>
     );
 }
-/*RESULT*/
