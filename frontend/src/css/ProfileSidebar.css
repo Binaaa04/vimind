@@ -1,0 +1,248 @@
+/* Overlay */
+.profile-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.08);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  z-index: 1500;
+}
+
+.profile-overlay.show {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.profile-greeting,
+.user-name,
+.profile-footer-text {
+  color: #333333 !important;
+}
+
+/* Sidebar */
+.profile-sidebar {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 350px;
+  height: auto;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  padding: 50px 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-8px);
+  transition: all 0.25s ease;
+  z-index: 2000;
+}
+
+.profile-sidebar.open {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* =========================
+   BUTTON RESET (ANTI UNGU)
+========================= */
+
+.profile-photo-btn,
+.profile-menu-btn,
+.profile-logout-btn {
+  background-color: #ffffff !important;
+  background-image: none !important;
+  border: 1px solid #d1d5db !important;
+  color: #374151 !important;
+  box-shadow: none !important;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  font-weight: 600;
+  border-radius: 8px !important;
+  height: 48px;
+  font-size: 20px;
+}
+
+/* Hover */
+.profile-photo-btn:hover, .profile-menu-btn:hover,
+.profile-logout-btn:hover  {
+  background-color: #8B5CF6 !important;
+  border-color: #A78BFA !important;
+  color: white !important;
+  font-weight: 600;
+}
+
+
+/* =========================
+   PHOTO BUTTON
+========================= */
+
+.profile-photo-btn {
+  justify-content: center;
+  width: 120px;
+  height: 40px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 400;
+  margin-bottom: 6px;
+  background-color: #A78BFA !important;
+  color:white !important;
+}
+
+/* =========================
+   MENU BUTTON
+========================= */
+
+.profile-menu {
+  width: 100%;
+  display: flex;
+  font-size: 12px;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 8px;
+  color: #2E1065 !important;
+}
+
+.profile-menu-btn {
+  width: 100%;
+  height: 36px;
+  border-radius: 2px;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: left;
+  padding: 0 9px;
+  margin: 0;
+  border-color: #A78BFA !important;
+}
+
+/* =========================
+   LOGOUT BUTTON
+========================= */
+
+.profile-logout-btn {
+  width: 100%;
+  height: 35px;
+  border-radius: 2px;
+  font-size: 12px;
+  font-weight: 600;
+  text-align: left;
+  padding: 0 9px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 40px;
+  color: #ea4d4d !important;
+  border-color: #ffdbdb !important;
+}
+
+.profile-logout-btn:hover {
+  background: #ea4d4d  !important;
+  border-color: #ffbaba !important;
+  color: #fff5f5 !important;
+}
+
+/* Icon logout */
+.logout-icon {
+  color: #888888 !important;
+  font-size: 10px;
+  line-height: 1;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.profile-top {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.profile-header {
+  width: 100%;
+  position: relative;
+  text-align: center;
+  margin-bottom: 12px;
+}
+
+.profile-header h3 {
+  margin: 0;
+  color: #333333;
+  font-size: 20px;
+  font-weight: 700;
+  margin-top: -20px;
+  margin-bottom: -12px;
+  padding-bottom: 12px;
+}
+
+/* Close button */
+
+.profile-close {
+  position: absolute;
+  top: -3px;
+  right: 2px;
+  border: none;
+  background: transparent;
+  color: #666;
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.profile-close:hover {
+  color: #333;
+}
+
+/* =========================
+   AVATAR
+========================= */
+
+.profile-avatar-wrap {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.profile-avatar-img {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #f0f0f0;
+}
+
+/* =========================
+   BOTTOM AREA
+========================= */
+
+.profile-bottom {
+  width: 100%;
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Brand */
+
+.profile-brand {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  margin-top: -40px;
+}
+
+.profile-brand img {
+  width: 220px;
+  height: auto;
+  margin-bottom: -55px;
+  object-fit: contain;
+}

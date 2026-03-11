@@ -1,11 +1,38 @@
-import "./ProfileSidebar.css";
+import "../css/ProfileSidebar.css";
 import logo from "../assets/logovimind2.png";
 import { useNavigate } from "react-router-dom";
+import { useRef } from "react";
 
-const ProfileSidebar = ({ isOpen, onClose, onOpenNicknameModal, onOpenLogoutModal, nickname }) => {
- const navigate = useNavigate();
-  
- return (
+const ProfileSidebar = ({ 
+  isOpen, 
+  onClose, 
+  onOpenNicknameModal, 
+  onOpenLogoutModal, 
+  nickname 
+}) => {
+
+  const navigate = useNavigate();
+  const fileInputRef = useRef(null);
+
+  const handlePhotoClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+
+    if (!file) return;
+
+    console.log("Foto dipilih:", file);
+
+    // preview foto sementara
+    const imageURL = URL.createObjectURL(file);
+    document.querySelector(".profile-avatar-img").src = imageURL;
+
+    // nanti di sini bisa upload ke server
+  };
+
+  return (
     <>
       <div
         className={`profile-overlay ${isOpen ? "show" : ""}`}
@@ -14,6 +41,7 @@ const ProfileSidebar = ({ isOpen, onClose, onOpenNicknameModal, onOpenLogoutModa
 
       <aside className={`profile-sidebar ${isOpen ? "open" : ""}`}>
         <div className="profile-top">
+
           <div className="profile-header">
             <h3>Hai, {nickname}</h3>
           </div>
@@ -26,7 +54,22 @@ const ProfileSidebar = ({ isOpen, onClose, onOpenNicknameModal, onOpenLogoutModa
             />
           </div>
 
-          <button className="profile-photo-btn">Ubah Foto</button>
+          {/* hidden input */}
+          <input
+            type="file"
+            accept="image/*"
+            ref={fileInputRef}
+            style={{ display: "none" }}
+            onChange={handleFileChange}
+          />
+
+          {/* tombol */}
+          <button
+            className="profile-photo-btn"
+            onClick={handlePhotoClick}
+          >
+            Ubah Foto
+          </button>
 
           <div className="profile-menu">
             <button
