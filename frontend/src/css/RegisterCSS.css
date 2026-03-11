@@ -1,0 +1,62 @@
+/* 1. Subtitle kembalikan ke tengah sesuai desain (Hanya untuk Register) */
+.register-page .subtitle {
+  text-align: center;
+  color: #5B4A78; 
+  font-size: 1.1rem;
+  margin-bottom: 18px;
+  font-weight: 600;
+}
+
+/* 2. Tombol Utama (Daftar)*/
+.register-page .primary-btn {
+  width: 100%;
+  margin-top: 18px; 
+}
+
+/* 3. Teks di bawah tombol rata kiri (sesuai gambar) */
+.register-page .small-text {
+  text-align: left; 
+  margin-top: 10px;
+  font-size: 0.82rem;
+  color: #5B4A78;
+}
+
+/* 4. Teks "Or" di tengah (Tanpa Garis Kiri-Kanan) */
+.register-page .divider-text {
+  display: block; 
+  text-align: center;
+  margin-top: -12px;
+  margin-bottom: 24px;
+  font-size: 0.85rem;
+  color: #5B4A78;
+}
+
+.register-page .divider-text::before,
+.register-page .divider-text::after {
+  display: none; 
+}
+
+/* 5. Tombol Google membulat (Pill Shape) & Di Tengah */
+.register-page .google-btn {
+  width: fit-content !important;
+  margin-top: -12px;
+  margin-bottom: 28px; 
+  margin-left: auto; 
+  margin-right: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 20px 30px !important; 
+  border-radius: 12px !important;
+  background-color: white !important;
+  color: #8C8C8C !important; 
+  border: 1px solid #E6D5FF !important;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.register-page .google-btn img {
+  width: 18px;
+  height: 18px;
+}
