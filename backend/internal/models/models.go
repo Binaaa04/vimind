@@ -55,3 +55,12 @@ type Rule struct {
 	ExpertCF  float64
 	Solutions string
 }
+
+type NewsItem struct {
+	ID        int    `json:"id"`
+	Title     string `json:"title"`
+	Link      string `json:"link"`
+	Image     string `json:"image"`
+	Source    string `json:"source"`
+	Highlight string `json:"highlight"`
+}

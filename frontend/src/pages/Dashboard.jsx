@@ -36,6 +36,7 @@ const Dashboard = () => {
     localStorage.getItem("avatar_url") || ""
   );
 
+  const [news, setNews] = useState([]);
   const navigate = useNavigate();
   const mood = localStorage.getItem("mood");
 
@@ -62,7 +63,18 @@ const Dashboard = () => {
         }
       }
     };
+    const fetchNews = async () => {
+      try {
+        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/news`);
+        const data = await response.json();
+        setNews(data);
+      } catch (err) {
+        console.error("Failed to fetch news:", err);
+      }
+    };
+
     fetchUserAndProfile();
+    fetchNews();
   }, []);
 
   const handleSaveNickname = async (newNickname) => {
@@ -103,30 +115,37 @@ const Dashboard = () => {
   // --- STATE UNTUK CAROUSEL ---
   const [currentSlide, setCurrentSlide] = useState(0);
 
-  // Data isi carousel (Saya buatkan 3 contoh slide berbeda, bisa Anda ubah isinya)
-  const carouselSlides = [
-    {
-      id: 0,
-      title: "Vimind Didukung",
-      highlight: "Kementerian Kesehatan RI",
-      rightText: "Lembaga Penyelenggara Pelatihan Bidang Kesehatan yang Telah Diakreditasi oleh Kemenkes RI",
-      bgRight: "#E9004C" // Warna Merah Halodoc
-    },
-    {
-      id: 1,
-      title: "Kesehatan Mental",
-      highlight: "Adalah Prioritas",
-      rightText: "Mari jaga kesehatan mentalmu bersama para ahli terbaik dari Vimind.",
-      bgRight: "#8B5CF6" // Warna Ungu Vimind
-    },
-    {
-      id: 2,
-      title: "Kenali Dirimu",
-      highlight: "Lebih Dalam",
-      rightText: "Ikuti berbagai tes dan kuis untuk memahami kondisi emosionalmu saat ini.",
-      bgRight: "#10B981" // Warna Hijau
-    }
-  ];
+  // Data isi carousel (Dinamis dari News API + Fallback Statis)
+  const carouselSlides = news.length > 0 
+    ? news.slice(0, 3).map((item, index) => ({
+        id: index,
+        title: item.title,
+        highlight: item.highlight,
+        rightText: "Mari baca berita kesehatan selengkapnya untuk wawasan lebih luas.",
+        bgRight: index === 0 ? "#E9004C" : index === 1 ? "#8B5CF6" : "#10B981",
+        image: item.image,
+        link: item.link
+      }))
+    : [
+        {
+          id: 0,
+          title: "Vimind Didukung",
+          highlight: "Kementerian Kesehatan RI",
+          rightText: "Lembaga Penyelenggara Pelatihan Bidang Kesehatan yang Telah Diakreditasi oleh Kemenkes RI",
+          bgRight: "#E9004C",
+          image: familyBanner,
+          link: "#"
+        },
+        {
+          id: 1,
+          title: "Kesehatan Mental",
+          highlight: "Adalah Prioritas",
+          rightText: "Mari jaga kesehatan mentalmu bersama para ahli terbaik dari Vimind.",
+          bgRight: "#8B5CF6",
+          image: familyBanner,
+          link: "#"
+        }
+      ];
 
   // Efek Auto-Slide setiap 3 detik (3000 ms)
   useEffect(() => {
@@ -156,24 +175,27 @@ const Dashboard = () => {
               {/* DROPDOWN MENU */}
               {showArticleMenu && (
                 <div className="article-menu-dropdown">
-                  <div
-                    className="article-menu-item"
-                    onClick={() => handleArticleClick(1)}
-                  >
-                    Kesehatan mental - Gejala, penyebab, pencegahan
-                  </div>
-                  <div
-                    className="article-menu-item"
-                    onClick={() => handleArticleClick(2)}
-                  >
-                    Pentingnya kesehatan mental bagi remaja
-                  </div>
-                  <div
-                    className="article-menu-item"
-                    onClick={() => handleArticleClick(3)}
-                  >
-                    Pentingnya kesehatan mental untuk pengalaman hidup
-                  </div>
+                  {news.length > 0 ? (
+                    news.map((item) => (
+                      <div
+                        key={item.id}
+                        className="article-menu-item"
+                        onClick={() => window.open(item.link, "_blank")}
+                      >
+                        {item.title}
+                      </div>
+                    ))
+                  ) : (
+                    articlesList.map((article) => (
+                      <div
+                        key={article.id}
+                        className="article-menu-item"
+                        onClick={() => handleArticleClick(article.id)}
+                      >
+                        {article.title}
+                      </div>
+                    ))
+                  )}
                 </div>
               )}
             </div>
@@ -223,17 +245,15 @@ const Dashboard = () => {
                 {/* Banner Kiri */}
                 <div className="hero-big promo-left">
                   <div className="promo-content">
-                    <h2>
-                      {slide.title}<br />
-                      dan Direkomendasikan<br />
-                      Penuh oleh <span className="highlight">{slide.highlight}</span>
+                    <h2 onClick={() => slide.link !== "#" && window.open(slide.link, "_blank")} style={{ cursor: slide.link !== "#" ? "pointer" : "default" }}>
+                      {slide.title} <span className="highlight">{slide.highlight}</span>
                     </h2>
                     <div className="sponsor-logo">
                       <img src={kemenkesLogo} alt="Sponsor" />
                     </div>
                   </div>
                   <div className="promo-image">
-                    <img src={familyBanner} alt="Ilustrasi" />
+                    <img src={slide.image} alt="Ilustrasi" />
                   </div>
                 </div>
 

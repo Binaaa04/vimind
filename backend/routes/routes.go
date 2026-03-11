@@ -14,4 +14,5 @@ func RegisterRoutes(app *fiber.App, handler *controllers.Handler) {
 	api.Get("/profile", handler.GetProfile)
 	api.Post("/profile", handler.UpdateProfile)
 	api.Get("/history", handler.GetHistory)
+	api.Get("/news", handler.GetDynamicNews)
 }
