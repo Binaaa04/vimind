@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import "../App.css";
+import "../css/LoginCSS.css";
 
 import logoLeft from "../assets/logovimind.png";
 import logoTop from "../assets/logovimind2.png";
@@ -13,7 +14,11 @@ const Login = () => {
     email: "",
     password: ""
   });
+  
   const [loading, setLoading] = useState(false);
+  
+  // 1. STATE BARU UNTUK SHOW/HIDE PASSWORD
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleGoogleLogin = async () => {
     try {
@@ -93,20 +98,29 @@ const Login = () => {
               onChange={handleChange}
             />
 
-            <input
-              name="password"
-              type="password"
-              placeholder="Password"
-              className="input-field"
-              onChange={handleChange}
-            />
+            {/* 2. WRAPPER UNTUK INPUT PASSWORD & ICON MATA */}
+            <div className="password-wrapper">
+              <input
+                name="password"
+                type={showPassword ? "text" : "password"} // Logika ubah tipe input
+                placeholder="Password"
+                className="input-field"
+                onChange={handleChange}
+              />
+              <span 
+                className="eye-icon" 
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? "🙈" : "👁️"} 
+              </span>
+            </div>
 
             <div className="forgot-row">
               <Link to="/forgot-password">Lupa Password?</Link>
             </div>
 
-            <button type="submit" className="primary-btn full">
-              Login
+            <button type="submit" className="primary-btn full" disabled={loading}>
+              {loading ? "Loading..." : "Login"}
             </button>
 
           </form>
