@@ -98,7 +98,13 @@ The system processes all 9 supported conditions simultaneously. The condition wi
 The logic is fully decoupled and data-driven:
 *   **symptoms**: Dynamic inventory of mental health symptoms.
 *   **disease**: Descriptions and professional recommendations.
-*   **cf_rules**: The "Knowledge Base" connecting symptoms to diseases with expert weights.
+- **cf_rules**: The "Knowledge Base" connecting symptoms to diseases with expert weights.
+
+### 4. Dynamic News & Resource Optimization
+ViMind features a real-time mental health news feed on the Dashboard:
+- **Live Fetcher (Go)**: The backend automatically retrieves the latest 10 mental health articles using the Google News RSS engine.
+- **In-Memory Caching (Optimization)**: To minimize external network requests and save server bandwidth, the news data is cached in-memory for **15 minutes**. This ensures lightning-fast responses during deployment and prevents API rate-limiting issues.
+- **Interactive UI**: The Dashboard Carousel automatically cycles through headlines, and the "Artikel Kesehatan Mental" dropdown in the Navbar provides quick access to external sources.
 
 ### 2. Result Page & UX Enhancements
 - **Dynamic Content**: Displays real descriptions and professional solutions fetched from the database top-match result.

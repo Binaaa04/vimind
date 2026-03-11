@@ -7,9 +7,16 @@ import (
 	"log"
 	"net/http"
 	"pbl-vimind/backend/internal/models"
+	"sync"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+)
+
+var (
+	newsCache      []models.NewsItem
+	cacheLastUpdate time.Time
+	cacheMutex      sync.Mutex
 )
 
 type RSS struct {
@@ -36,6 +43,13 @@ type Enclosure struct {
 }
 
 func (h *Handler) GetDynamicNews(c *fiber.Ctx) error {
+	cacheMutex.Lock()
+	if time.Since(cacheLastUpdate) < 15*time.Minute && len(newsCache) > 0 {
+		defer cacheMutex.Unlock()
+		return c.JSON(newsCache)
+	}
+	cacheMutex.Unlock()
+
 	// Source: Google News (search for mental health in Indonesia)
 	query := "kesehatan+mental"
 	url := fmt.Sprintf("https://news.google.com/rss/search?q=%s&hl=id&gl=ID&ceid=ID:id", query)
@@ -52,7 +66,12 @@ func (h *Handler) GetDynamicNews(c *fiber.Ctx) error {
 	resp, err := client.Do(req)
 	if err != nil {
 		log.Printf("Error fetching RSS: %v", err)
-		// Fallback to empty list or static-like data if needed
+		// Return cache even if expired if we can't fetch new ones
+		cacheMutex.Lock()
+		defer cacheMutex.Unlock()
+		if len(newsCache) > 0 {
+			return c.JSON(newsCache)
+		}
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch news from source"})
 	}
 	defer resp.Body.Close()
@@ -95,10 +114,16 @@ func (h *Handler) GetDynamicNews(c *fiber.Ctx) error {
 			Title:     item.Title,
 			Link:      item.Link,
 			Image:     image,
-			Source:    "Antara News",
+			Source:    "Google News",
 			Highlight: highlight,
 		})
 	}
+
+	// Update cache
+	cacheMutex.Lock()
+	newsCache = newsList
+	cacheLastUpdate = time.Now()
+	cacheMutex.Unlock()
 
 	return c.JSON(newsList)
 }
