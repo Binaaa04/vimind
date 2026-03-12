@@ -58,6 +58,7 @@ const Register = () => {
           data: {
             full_name: form.name,
           },
+          emailRedirectTo: window.location.origin + "/auth/callback",
         },
       });
 

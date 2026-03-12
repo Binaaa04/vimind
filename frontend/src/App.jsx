@@ -12,6 +12,7 @@ import ResetPassword from "./pages/ResetPassword";
 import ResetSuccess from "./pages/ResetSuccess";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import AuthCallback from "./pages/AuthCallback";
 
 function App() {
   return (
@@ -30,6 +31,7 @@ function App() {
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/reset-success" element={<ResetSuccess />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/auth/callback" element={<AuthCallback />} />
       </Routes>
     </BrowserRouter>
   );
