@@ -48,5 +48,5 @@ func main() {
 	routes.RegisterRoutes(app, handler)
 
 	// 5. Start Server
-	log.Fatal(app.Listen(":8080"))
+	log.Fatal(app.Listen("127.0.0.1:8080"))
 }

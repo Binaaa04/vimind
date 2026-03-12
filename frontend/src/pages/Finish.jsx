@@ -1,7 +1,8 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 export default function Finish() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   return (
     <div className="question-page">
@@ -20,7 +21,7 @@ export default function Finish() {
         <button
           className="next-btn"
           style={{ marginTop: "30px" }}
-          onClick={() => navigate("/hasil")}
+          onClick={() => navigate("/hasil", { state: location.state })}
         >
           Lanjutkan
         </button>

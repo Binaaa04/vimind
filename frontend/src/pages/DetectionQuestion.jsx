@@ -28,8 +28,15 @@ export default function Detection() {
           setUserEmail(email);
         }
 
-        // Start Phase 1: Try Refined first (Backend falls back to screening if no history)
-        const response = await getQuestions("refined", [], email);
+        // Start Phase 1: Try Refined first
+        let response = await getQuestions("refined", [], email);
+        
+        // If Refined returns an empty array (due to missing DB rule data for that disease ID), fallback to screening
+        if (!response.data || response.data.length === 0) {
+            console.warn("Refined diagnosis returned empty. Falling back to Screening.");
+            response = await getQuestions("screening", [], "");
+        }
+        
         setQuestions(response.data);
       } catch (err) {
         console.error("Initialization failed:", err);
