@@ -14,7 +14,7 @@ export const getQuestions = (mode = "default", diseaseIDs = [], email = "") => {
   }
   return api.get(url);
 };
-export const diagnose = (answers, userEmail = "") => api.post("/api/diagnose", { answers, user_email: userEmail });
+export const diagnose = (answers, userEmail = "", refinedDiseaseID = 0) => api.post("/api/diagnose", { answers, user_email: userEmail, refined_disease_id: refinedDiseaseID });
 export const getHistory = (email) => api.get(`/api/history?email=${email}`);
 export const getProfile = (email) => api.get(`/api/profile?email=${email}`);
 export const updateProfile = (email, name, avatarUrl = "") => api.post("/api/profile", { email, name, avatar_url: avatarUrl });

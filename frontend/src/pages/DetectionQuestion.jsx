@@ -18,6 +18,7 @@ export default function Detection() {
   const [phase, setPhase] = useState(1); // 1: Screening, 2: Discovery
   const [phase1Results, setPhase1Results] = useState([]); // {disease_id, value}
   const [isRefinedMode, setIsRefinedMode] = useState(false); // Skip Phase 2 for returning users
+  const [historyDiseaseID, setHistoryDiseaseID] = useState(0); // Known prior disease to anchor result
 
   useEffect(() => {
     let ignore = false; // StrictMode fix: ignore stale async results from unmounted render
@@ -37,15 +38,20 @@ export default function Detection() {
         const response = await getQuestions("refined", [], email);
         if (ignore) return; // Unmounted while waiting for questions
 
-        if (response.data && response.data.length > 0) {
-          setQuestions(response.data);
-          // Mark as refined if user is logged in AND backend returned questions
-          // (backend only returns refined questions if user has a non-healthy history)
-          if (email) setIsRefinedMode(true);
+        const { questions: qs, is_refined } = response.data;
+
+        if (qs && qs.length > 0) {
+          setQuestions(qs);
+          if (is_refined) {
+            setIsRefinedMode(true); // Backend confirmed: user has history
+            // Store the disease ID so we can anchor the final diagnosis
+            const { history_disease_id } = response.data;
+            if (history_disease_id > 0) setHistoryDiseaseID(history_disease_id);
+          }
         } else {
           // Fallback: no history or healthy history, use general screening
           const fallback = await getQuestions("screening");
-          if (!ignore) setQuestions(fallback.data);
+          if (!ignore) setQuestions(fallback.data?.questions || fallback.data || []);
         }
       } catch (err) {
         if (!ignore) {
@@ -112,7 +118,7 @@ export default function Detection() {
 
       try {
         const response = await getQuestions("discovery", finalSuspects);
-        const newQuestions = response.data;
+        const newQuestions = response.data?.questions || response.data || [];
 
         if (newQuestions.length > 0) {
           setQuestions(newQuestions);
@@ -139,7 +145,8 @@ export default function Detection() {
     try {
       // Remove disease_id metadata before sending to API
       const apiAnswers = finalAnswers.map(({ symptom_id, value }) => ({ symptom_id, value }));
-      const result = await diagnose(apiAnswers, userEmail);
+      // Pass historyDiseaseID so backend anchors result to prior diagnosis in refined mode
+      const result = await diagnose(apiAnswers, userEmail, historyDiseaseID);
 
       if (userEmail) {
         localStorage.setItem("latest_diagnosis", JSON.stringify(result.data));

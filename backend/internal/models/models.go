@@ -15,8 +15,9 @@ type Answer struct {
 }
 
 type DiagnosisRequest struct {
-	Answers   []Answer `json:"answers"`
-	UserEmail string   `json:"user_email"`
+	Answers          []Answer `json:"answers"`
+	UserEmail        string   `json:"user_email"`
+	RefinedDiseaseID int      `json:"refined_disease_id"` // If set, anchor result to this disease
 }
 
 type DiagnosisResult struct {

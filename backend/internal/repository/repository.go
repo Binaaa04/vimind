@@ -124,6 +124,12 @@ func (r *Repository) GetDiseaseIDByName(name string) (int, error) {
 	return id, err
 }
 
+func (r *Repository) GetDiseaseNameByID(id int) (string, error) {
+	var name string
+	err := r.pool.QueryRow(context.Background(), "SELECT disease_name FROM disease WHERE disease_id=$1", id).Scan(&name)
+	return name, err
+}
+
 func (r *Repository) SaveDiagnosis(uid int, diseaseID int, levelID int, cfValue float64, percentage float64) (int, error) {
 	var diagnosisID int
 	err := r.pool.QueryRow(context.Background(), `
@@ -208,3 +214,4 @@ func (r *Repository) GetLatestDiagnosisDiseaseID(email string) (int, error) {
 	err = r.pool.QueryRow(context.Background(), query, uid).Scan(&diseaseID)
 	return diseaseID, err
 }
+

@@ -25,11 +25,13 @@ func (h *Handler) GetQuestions(c *fiber.Ctx) error {
 	email := c.Query("email")
 	
 	var diseaseIDs []int
+	isRefined := false
 
 	if mode == "refined" && email != "" {
 		lastDiseaseID, err := h.Repo.GetLatestDiagnosisDiseaseID(email)
 		if err == nil && lastDiseaseID > 0 && lastDiseaseID != 10 { // 10 is Normal/Sehat
 			diseaseIDs = append(diseaseIDs, lastDiseaseID)
+			isRefined = true // Confirmed: user has history → will get targeted questions
 		} else {
 			// Fallback to screening if no history or history is Normal
 			mode = "screening"
@@ -49,7 +51,17 @@ func (h *Handler) GetQuestions(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch questions"})
 	}
-	return c.JSON(questions)
+	// Include is_refined flag and history_disease_id so frontend knows whether to skip Phase 2
+	// and which disease ID to anchor the final diagnosis to
+	historyDiseaseID := 0
+	if isRefined && len(diseaseIDs) > 0 {
+		historyDiseaseID = diseaseIDs[0]
+	}
+	return c.JSON(fiber.Map{
+		"questions":          questions,
+		"is_refined":         isRefined,
+		"history_disease_id": historyDiseaseID,
+	})
 }
 
 func (h *Handler) Diagnose(c *fiber.Ctx) error {
@@ -85,7 +97,7 @@ func (h *Handler) Diagnose(c *fiber.Ctx) error {
 		if _, ok := resultsMap[r.DiseaseID]; !ok {
 			initialCF := 0.0
 			if r.DiseaseID == lastDiseaseID && lastDiseaseID != 10 { // 10 is Kondisi Stabil
-				initialCF = 0.3 // Historical Weight base padding
+				initialCF = 0.5 // Historical Weight: strong anchor to prior diagnosis
 			}
 			resultsMap[r.DiseaseID] = &models.DiseaseCF{Name: r.Name, Description: r.Desc, Solutions: r.Solutions, CF: initialCF}
 		}
@@ -127,6 +139,22 @@ func (h *Handler) Diagnose(c *fiber.Ctx) error {
 			Percentage:      0,
 			Recommendations: "Tetap jaga pola makan tidur yang cukup, berolahraga secara teratur, dan luangkan waktu untuk relaksasi atau hobi Anda.",
 		})
+	}
+
+	// REFINED MODE ANCHORING: If this test was for a known history disease,
+	// ensure that disease stays as the top result (disease label stays consistent).
+	// The CF/Percentage will still reflect the current answers accurately.
+	if req.RefinedDiseaseID > 0 && req.RefinedDiseaseID != 10 {
+		refinedDiseaseName, dbErr := h.Repo.GetDiseaseNameByID(req.RefinedDiseaseID)
+		if dbErr == nil && refinedDiseaseName != "" {
+			for i, r := range finalResults {
+				if r.DiseaseName == refinedDiseaseName {
+					// Swap it to position 0
+					finalResults[0], finalResults[i] = finalResults[i], finalResults[0]
+					break
+				}
+			}
+		}
 	}
 
 	top := finalResults[0]
