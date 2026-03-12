@@ -453,10 +453,15 @@ body {
     font-family: sans-serif;
 }
 
-/*5. RESPONSIVE MOBILE / LAYAR KECIL */
+/*5. RESPONSIVE (TABLET & MOBILE) */
 @media screen and (max-width: 900px) {
     .dashboard-hero {
         flex-direction: column;
+    }
+
+    .promo-left, .promo-right {
+        height: auto;
+        min-height: 200px;
     }
 
     .feature-cards {
@@ -470,5 +475,102 @@ body {
 
     .feature-card:last-child {
         border-bottom: none;
+    }
+}
+
+/* RESPONSIVE MOBILE (LAYAR KECIL / HP) */
+@media screen and (max-width: 768px) {
+    .dashboard-navbar {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 15px;
+        gap: 15px;
+    }
+
+    .nav-left {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .dashboard-navbar .nav-logo {
+        margin-left: 0;
+        height: 50px !important;
+    }
+
+    .divider {
+        display: none; /* Sembunyikan garis pembatas di HP */
+    }
+
+    .nav-profile-area {
+        margin-right: 0;
+        align-self: flex-end;
+    }
+
+    /* Hero Banner Mobile */
+    .hero-big {
+        padding: 20px;
+    }
+
+    .promo-content h2 {
+        font-size: 1.5rem;
+        margin-bottom: 15px;
+    }
+
+    .sponsor-logo img {
+        height: 30px;
+    }
+
+    .promo-right {
+        padding: 20px;
+    }
+
+    .academy-logo {
+        font-size: 1.4rem;
+    }
+
+    .promo-right-content p {
+        font-size: 0.85rem;
+    }
+
+    /* Main Features Area Mobile */
+    .bottom-section {
+        flex-direction: column;
+        align-items: flex-start;
+        margin-left: 0;
+        padding: 0 10px;
+    }
+
+    .bottom-left {
+        margin-left: 0 !important;
+        padding-left: 0 !important;
+        max-width: 100%;
+        margin-bottom: 10px;
+    }
+
+    .bottom-left h2 {
+        min-width: 100% !important;
+        font-size: 1.2rem;
+    }
+
+    .bottom-cards {
+        flex-direction: column;
+        width: 100%;
+        margin-left: 0 !important;
+        margin-top: 10px;
+    }
+
+    /* Hilangkan background pembungkus form, jadikan card terpisah di mobile */
+    .feature-cards {
+        border: none;
+        box-shadow: none;
+        background-color: transparent;
+        gap: 12px;
+    }
+
+    .feature-card {
+        border: 1.5px solid #e8e0f5;
+        border-radius: 12px;
+        background-color: #ffffff;
+        padding: 15px;
     }
 }

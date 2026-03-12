@@ -23,7 +23,7 @@ func (r *Repository) GetQuestions(mode string, diseaseIDs []int) ([]models.Quest
 	if mode == "screening" {
 		// Fase 1: Ambil 1 gejala terkuat untuk SETIAP penyakit
 		query = `
-			SELECT symptoms_id, symptoms_code, symptoms_name, disease_id
+			SELECT s.symptoms_id, s.symptoms_code, s.symptoms_name, r.disease_id
 			FROM symptoms s
 			JOIN (
 				SELECT symptoms_id, disease_id,
