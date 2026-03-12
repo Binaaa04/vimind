@@ -98,7 +98,7 @@ The system processes all 9 supported conditions simultaneously. The condition wi
 The logic is fully decoupled and data-driven:
 *   **symptoms**: Dynamic inventory of mental health symptoms.
 *   **disease**: Descriptions and professional recommendations.
-- **cf_rules**: The "Knowledge Base" connecting symptoms to diseases with expert weights.
+- **cf_rules**: The "Knowledge Base" connecting symptoms to diseases with expert weights. Recently **clinically validated** against WHO and APA diagnostic standards (March 2026) to ensure mapping accuracy for conditions like PTSD and Anxiety.
 
 ### 4. Adaptive Discovery Flow (Intelligent Questioning)
 To improve diagnostic accuracy and user experience, ViMind employs a **2-Phase Discovery Flow**:
