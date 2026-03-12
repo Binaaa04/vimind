@@ -39,7 +39,14 @@ export default function Detection() {
         
         setQuestions(response.data);
       } catch (err) {
-        console.error("Initialization failed:", err);
+        console.warn("Refined diagnosis failed, falling back to Screening:", err.message);
+        try {
+            // Attempt fallback to screening if the refined request threw a network error
+            const fallbackResponse = await getQuestions("screening");
+            setQuestions(fallbackResponse.data);
+        } catch (fallbackErr) {
+            console.error("Initialization completely failed:", fallbackErr);
+        }
       } finally {
         setLoading(false);
       }
