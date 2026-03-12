@@ -16,21 +16,46 @@ func NewRepository(pool *pgxpool.Pool) *Repository {
 	return &Repository{pool: pool}
 }
 
-func (r *Repository) GetQuestions() ([]models.Question, error) {
-	query := `
-		SELECT symptoms_id, symptoms_code, symptoms_name
-		FROM symptoms
-		WHERE symptoms_id IN (
-			SELECT symptoms_id FROM (
-				SELECT symptoms_id, 
+func (r *Repository) GetQuestions(mode string, diseaseIDs []int) ([]models.Question, error) {
+	var query string
+	var args []interface{}
+
+	if mode == "screening" {
+		// Fase 1: Ambil 1 gejala terkuat untuk SETIAP penyakit
+		query = `
+			SELECT symptoms_id, symptoms_code, symptoms_name, disease_id
+			FROM symptoms s
+			JOIN (
+				SELECT symptoms_id, disease_id,
 					   ROW_NUMBER() OVER(PARTITION BY disease_id ORDER BY expert_cf_value DESC) as rank
 				FROM cf_rules
-			) r
-			WHERE r.rank <= 10
-		)
-		ORDER BY RANDOM();
-	`
-	rows, err := r.pool.Query(context.Background(), query)
+			) r ON s.symptoms_id = r.symptoms_id
+			WHERE r.rank = 1
+			ORDER BY RANDOM();
+		`
+	} else if mode == "discovery" && len(diseaseIDs) > 0 {
+		// Fase 2: Ambil gejala tambahan untuk penyakit spesifik yang dicurigai
+		query = `
+			SELECT DISTINCT s.symptoms_id, s.symptoms_code, s.symptoms_name, r.disease_id
+			FROM symptoms s
+			JOIN cf_rules r ON s.symptoms_id = r.symptoms_id
+			WHERE r.disease_id = ANY($1)
+			AND r.expert_cf_value >= 0.6
+			ORDER BY RANDOM()
+			LIMIT 8;
+		`
+		args = append(args, diseaseIDs)
+	} else {
+		// Default: Fallback ke random (logic lama)
+		query = `
+			SELECT symptoms_id, symptoms_code, symptoms_name, 0 as disease_id
+			FROM symptoms
+			ORDER BY RANDOM()
+			LIMIT 10;
+		`
+	}
+
+	rows, err := r.pool.Query(context.Background(), query, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -39,7 +64,7 @@ func (r *Repository) GetQuestions() ([]models.Question, error) {
 	questions := []models.Question{}
 	for rows.Next() {
 		var q models.Question
-		if err := rows.Scan(&q.ID, &q.Code, &q.Name); err != nil {
+		if err := rows.Scan(&q.ID, &q.Code, &q.Name, &q.DiseaseID); err != nil {
 			continue
 		}
 		questions = append(questions, q)

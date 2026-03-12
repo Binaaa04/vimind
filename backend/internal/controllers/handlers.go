@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"log"
 	"strings"
 
@@ -19,7 +20,22 @@ func NewHandler(repo *repository.Repository) *Handler {
 }
 
 func (h *Handler) GetQuestions(c *fiber.Ctx) error {
-	questions, err := h.Repo.GetQuestions()
+	mode := c.Query("mode", "default")
+	idsStr := c.Query("disease_ids")
+	
+	var diseaseIDs []int
+	if idsStr != "" {
+		parts := strings.Split(idsStr, ",")
+		for _, p := range parts {
+			var id int
+			fmt.Sscanf(p, "%d", &id)
+			if id > 0 {
+				diseaseIDs = append(diseaseIDs, id)
+			}
+		}
+	}
+
+	questions, err := h.Repo.GetQuestions(mode, diseaseIDs)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch questions"})
 	}

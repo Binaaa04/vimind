@@ -100,13 +100,18 @@ The logic is fully decoupled and data-driven:
 *   **disease**: Descriptions and professional recommendations.
 - **cf_rules**: The "Knowledge Base" connecting symptoms to diseases with expert weights.
 
-### 4. Dynamic News & Resource Optimization
+### 4. Adaptive Discovery Flow (Intelligent Questioning)
+To improve diagnostic accuracy and user experience, ViMind employs a **2-Phase Discovery Flow**:
+- **Phase 1 (Screening)**: The system samples broad, high-impact symptoms across all supported conditions to identify potential "signals".
+- **Phase 2 (Targeted Discovery)**: Based on real-time scoring of Phase 1 answers, the frontend intelligently requests additional, specific symptoms for suspected conditions. This provides a deep-dive analysis without asking irrelevant questions.
+
+### 5. Dynamic News & Resource Optimization
 ViMind features a real-time mental health news feed on the Dashboard:
 - **Live Fetcher (Go)**: The backend automatically retrieves the latest 10 mental health articles using the Google News RSS engine.
 - **In-Memory Caching (Optimization)**: To minimize external network requests and save server bandwidth, the news data is cached in-memory for **15 minutes**. This ensures lightning-fast responses during deployment and prevents API rate-limiting issues.
 - **Interactive UI**: The Dashboard Carousel automatically cycles through headlines, and the "Artikel Kesehatan Mental" dropdown in the Navbar provides quick access to external sources.
 
-### 2. Result Page & UX Enhancements
+### 6. Result Page & UX Enhancements
 - **Dynamic Content**: Displays real descriptions and professional solutions fetched from the database top-match result.
 - **Guest Access Control**: 
   - Partial **Blur Effect** on result cards for non-logged-in users.
