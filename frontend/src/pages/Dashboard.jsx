@@ -10,7 +10,7 @@ import NicknameSuccessModal from "../components/NicknameSuccessModal";
 import LogoutModal from "../components/LogoutModal";
 import ArticleModal from "../components/ArticleModal";
 import { articlesList } from "../data/articlesData";
-import { getProfile, updateProfile } from "../services/api";
+import { getProfile, updateProfile, diagnose } from "../services/api";
 import logo from "../assets/logovimind2.png";
 import kemenkesLogo from "../assets/kemenkes_logo.png";
 import familyBanner from "../assets/family_banner.png";
@@ -64,6 +64,20 @@ const Dashboard = () => {
           // If profile not in DB yet, use Supabase metadata if exists
           const name = session.user.user_metadata?.full_name || session.user.email.split("@")[0];
           setNickname(name);
+        }
+
+        // SYNC PENDING DIAGNOSIS FROM GUEST
+        const pendingAnswersRaw = localStorage.getItem("pending_answers");
+        if (pendingAnswersRaw) {
+          try {
+            const parsedAnswers = JSON.parse(pendingAnswersRaw);
+            const diagRes = await diagnose(parsedAnswers, session.user.email);
+            localStorage.setItem("latest_diagnosis", JSON.stringify(diagRes.data));
+            localStorage.removeItem("pending_answers");
+            console.log("Successfully synced pending diagnosis to DB.");
+          } catch (syncErr) {
+            console.error("Failed to sync pending diagnosis:", syncErr);
+          }
         }
       }
     };

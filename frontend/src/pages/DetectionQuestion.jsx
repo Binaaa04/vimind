@@ -113,8 +113,10 @@ export default function Detection() {
 
       if (userEmail) {
         localStorage.setItem("latest_diagnosis", JSON.stringify(result.data));
+        localStorage.removeItem("pending_answers");
       } else {
         localStorage.removeItem("latest_diagnosis"); 
+        localStorage.setItem("pending_answers", JSON.stringify(apiAnswers));
       }
 
       navigate("/selesai", { state: { diagnosis: result.data, isGuest: !userEmail } });
