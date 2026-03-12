@@ -22,9 +22,19 @@ func NewHandler(repo *repository.Repository) *Handler {
 func (h *Handler) GetQuestions(c *fiber.Ctx) error {
 	mode := c.Query("mode", "default")
 	idsStr := c.Query("disease_ids")
+	email := c.Query("email")
 	
 	var diseaseIDs []int
-	if idsStr != "" {
+
+	if mode == "refined" && email != "" {
+		lastDiseaseID, err := h.Repo.GetLatestDiagnosisDiseaseID(email)
+		if err == nil && lastDiseaseID > 0 && lastDiseaseID != 10 { // 10 is Normal/Sehat
+			diseaseIDs = append(diseaseIDs, lastDiseaseID)
+		} else {
+			// Fallback to screening if no history or history is Normal
+			mode = "screening"
+		}
+	} else if idsStr != "" {
 		parts := strings.Split(idsStr, ",")
 		for _, p := range parts {
 			var id int
@@ -63,10 +73,21 @@ func (h *Handler) Diagnose(c *fiber.Ctx) error {
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch diagnostic rules"})
 	}
 
+	var lastDiseaseID int
+	if req.UserEmail != "" {
+		if id, err := h.Repo.GetLatestDiagnosisDiseaseID(req.UserEmail); err == nil {
+			lastDiseaseID = id
+		}
+	}
+
 	resultsMap := make(map[int]*models.DiseaseCF)
 	for _, r := range rules {
 		if _, ok := resultsMap[r.DiseaseID]; !ok {
-			resultsMap[r.DiseaseID] = &models.DiseaseCF{Name: r.Name, Description: r.Desc, Solutions: r.Solutions, CF: 0}
+			initialCF := 0.0
+			if r.DiseaseID == lastDiseaseID && lastDiseaseID != 10 { // 10 is Kondisi Stabil
+				initialCF = 0.3 // Historical Weight base padding
+			}
+			resultsMap[r.DiseaseID] = &models.DiseaseCF{Name: r.Name, Description: r.Desc, Solutions: r.Solutions, CF: initialCF}
 		}
 
 		if userVal, answered := userAnswers[r.SymptomID]; answered {
@@ -99,7 +120,13 @@ func (h *Handler) Diagnose(c *fiber.Ctx) error {
 	}
 
 	if len(finalResults) == 0 {
-		return c.JSON(fiber.Map{"message": "No specific condition detected based on answers.", "results": []string{}})
+		finalResults = append(finalResults, models.DiagnosisResult{
+			DiseaseName:     "Kondisi Mental Stabil (Sehat)",
+			Description:     "Berdasarkan jawaban Anda, tidak terdeteksi adanya indikasi masalah kesehatan mental yang signifikan. Kondisi mental Anda saat ini tergolong stabil dan sehat.",
+			CFValue:         0,
+			Percentage:      0,
+			Recommendations: "Tetap jaga pola makan tidur yang cukup, berolahraga secara teratur, dan luangkan waktu untuk relaksasi atau hobi Anda.",
+		})
 	}
 
 	top := finalResults[0]

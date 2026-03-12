@@ -4,10 +4,13 @@ const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:8080",
 });
 
-export const getQuestions = (mode = "default", diseaseIDs = []) => {
+export const getQuestions = (mode = "default", diseaseIDs = [], email = "") => {
   let url = `/api/questions?mode=${mode}`;
   if (diseaseIDs.length > 0) {
     url += `&disease_ids=${diseaseIDs.join(",")}`;
+  }
+  if (email) {
+    url += `&email=${encodeURIComponent(email)}`;
   }
   return api.get(url);
 };

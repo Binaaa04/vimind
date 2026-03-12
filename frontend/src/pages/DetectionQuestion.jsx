@@ -21,13 +21,15 @@ export default function Detection() {
   useEffect(() => {
     const init = async () => {
       try {
+        let email = "";
         const { data: { session } } = await supabase.auth.getSession();
         if (session?.user) {
-          setUserEmail(session.user.email);
+          email = session.user.email;
+          setUserEmail(email);
         }
 
-        // Start Phase 1: Screening
-        const response = await getQuestions("screening");
+        // Start Phase 1: Try Refined first (Backend falls back to screening if no history)
+        const response = await getQuestions("refined", [], email);
         setQuestions(response.data);
       } catch (err) {
         console.error("Initialization failed:", err);

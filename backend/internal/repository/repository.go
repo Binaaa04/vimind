@@ -45,6 +45,18 @@ func (r *Repository) GetQuestions(mode string, diseaseIDs []int) ([]models.Quest
 			LIMIT 8;
 		`
 		args = append(args, diseaseIDs)
+	} else if mode == "refined" && len(diseaseIDs) > 0 {
+		// Refined Diagnosis: Ambil soal spesifik untuk history penyakit user
+		query = `
+			SELECT DISTINCT s.symptoms_id, s.symptoms_code, s.symptoms_name, r.disease_id
+			FROM symptoms s
+			JOIN cf_rules r ON s.symptoms_id = r.symptoms_id
+			WHERE r.disease_id = ANY($1)
+			AND r.expert_cf_value >= 0.4
+			ORDER BY RANDOM()
+			LIMIT 10;
+		`
+		args = append(args, diseaseIDs)
 	} else {
 		// Default: Fallback ke random (logic lama)
 		query = `
@@ -174,5 +186,25 @@ func (r *Repository) GetHistory(uid int) ([]models.HistoryItem, error) {
 		}
 		history = append(history, hi)
 	}
+
 	return history, nil
+}
+
+// GetLatestDiagnosisDiseaseID gets the disease_id of the user's most recent diagnosis
+func (r *Repository) GetLatestDiagnosisDiseaseID(email string) (int, error) {
+	uid, err := r.GetUserIDByEmail(email)
+	if err != nil {
+		return 0, err
+	}
+
+	var diseaseID int
+	query := `
+		SELECT disease_id 
+		FROM diagnosis 
+		WHERE user_id = $1 
+		ORDER BY date_of_diagnosis DESC 
+		LIMIT 1
+	`
+	err = r.pool.QueryRow(context.Background(), query, uid).Scan(&diseaseID)
+	return diseaseID, err
 }
