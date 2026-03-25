@@ -109,7 +109,7 @@ export default function Result() {
                             sangat disarankan untuk berkonsultasi dengan psikolog atau psikiater.
                         </p>
                     </div>
-                </div>
+                </div> 
 
                 {isLoggedIn && (
                     <div className="result-footer">
