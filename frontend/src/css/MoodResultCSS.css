@@ -1,0 +1,133 @@
+/* Latar Belakang Gelap (Overlay) */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4); /* Efek gelap transparan */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 3000; /* Pastikan di atas elemen lain */
+  padding: 20px;
+}
+
+/* Bingkai Ungu Luar */
+.result-wrapper {
+  background-color: #8b5cf6; /* Warna ungu utama */
+  padding: 20px 20px 15px 20px;
+  border-radius: 20px;
+  width: 100%;
+  max-width: 320px;
+  box-shadow: 0 10px 25px rgba(139, 92, 246, 0.4);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Kartu Putih Bagian Dalam */
+.result-card {
+  background-color: #ffffff;
+  width: 100%;
+  border-radius: 16px;
+  padding: 50px 40px;
+  text-align: center;
+  position: relative;
+}
+
+/* Judul Modal */
+.result-card h2 {
+  color: #4c1d95; /* Ungu gelap */
+  font-size: 16px;
+  font-weight: 700;
+  margin: 0 0 25px 0;
+}
+
+/* --- Area Grafik Setengah Lingkaran (Gauge) --- */
+.mood-gauge {
+  position: relative;
+  width: 220px;
+  height: 110px; /* Setengah dari lebar untuk membentuk setengah lingkaran */
+  background-color: #a1a1aa; /* Abu-abu untuk track yang kosong */
+  border-radius: 110px 110px 0 0;
+  margin: 0 auto 15px;
+  overflow: hidden;
+}
+
+/* Warna Isi Grafik (Bar Ungu) */
+.mood-gauge-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background-color: #8b5cf6; /* Warna ungu bar */
+  transition: width 0.8s ease-out;
+}
+
+/* Potongan Putih di Tengah untuk Efek "Donat" */
+.mood-gauge::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 150px;
+  height: 75px;
+  background-color: #ffffff;
+  border-radius: 75px 75px 0 0;
+}
+/* --------------------------------------------- */
+
+/* Teks Persentase & Emoji (Diatur posisinya di atas lubang grafik) */
+.result-card h1 {
+  position: absolute;
+  top: 145px; 
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 26px;
+  color: #2E1065;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  z-index: 10; /* Agar di atas .mood-gauge::after */
+}
+
+/* Keterangan "Anda Terdeteksi" */
+.result-card p {
+  font-size: 12px;
+  color: #6b7280;
+  margin: 35px 0 5px 0; /* Jarak dijauhkan karena posisi H1 absolute */
+}
+
+/* Teks Mood Spesifik (Bahagia, Sedih, dll) */
+.result-card p b {
+  display: block;
+  font-size: 18px;
+  color: #6d28d9;
+  margin-top: 4px;
+}
+
+/* Pesan Motivasi di Bawah */
+.result-card span {
+  display: block;
+  font-size: 10px;
+  color: #9ca3af;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px dashed #e5e7eb; /* Garis pemisah putus-putus */
+}
+
+/* Tombol Tutup di Area Ungu */
+.close-btn {
+  background: transparent;
+  border: none;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  margin-top: 15px;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.close-btn:hover {
+  opacity: 0.8;
+}
