@@ -1,6 +1,4 @@
-/* =========================
-   NICKNAME MODAL
-========================= */
+/*NICKNAME MODAL*/
 
 .nickname-overlay {
   position: fixed;
@@ -20,9 +18,7 @@
   animation: popUp 0.35s ease;
 }
 
-/* =========================
-   SUCCESS MODAL
-========================= */
+/*SUCCESS MODAL*/
 
 .success-overlay {
   position: fixed;
@@ -43,9 +39,7 @@
   box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
 }
 
-/* =========================
-   SUCCESS ICON
-========================= */
+/*SUCCESS ICON*/
 
 .success-icon {
   width: 56px;
@@ -62,9 +56,7 @@
   justify-content: center;
 }
 
-/* =========================
-   POP ANIMATION
-========================= */
+/*POP ANIMATION*/
 
 .animate-pop {
   animation: popUp 0.4s ease forwards;
@@ -88,10 +80,7 @@
 
 }
 
-/* =========================
-   TEXT
-========================= */
-
+/*Text*/  
 .success-modal h2 {
   color: #2e1c6b;
   font-size: 28px;
@@ -106,10 +95,7 @@
   padding-bottom: 26px;
 }
 
-/* =========================
-   BUTTON
-========================= */
-
+/*Button*/
 .nickname-modal button,
 .success-modal button {
   width: 100%;
