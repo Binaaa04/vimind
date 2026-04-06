@@ -59,7 +59,7 @@ export default function Home() {
             Vimind bantu kamu memahami kondisi kesehatan mentalmu
           </p>
 
-          <button onClick={() => navigate("/deteksi")}>
+          <button onClick={() => navigate("/deteksi/soal")}>
             Coba tes gratis →
           </button>
         </div>
