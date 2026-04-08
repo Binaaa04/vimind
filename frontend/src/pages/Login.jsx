@@ -22,10 +22,16 @@ const Login = () => {
 
   const handleGoogleLogin = async () => {
     try {
+      const redirectAfterLogin = localStorage.getItem("redirectAfterLogin");
+      // If guest came from result page, redirect directly to /hasil after Google login
+      // Supabase will attach the session token as a hash in the URL
+      const redirectTo = redirectAfterLogin
+        ? window.location.origin + redirectAfterLogin
+        : window.location.origin + "/dashboard";
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: window.location.origin + "/dashboard",
+          redirectTo,
         },
       });
       if (error) throw error;
@@ -61,7 +67,15 @@ const Login = () => {
 
       console.log("Login success:", data);
       localStorage.setItem("isLogin", "true");
-      navigate("/dashboard");
+
+      // Check if there's a pending redirect (e.g., from guest result page)
+      const redirectAfterLogin = localStorage.getItem("redirectAfterLogin");
+      if (redirectAfterLogin) {
+        localStorage.removeItem("redirectAfterLogin");
+        navigate(redirectAfterLogin);
+      } else {
+        navigate("/dashboard");
+      }
     } catch (error) {
       console.error("Login error:", error.message);
       alert("Gagal login: " + error.message);

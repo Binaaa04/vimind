@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "../services/supabaseClient";
-import { getProfile } from "../services/api";
+import { getProfile, diagnose } from "../services/api";
 
 export default function Result() {
     const navigate = useNavigate();
@@ -11,15 +11,17 @@ export default function Result() {
     const [avatarUrl, setAvatarUrl] = useState("");
     const [showModal, setShowModal] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [syncing, setSyncing] = useState(false);
 
-    // Get data from location state (Passed from DetectionQuestion)
-    const stateDiagnosis = location.state?.diagnosis;
-    const storedDiagnosis = JSON.parse(localStorage.getItem("latest_diagnosis"));
-    const diagnosis = stateDiagnosis || storedDiagnosis;
+    // Get data from location state or localStorage
+    const [currentDiagnosis, setCurrentDiagnosis] = useState(() => {
+        const stateDiagnosis = location.state?.diagnosis;
+        const storedDiagnosis = JSON.parse(localStorage.getItem("latest_diagnosis"));
+        return stateDiagnosis || storedDiagnosis;
+    });
 
     useEffect(() => {
-        const checkAuthAndProfile = async () => {
-            const { data: { session } } = await supabase.auth.getSession();
+        const handleSession = async (session) => {
             if (session) {
                 setIsLoggedIn(true);
                 setShowModal(false);
@@ -30,15 +32,45 @@ export default function Result() {
                 } catch (err) {
                     setNickname(session.user.email.split("@")[0]);
                 }
+
+                // Sync pending answers if user just logged in from guest flow
+                const pendingAnswersRaw = localStorage.getItem("pending_answers");
+                if (pendingAnswersRaw) {
+                    setSyncing(true);
+                    try {
+                        const parsedAnswers = JSON.parse(pendingAnswersRaw);
+                        const diagRes = await diagnose(parsedAnswers, session.user.email);
+                        setCurrentDiagnosis(diagRes.data);
+                        localStorage.setItem("latest_diagnosis", JSON.stringify(diagRes.data));
+                        localStorage.removeItem("pending_answers");
+                        // Also clear the redirect flag since we've now handled it
+                        localStorage.removeItem("redirectAfterLogin");
+                    } catch (syncErr) {
+                        console.error("Failed to sync pending diagnosis:", syncErr);
+                    } finally {
+                        setSyncing(false);
+                    }
+                }
             } else {
                 setIsLoggedIn(false);
                 setShowModal(true);
             }
         };
-        checkAuthAndProfile();
+
+        // First check current session (handles email/password login redirect)
+        supabase.auth.getSession().then(({ data: { session } }) => {
+            handleSession(session);
+        });
+
+        // Also listen for auth changes (handles Google OAuth token in URL hash)
+        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+            handleSession(session);
+        });
+
+        return () => subscription.unsubscribe();
     }, []);
 
-    const result = diagnosis?.top_result || (diagnosis?.all_results ? diagnosis.all_results[0] : null);
+    const result = currentDiagnosis?.top_result || (currentDiagnosis?.all_results ? currentDiagnosis.all_results[0] : null);
 
     const handleLogout = async () => {
         await supabase.auth.signOut();
@@ -51,7 +83,9 @@ export default function Result() {
                 <div className="header-info">
                     <h1>Mari Lihat Hasil Tesmu{nickname ? `, ${nickname}!` : ""}</h1>
                     <div className="result-badge">
-                        {result ? (
+                        {syncing ? (
+                            <p>Menyinkronkan hasil tes Anda...</p>
+                        ) : result ? (
                             <>
                                 <span>Kamu Terdeteksi:</span>
                                 <h2>{result.disease_name}</h2>
@@ -130,6 +164,7 @@ export default function Result() {
                             disabled={loading}
                             onClick={() => {
                                 setLoading(true);
+                                localStorage.setItem("redirectAfterLogin", "/hasil");
                                 navigate("/login");
                             }}
                         >
