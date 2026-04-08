@@ -72,7 +72,7 @@ const Login = () => {
 
   return (
     <div className="page-wrapper">
-      <div className="card">
+      <div className="login-card">
 
         {/* LEFT IMAGE */}
         <div className="card-left">

@@ -1,3 +1,8 @@
+.login-page {
+  background:#f3f1fb;
+  min-height:100vh;
+}
+
 .page-wrapper {
   display: flex;
   justify-content: center;
@@ -7,20 +12,20 @@
 }
 
 /* 1. Container Card Utama */
-.card {
-  background-color: #E6D5FF; 
-  border-radius: 20px;
-  box-shadow: 0 7px 4px rgba(0, 0, 0, 0.15);
-  display: flex;
-  flex-direction: row;
-  max-width: 900px;
-  width: 100%;
-  padding: 40px;
-  gap: 30px;
+/* ganti semua .card jadi .login-card */
+.login-card {
+  background:#E9D5FF;
+  border-radius:20px;
+  box-shadow:0 7px 20px rgba(0,0,0,0.1);
+  display:flex;
+  max-width:900px;
+  width:100%;
+  padding:40px;
+  gap:30px;
 }
 
 /* 2. Bagian Kiri (Ilustrasi) */
-.card-left {
+.login-card .card-left {
   flex: 1;
   display: flex;
   justify-content: center;

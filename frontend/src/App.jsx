@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Landing from "./pages/Landing";
+import Home from "./pages/Home";
+//import Welcome from "./pages/Welcome";
 import DetectionIntro from "./pages/DetectionIntro";
 import DetectionQuestion from "./pages/DetectionQuestion";
 import Finish from "./pages/Finish";
@@ -18,7 +19,8 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Landing />} />
+        <Route path="/" element={<Home/>}/>
+        {/* <Route path="/Welcome" element={<Welcome />} /> */}
         <Route path="/deteksi" element={<DetectionIntro />} />
         <Route path="/deteksi/soal" element={<DetectionQuestion />} />
         <Route path="/selesai" element={<Finish />} />

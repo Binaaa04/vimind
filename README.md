@@ -1,134 +1,244 @@
-# ViMind Project
-(npm dotenv)
-ViMind is a mental health management application using **Go (Fiber)** for the backend and **React (Vite)** for the frontend, with **Supabase** integration for database and authentication.
+# ViMind — Early Mental Health Detection Platform for Students
 
-## Prerequisites
+ViMind is a web-based mental health application designed to help users—especially Gen Z and university students—detect early signs of mental health conditions. The platform provides self-assessment tools, mood tracking, and progress monitoring in a private and stigma-free environment.
 
-Ensure you have the following installed:
-- [Node.js](https://nodejs.org/) (v18+ recommended)
-- [Go](https://go.dev/) (v1.20+ recommended)
+## 🧭 Overview
+
+ViMind is designed as a digital mental health companion that enables users to understand and monitor their psychological condition independently.
+
+In Indonesia, mental health is still considered a sensitive topic. Many people hesitate to visit psychologists due to social stigma, often being labeled negatively. As a result, early symptoms are frequently ignored.
+
+ViMind addresses this issue by providing an accessible platform for early detection and continuous monitoring. Users can evaluate their condition, track progress, and receive recommendations when professional help may be needed.
+
+## ✨ Main Features
+
+### 🧠 Mental Health Check (Self-Assessment)
+- Interactive questionnaire based on mental health symptoms
+- Generates early diagnosis with percentage results
+- Powered by Certainty Factor (CF) algorithm
+
+### 😊 Mood Condition Summary
+- Provides an overview of user emotional states
+- Helps identify mood patterns over time
+
+### 📈 Test Progress Tracking
+- Displays history of test results
+- Visualizes improvement or deterioration
+
+### ⚠️ Early Warning Recommendation
+- Detects worsening conditions
+- Recommends consulting a psychologist
+
+### 📰 Mental Health News
+- Displays latest mental health articles
+- Fetched dynamically from Google News
+
+## ⚙️ Tech Stack
+
+| Category              | Technology                   |
+|-----------------------|------------------------------|
+| Frontend              | React (Vite)                 |
+| Backend               | Go (Fiber)                   |
+| Database              | Supabase (PostgreSQL)        |
+| Authentication        | Supabase Auth (Google Login) |
+| API                   | REST API                     |
+| Version Control       | GitHub                       |
+
+## 🚀 Installation & Setup
+
+### 📌 Prerequisites
+
+Make sure you have installed:
+
+- Node.js (v18+)
+- Go (v1.20+)
 - Git
 
-## Project Setup (Post Git Pull)
+### 🔧 Backend Setup (Go - Fiber)
 
-### 1. Backend (Go)
-Navigate to the backend directory and install dependencies:
 ```bash
 cd backend
 go mod tidy
-```
+````
 
-**Environment Variables:**
-Create a `.env` file in the `backend/` directory:
+Create a `.env` file inside `backend/`:
+
 ```env
-DATABASE_URL=postgresql://postgres.ujhyykkpfrizkgmtyvee:[YOUR_PASSWORD]@aws-1-ap-northeast-1.pooler.supabase.com:6543/postgres
+DATABASE_URL=postgresql://postgres.[PROJECT_REF]:[YOUR_PASSWORD]@aws-1-ap-northeast-1.pooler.supabase.com:6543/postgres
 ```
-*(Replace `[YOUR_PASSWORD]` with our database password)*
 
-### 2. Frontend (React)
-Navigate to the frontend directory and install packages:
+### 🎨 Frontend Setup (React - Vite)
+
 ```bash
 cd frontend
 npm install
 ```
 
-**Environment Variables:**
-Create a `.env` file in the `frontend/` directory:
+Create a `.env` file inside `frontend/`:
+
 ```env
 VITE_API_BASE_URL=http://127.0.0.1:8080
-VITE_SUPABASE_URL=https://ujhyykkpfrizkgmtyvee.supabase.co
+VITE_SUPABASE_URL=https://[PROJECT_REF].supabase.co
 VITE_SUPABASE_ANON_KEY=[YOUR_SUPABASE_ANON_KEY]
 ```
-> **⚠️ Note:** Use `127.0.0.1` instead of `localhost` to avoid IPv4/IPv6 resolution issues on some Windows machines.
-*(Contact the project owner for the keys)*
 
-## Running the Application
+⚠️ Use `127.0.0.1` instead of `localhost` to avoid IPv4/IPv6 issues on some systems.
 
-Run both the backend and frontend in separate terminals:
+### ▶️ Running the Application
 
-**Terminal 1 (Backend):**
+**Terminal 1 — Backend**
+
 ```bash
 cd backend
 go run main.go
 ```
 
-**Terminal 2 (Frontend):**
+**Terminal 2 — Frontend**
+
 ```bash
 cd frontend
 npm run dev
 ```
 
-Open `http://localhost:5173` in your browser.
+Open in browser:
+[http://localhost:5173](http://localhost:5173)
 
-## Google Authentication
-Google Login integration is powered by Supabase Auth. Ensure the Redirect URI in the Google Cloud Console is set to:
-`https://ujhyykkpfrizkgmtyvee.supabase.co/auth/v1/callback`
+### 🔐 Authentication
 
-## Core Features Implemented (March 12, 2026)
+Powered by Supabase Auth
+Supports Google Login
 
-## 🧠 Certainty Factor (CF) Algorithm Implementation
+Set Redirect URI:
+`https://[PROJECT_REF].supabase.co/auth/v1/callback`
 
-ViMind uses the **Certainty Factor (CF)** method, a classic expert system algorithm designed to handle uncertainty in diagnosis.
+## 🧠 Core Algorithm — Certainty Factor (CF)
 
-### 1. Data Components
-*   **Expert CF (MB - Measure of Belief)**: Pre-defined weights in our database (`cf_rules` table) that represent how strongly a symptom indicates a specific mental health condition. Range: `(0.0 to 1.0)`.
-*   **User Value (MD - Measure of Disbelief/Certainty)**: Input from the patient during the questionnaire.
-    *   *Sangat Setuju*: `1.0`
-    *   *Setuju*: `0.7`
-    *   *Ragu-ragu*: `0.4`
-    *   *Tidak Setuju*: `0.0`
+ViMind uses the Certainty Factor (CF) method, a classic expert system approach for handling uncertainty in diagnosis.
 
-### 2. Calculation Logic (Backend Go)
-The diagnosis process follows these mathematical steps:
+### 🔹 Data Components
 
-#### A. Individual Symptom Calculation
-For every symptom answered by the user, we calculate the individual certainty:
-`CF(h,e) = User_Value * Expert_CF`
+* **Expert CF (MB)** → Predefined expert weight (0–1)
+* **User Value (MD)** → User input during test:
 
-#### B. Combination Formula (Aggregation)
-To combine multiple symptoms for the same disease, we use the sequential combination formula:
-`CF_combine(CF_old, CF_new) = CF_old + CF_new * (1 - CF_old)`
+  * Strongly Agree → 1.0
+  * Agree → 0.7
+  * Neutral → 0.4
+  * Disagree → 0.0
 
-*This ensures that as more symptoms are confirmed, the overall certainty increases asymptotically towards 100%, but never exceeds it.*
+### 🔹 Calculation Logic
 
-#### C. Final Diagnosis
-The system processes all 9 supported conditions simultaneously. The condition with the highest `CF_combine` value is selected as the top result and presented to the user with a percentage (`CF * 100`).
+* **A. Individual CF**
 
-### 3. Database Mapping
-The logic is fully decoupled and data-driven:
-*   **symptoms**: Dynamic inventory of mental health symptoms.
-*   **disease**: Descriptions and professional recommendations.
-- **cf_rules**: The "Knowledge Base" connecting symptoms to diseases with expert weights. Recently **clinically validated** against WHO and APA diagnostic standards (March 2026) to ensure mapping accuracy for conditions like PTSD and Anxiety.
+```math
+CF(h,e) = User_Value × Expert_CF
+```
 
-### 4. Adaptive Discovery Flow (Intelligent Questioning)
-To improve diagnostic accuracy and user experience, ViMind employs a **2-Phase Discovery Flow** for new users, and a **Refined Diagnosis Flow** for returning users:
+* **B. Combination Formula**
 
-**For New Users (No Prior History):**
-- **Phase 1 (Screening)**: The system samples broad, high-impact symptoms across all supported conditions to identify potential "signals".
-- **Phase 2 (Targeted Discovery)**: Based on real-time scoring of Phase 1 answers, the frontend intelligently requests additional, specific symptoms for suspected conditions. This provides a deep-dive analysis without asking irrelevant questions.
+```math
+CFcombine = CFold + CFnew × (1 - CFold)
+```
 
-**For Returning Users (Has Prior Diagnosis):**
-- **Refined Mode**: The backend detects the user's last diagnosis and immediately returns 10 targeted questions for that specific condition. Phase 2 is skipped entirely.
-- **Diagnosis Anchoring**: The prior condition is given a historical CF weight (`+0.5` baseline) and is always promoted as the primary result, ensuring consistency between tests. The CF percentage still reflects current answers accurately.
-- **`is_refined` flag**: The `/api/questions` endpoint returns `{ questions, is_refined: true, history_disease_id }` so the frontend knows to skip Phase 2 and pass back the `history_disease_id` to `/api/diagnose` for anchoring.
+* **C. Final Diagnosis**
 
-### 5. Dynamic News & Resource Optimization
-ViMind features a real-time mental health news feed on the Dashboard:
-- **Live Fetcher (Go)**: The backend automatically retrieves the latest 10 mental health articles using the Google News RSS engine.
-- **In-Memory Caching (Optimization)**: To minimize external network requests and save server bandwidth, the news data is cached in-memory for **15 minutes**. This ensures lightning-fast responses during deployment and prevents API rate-limiting issues.
-- **Interactive UI**: The Dashboard Carousel automatically cycles through headlines, and the "Artikel Kesehatan Mental" dropdown in the Navbar provides quick access to external sources.
+All conditions are evaluated simultaneously. Highest CF value is selected as the result.
 
-### 6. Result Page & UX Enhancements
-- **Dynamic Content**: Displays real descriptions and professional solutions fetched from the database top-match result.
-- **Guest Access Control**: 
-  - Partial **Blur Effect** on result cards for non-logged-in users.
-  - Persistent login modal to incentivize registration for full access.
-  - Header remains clear for premium visual feedback.
-- **Unified Flow**: Streamlined the multi-page detection intro into a single dynamic questionnaire path.
+### 🔹 Database Structure
 
-## Security Features
-This project includes several security hardening measures:
-- **Rate Limiting**: Maximum 100 requests every 15 minutes per IP to prevent brute-force and DDoS.
-- **SQL Injection Protection**: Uses parameterized queries for all database interactions.
-- **Security Headers**: Integrated with Helmet middleware.
-- **Session Validation**: Direct integration with Supabase session management for secure feature access.
+* **symptoms** → symptom list
+* **disease** → mental conditions & solutions
+* **cf_rules** → knowledge base mapping
+
+## 🔄 Adaptive Discovery System
+
+### 👤 New Users
+
+* Phase 1: General screening
+* Phase 2: Targeted follow-up questions
+
+### 🔁 Returning Users
+
+* Direct targeted questions
+* Uses previous diagnosis (history-based)
+* Applies CF baseline (+0.5)
+
+## 📰 News System Optimization
+
+* Fetches articles via Google News RSS
+* Uses 15-minute in-memory caching
+* Reduces API calls and improves performance
+
+## 🛡️ Security Features
+
+* Rate Limiting (100 requests / 15 minutes / IP)
+* SQL Injection Protection (parameterized queries)
+* Security Headers (Helmet middleware)
+* Supabase Session Validation
+
+## 🚀 Future Development
+
+* 💬 AI Mental Health Chatbot
+* 📊 Advanced Mood Analytics
+* 🏥 Psychologist Integration (consultation booking)
+
+## 👥 Development Team
+
+| Name              | Role                    |
+| ----------------- | ----------------------- |
+| Sabrina Rahmadini | Project Manager & QA    |
+| Shabrina Q        | Database                |
+| Ardhiofatra       | Frontend Developer      |
+| Dimas Arya        | Backend Developer       |
+| M. Faruq          | UI/UX Designer          |
+
+## 📸 UI Preview
+
+## Landing Page
+<p align="center">
+<img src="frontend\src\assets\landing.PNG" width="250"/>
+<img src="frontend\src\assets\login page.PNG" width="250"/>
+<img src="frontend\src\assets\Locked Result Page.PNG" width="250"/>
+</p>
+
+## Dashboard Page
+<p align="center">
+<img src="frontend\src\assets\dashboard page.PNG" width="250"/>
+<img src="frontend\src\assets\dashboard page2.PNG" width="250"/>
+</p>
+
+## Mental Health Check (Self-Assessment)
+<p align="center">
+<img src="frontend\src\assets\question.PNG" width="250"/>
+<img src="frontend\src\assets\question2.PNG" width="250"/>
+</p>
+
+## Mood Condition Summary
+<p align="center">
+<img src="frontend\src\assets\dashboard page.PNG" width="250"/>
+<img src="frontend\src\assets\Mood Condition Summary.PNG" width="250"/>
+</p>
+
+## Test Progress Tracking
+<p align="center">
+<img src="frontend\src\assets\Test Progress Tracking.PNG" width="250"/>
+</p>
+
+## Early Warning Recommendation
+<p align="center">
+<img src="frontend\src\assets\Picture3.png" width="250"/>
+</p>
+
+## Mental Health News
+<p align="center">
+<img src="frontend\src\assets\news.PNG" width="250"/>
+<img src="frontend\src\assets\news2.PNG"  width="250"/>
+</p>
+
+## Profile
+<p align="center">
+<img src="frontend\src\assets\change name.PNG" width="250"/>
+<img src="frontend\src\assets\change name2.PNG" width="250"/>
+<img src="frontend\src\assets\change picture.PNG" width="250"/>
+<img src="frontend\src\assets\logout.PNG" width="250"/>
+</p>
+
