@@ -15,4 +15,5 @@ func RegisterRoutes(app *fiber.App, handler *controllers.Handler) {
 	api.Post("/profile", handler.UpdateProfile)
 	api.Get("/history", handler.GetHistory)
 	api.Get("/news", handler.GetDynamicNews)
+	api.Post("/chat", handler.Chatbot)
 }

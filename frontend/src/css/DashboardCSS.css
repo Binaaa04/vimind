@@ -598,10 +598,14 @@ body {
 /* ICON DI DALAM BUTTON */
 .chatbot-float-btn img {
   width: 60px;
-  height: 50px;
-  object-fit: cover;
-  border-radius: 50%;
-  filter: drop-shadow(0 0 0 transparent);
+  height: 60px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 8px rgba(139, 92, 246, 0.3));
+  transition: transform 0.3s ease;
+}
+
+.chatbot-float-btn:hover img {
+  transform: scale(1.1);
 }
 
 /* PANEL CHAT */
@@ -635,11 +639,34 @@ body {
 .chatbot-body {
   flex: 1;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  overflow-y: auto;
+  padding: 15px;
+  background: #f9f9ff;
+  gap: 12px;
+}
+
+.dot-typing {
+  display: inline-flex;
+  gap: 4px;
   align-items: center;
-  color: #8b5cf6;
-  text-align: center;
-  padding: 20px;
+  font-weight: bold;
+}
+
+.dot-typing::after {
+  content: "...";
+  animation: typing 1.5s infinite steps(4, end);
+  width: 1.5em;
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+
+@keyframes typing {
+  from { width: 0; }
+  to { width: 1.5em; }
 }
 
 /* INPUT */

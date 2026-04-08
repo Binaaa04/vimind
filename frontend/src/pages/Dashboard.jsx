@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { supabase } from "../services/supabaseClient";
 import SummaryModal from "../components/SummaryModal";
 import MoodResultModal from "../components/MoodResultModal";
@@ -10,7 +10,7 @@ import NicknameSuccessModal from "../components/NicknameSuccessModal";
 import LogoutModal from "../components/LogoutModal";
 import ArticleModal from "../components/ArticleModal";
 import { articlesList } from "../data/articlesData";
-import { getProfile, updateProfile, diagnose } from "../services/api";
+import { getProfile, updateProfile, diagnose, sendChatMessage } from "../services/api";
 import logo from "../assets/logovimind2.png";
 import kemenkesLogo from "../assets/kemenkes_logo.png";
 import familyBanner from "../assets/family_banner.png";
@@ -29,6 +29,11 @@ const Dashboard = () => {
   const [showNicknameSuccessModal, setShowNicknameSuccessModal] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showChatbot, setShowChatbot] = useState(false);
+
+  const [chatMessages, setChatMessages] = useState([]);
+  const [chatInput, setChatInput] = useState("");
+  const [isChatLoading, setIsChatLoading] = useState(false);
+  const chatEndRef = useRef(null);
 
   const [userEmail, setUserEmail] = useState("");
   const [nickname, setNickname] = useState(
@@ -111,11 +116,50 @@ const Dashboard = () => {
     }
   };
 
-  const handleArticleClick = (articleId) => {
-    const article = articlesList.find(a => a.id === articleId);
+  useEffect(() => {
+    if (chatEndRef.current) {
+      chatEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [chatMessages, isChatLoading]);
+
+  const handleArticleClick = (article) => {
     setSelectedArticle(article);
+    setShowArticleMenu(false);
     setShowArticleModal(true);
-    setShowArticleMenu(false); // Tutup dropdown setelah klik
+  };
+
+  const fetchChatbotReply = async (newMessages) => {
+    try {
+      setIsChatLoading(true);
+      const emailToUse = userEmail || "guest";
+      const res = await sendChatMessage(emailToUse, newMessages);
+      
+      setChatMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: res.data.reply }
+      ]);
+    } catch (err) {
+      console.error("Chatbot error:", err);
+      setChatMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: "Maaf, aku sedang mengalami kendala. Bisa dicoba lagi nanti ya!" }
+      ]);
+    } finally {
+      setIsChatLoading(false);
+    }
+  };
+
+  const handleSendChat = (e) => {
+    e.preventDefault();
+    if (!chatInput.trim()) return;
+
+    const newMsg = { role: "user", content: chatInput };
+    const updatedMessages = [...chatMessages, newMsg];
+    
+    setChatMessages(updatedMessages);
+    setChatInput("");
+    
+    fetchChatbotReply(updatedMessages);
   };
 
   const handleLogout = async () => {
@@ -415,18 +459,79 @@ const Dashboard = () => {
       {showChatbot && (
         <div className="chatbot-panel">
           <div className="chatbot-header">
-            <span>Vivi <small>AI Bot</small></span>
-            <button onClick={() => setShowChatbot(false)}>✕</button>
+            <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
+              <span>Vivi <small style={{fontWeight: 'normal', opacity: 0.8}}>AI Bot</small></span>
+            </div>
+            <button onClick={() => setShowChatbot(false)} style={{background:'none', border:'none', color:'white', fontSize:'18px', cursor:'pointer'}}>✕</button>
           </div>
 
           <div className="chatbot-body">
-            <p>Apa keluhanmu hari ini?</p>
+            {chatMessages.length === 0 && (
+              <div style={{
+                background: '#EDE9FE', 
+                alignSelf: 'flex-start', 
+                padding: '12px 16px', 
+                borderRadius: '16px 16px 16px 4px', 
+                maxWidth: '85%', 
+                color: '#4C1D95', 
+                fontSize: '14px', 
+                boxShadow:'0 2px 4px rgba(0,0,0,0.05)',
+                lineHeight: '1.5'
+              }}>
+                Halo{nickname !== 'User' ? ` ${nickname}` : ''}! Aku Vivi 😊 <br/>Ada yang ingin kamu ceritakan hari ini?
+              </div>
+            )}
+            
+            {chatMessages.map((msg, idx) => (
+              <div key={idx} style={{
+                background: msg.role === 'user' ? 'linear-gradient(135deg, #8B5CF6, #7C3AED)' : '#FFFFFF',
+                color: msg.role === 'user' ? 'white' : '#1E293B',
+                alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
+                padding: '12px 16px',
+                borderRadius: msg.role === 'user' ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
+                maxWidth: '85%',
+                fontSize: '14px',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                border: msg.role === 'user' ? 'none' : '1px solid #F1F5F9',
+                lineHeight: '1.5'
+              }}>
+                <div style={{whiteSpace: 'pre-wrap'}}>{msg.content}</div>
+              </div>
+            ))}
+            
+            {isChatLoading && (
+              <div style={{
+                background: '#FFFFFF', 
+                alignSelf: 'flex-start', 
+                padding: '10px 16px', 
+                borderRadius: '16px 16px 16px 4px', 
+                color: '#8B5CF6', 
+                fontSize: '14px',
+                boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
+                border: '1px solid #F1F5F9'
+              }}>
+                <span className="dot-typing">Vivi sedang mengetik</span>
+              </div>
+            )}
+            <div ref={chatEndRef} />
           </div>
 
-          <div className="chatbot-input">
-            <input placeholder="Mari ceritakan keluhanmu..." />
-            <button>➤</button>
-          </div>
+          <form className="chatbot-input" onSubmit={handleSendChat} style={{display: 'flex', borderTop: '1px solid #E5E7EB', padding: '10px', background: 'white'}}>
+            <input 
+              placeholder="Ceritakan kondisimu..." 
+              value={chatInput}
+              onChange={(e) => setChatInput(e.target.value)}
+              disabled={isChatLoading}
+              style={{flex: 1, border: 'none', background: '#F3F4F6', padding: '10px 14px', borderRadius: '20px', outline: 'none', fontSize: '14px'}}
+            />
+            <button 
+              type="submit" 
+              disabled={isChatLoading || !chatInput.trim()}
+              style={{background: 'none', border: 'none', color: '#8B5CF6', marginLeft: '8px', cursor: (isChatLoading || !chatInput.trim()) ? 'not-allowed' : 'pointer', fontSize: '20px', opacity: (isChatLoading || !chatInput.trim()) ? 0.5 : 1}}
+            >
+              ➤
+            </button>
+          </form>
         </div>
       )}
     </div>
