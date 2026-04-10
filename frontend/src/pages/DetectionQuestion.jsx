@@ -1,10 +1,11 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { getQuestions, diagnose } from "../services/api";
 import { supabase } from "../services/supabaseClient";
 
 export default function Detection() {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState([]); // All answers {symptom_id, value}
@@ -34,22 +35,30 @@ export default function Detection() {
           setUserEmail(email);
         }
 
-        // Request questions (refined if logged in, backend auto-falls-back to screening)
-        const response = await getQuestions("refined", [], email);
-        if (ignore) return; // Unmounted while waiting for questions
+        const forceNewTest = location.state?.forceNewTest;
 
-        const { questions: qs, is_refined } = response.data;
+        if (!forceNewTest) {
+          // Request questions (refined if logged in, backend auto-falls-back to screening)
+          const response = await getQuestions("refined", [], email);
+          if (ignore) return; // Unmounted while waiting for questions
 
-        if (qs && qs.length > 0) {
-          setQuestions(qs);
-          if (is_refined) {
-            setIsRefinedMode(true); // Backend confirmed: user has history
-            // Store the disease ID so we can anchor the final diagnosis
-            const { history_disease_id } = response.data;
-            if (history_disease_id > 0) setHistoryDiseaseID(history_disease_id);
+          const { questions: qs, is_refined } = response.data;
+
+          if (qs && qs.length > 0) {
+            setQuestions(qs);
+            if (is_refined) {
+              setIsRefinedMode(true); // Backend confirmed: user has history
+              // Store the disease ID so we can anchor the final diagnosis
+              const { history_disease_id } = response.data;
+              if (history_disease_id > 0) setHistoryDiseaseID(history_disease_id);
+            }
+          } else {
+            // Fallback: no history or healthy history, use general screening
+            const fallback = await getQuestions("screening");
+            if (!ignore) setQuestions(fallback.data?.questions || fallback.data || []);
           }
         } else {
-          // Fallback: no history or healthy history, use general screening
+          // User forced a new test
           const fallback = await getQuestions("screening");
           if (!ignore) setQuestions(fallback.data?.questions || fallback.data || []);
         }

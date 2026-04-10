@@ -79,33 +79,43 @@ func (h *Handler) Diagnose(c *fiber.Ctx) error {
 		userAnswers[ans.SymptomID] = ans.Value
 	}
 
+	// REFINED MODE: If anchoring to a specific disease, only evaluate that disease.
+	// This prevents other diseases (which share overlapping symptoms) from outscoring
+	// the anchored disease and causing an inconsistent result label for the user.
+	isRefinedAnchor := req.RefinedDiseaseID > 0 && req.RefinedDiseaseID != 10
+
 	rules, err := h.Repo.GetAllRules()
 	if err != nil {
 		log.Printf("Error fetching diagnostic rules: %v", err)
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch diagnostic rules"})
 	}
 
-	var lastDiseaseID int
-	if req.UserEmail != "" {
-		if id, err := h.Repo.GetLatestDiagnosisDiseaseID(req.UserEmail); err == nil {
-			lastDiseaseID = id
-		}
-	}
-
 	resultsMap := make(map[int]*models.DiseaseCF)
 	for _, r := range rules {
+		// In refined mode, skip any rule not belonging to the anchored disease
+		if isRefinedAnchor && r.DiseaseID != req.RefinedDiseaseID {
+			continue
+		}
+
 		if _, ok := resultsMap[r.DiseaseID]; !ok {
-			initialCF := 0.0
-			if r.DiseaseID == lastDiseaseID && lastDiseaseID != 10 { // 10 is Kondisi Stabil
-				initialCF = 0.5 // Historical Weight: strong anchor to prior diagnosis
-			}
-			resultsMap[r.DiseaseID] = &models.DiseaseCF{Name: r.Name, Description: r.Desc, Solutions: r.Solutions, CF: initialCF}
+			resultsMap[r.DiseaseID] = &models.DiseaseCF{Name: r.Name, Description: r.Desc, Solutions: r.Solutions, CF: 0.0}
 		}
 
 		if userVal, answered := userAnswers[r.SymptomID]; answered {
 			cfEntry := userVal * r.ExpertCF
 			currentCF := resultsMap[r.DiseaseID].CF
 			resultsMap[r.DiseaseID].CF = currentCF + cfEntry*(1-currentCF)
+		}
+	}
+
+	// Non-refined mode: apply historical weight to last diagnosed disease
+	if !isRefinedAnchor && req.UserEmail != "" {
+		if lastDiseaseID, err := h.Repo.GetLatestDiagnosisDiseaseID(req.UserEmail); err == nil && lastDiseaseID > 0 && lastDiseaseID != 10 {
+			if entry, ok := resultsMap[lastDiseaseID]; ok {
+				// Add historical bias: combine 0.5 prior with current CF
+				combined := 0.5 + entry.CF*(1-0.5)
+				entry.CF = combined
+			}
 		}
 	}
 
@@ -122,7 +132,7 @@ func (h *Handler) Diagnose(c *fiber.Ctx) error {
 		}
 	}
 
-	// Sort manually (simple bubble sort as in previous main.go)
+	// Sort manually (simple bubble sort)
 	for i := 0; i < len(finalResults); i++ {
 		for j := i + 1; j < len(finalResults); j++ {
 			if finalResults[i].CFValue < finalResults[j].CFValue {
@@ -139,22 +149,6 @@ func (h *Handler) Diagnose(c *fiber.Ctx) error {
 			Percentage:      0,
 			Recommendations: "Tetap jaga pola makan tidur yang cukup, berolahraga secara teratur, dan luangkan waktu untuk relaksasi atau hobi Anda.",
 		})
-	}
-
-	// REFINED MODE ANCHORING: If this test was for a known history disease,
-	// ensure that disease stays as the top result (disease label stays consistent).
-	// The CF/Percentage will still reflect the current answers accurately.
-	if req.RefinedDiseaseID > 0 && req.RefinedDiseaseID != 10 {
-		refinedDiseaseName, dbErr := h.Repo.GetDiseaseNameByID(req.RefinedDiseaseID)
-		if dbErr == nil && refinedDiseaseName != "" {
-			for i, r := range finalResults {
-				if r.DiseaseName == refinedDiseaseName {
-					// Swap it to position 0
-					finalResults[0], finalResults[i] = finalResults[i], finalResults[0]
-					break
-				}
-			}
-		}
 	}
 
 	top := finalResults[0]

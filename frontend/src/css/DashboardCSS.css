@@ -574,3 +574,120 @@ body {
         padding: 15px;
     }
 }
+
+/* FLOAT BUTTON */
+.chatbot-float-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: none;
+  z-index: 9999;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* ICON DI DALAM BUTTON */
+.chatbot-float-btn img {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  filter: drop-shadow(0 4px 8px rgba(139, 92, 246, 0.3));
+  transition: transform 0.3s ease;
+}
+
+.chatbot-float-btn:hover img {
+  transform: scale(1.1);
+}
+
+/* PANEL CHAT */
+.chatbot-panel {
+  position: fixed;
+  bottom: 90px;
+  right: 20px;
+  width: 320px;
+  height: 440px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 9999;
+}
+
+/* HEADER */
+.chatbot-header {
+  background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+  color: white;
+  padding: 12px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+}
+
+/* BODY */
+.chatbot-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: stretch;
+  overflow-y: auto;
+  padding: 15px;
+  background: #f9f9ff;
+  gap: 12px;
+}
+
+.dot-typing {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+  font-weight: bold;
+}
+
+.dot-typing::after {
+  content: "...";
+  animation: typing 1.5s infinite steps(4, end);
+  width: 1.5em;
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: bottom;
+}
+
+@keyframes typing {
+  from { width: 0; }
+  to { width: 1.5em; }
+}
+
+/* INPUT */
+.chatbot-input {
+  display: flex;
+  border-top: 1px solid #eee;
+  background: #fafafa;
+}
+
+.chatbot-input input {
+  flex: 1;
+  border: none;
+  padding: 12px;
+  outline: none;
+  font-size: 14px;
+}
+
+.chatbot-input button {
+  background: #8b5cf6;
+  color: white;
+  border: none;
+  padding: 0 16px;
+  cursor: pointer;
+}

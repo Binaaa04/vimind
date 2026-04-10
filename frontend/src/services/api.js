@@ -18,5 +18,6 @@ export const diagnose = (answers, userEmail = "", refinedDiseaseID = 0) => api.p
 export const getHistory = (email) => api.get(`/api/history?email=${email}`);
 export const getProfile = (email) => api.get(`/api/profile?email=${email}`);
 export const updateProfile = (email, name, avatarUrl = "") => api.post("/api/profile", { email, name, avatar_url: avatarUrl });
+export const sendChatMessage = (email, messages) => api.post("/api/chat", { email, messages });
 
 export default api;
