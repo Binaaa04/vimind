@@ -146,13 +146,25 @@ func (h *Handler) Diagnose(c *fiber.Ctx) error {
 	}
 
 	if len(finalResults) == 0 {
-		finalResults = append(finalResults, models.DiagnosisResult{
-			DiseaseName:     "Kondisi Mental Stabil (Sehat)",
-			Description:     "Berdasarkan jawaban Anda, tidak terdeteksi adanya indikasi masalah kesehatan mental yang signifikan. Kondisi mental Anda saat ini tergolong stabil dan sehat.",
-			CFValue:         0,
-			Percentage:      0,
-			Recommendations: "Tetap jaga pola makan tidur yang cukup, berolahraga secara teratur, dan luangkan waktu untuk relaksasi atau hobi Anda.",
-		})
+		if isRefinedAnchor {
+			// If tracking a specific disease but CF is 0, still return that disease with 0%
+			diseaseName, _ := h.Repo.GetDiseaseNameByID(req.RefinedDiseaseID)
+			finalResults = append(finalResults, models.DiagnosisResult{
+				DiseaseName:     diseaseName,
+				Description:     "Berdasarkan jawaban terbaru Anda, gejala untuk kondisi ini sudah sangat minim atau tidak terdeteksi lagi.",
+				CFValue:         0,
+				Percentage:      0,
+				Recommendations: "Tetap pertahankan pola hidup sehat dan terus pantau kondisi Anda secara mandiri.",
+			})
+		} else {
+			finalResults = append(finalResults, models.DiagnosisResult{
+				DiseaseName:     "Kondisi Mental Stabil (Sehat)",
+				Description:     "Berdasarkan jawaban Anda, tidak terdeteksi adanya indikasi masalah kesehatan mental yang signifikan. Kondisi mental Anda saat ini tergolong stabil dan sehat.",
+				CFValue:         0,
+				Percentage:      0,
+				Recommendations: "Tetap jaga pola makan tidur yang cukup, berolahraga secara teratur, dan luangkan waktu untuk relaksasi atau hobi Anda.",
+			})
+		}
 	}
 
 	top := finalResults[0]

@@ -168,13 +168,13 @@ const Dashboard = () => {
 
   const handleResumeTest = () => {
     localStorage.setItem("quizFrom", "dashboard");
-    navigate("/deteksi", { state: { refinedMode: true } });
+    navigate("/deteksi", { state: { forceNewTest: false } });
     setShowTestOptions(false);
   };
 
   const handleNewTest = () => {
     localStorage.setItem("quizFrom", "dashboard");
-    navigate("/deteksi", { state: { refinedMode: false } });
+    navigate("/deteksi", { state: { forceNewTest: true } });
     setShowTestOptions(false);
   };
 
