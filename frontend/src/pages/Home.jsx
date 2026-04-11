@@ -12,6 +12,7 @@ export default function Home() {
   // 1. STATE & DATA
   // ==========================================
   const [openFaqIndex, setOpenFaqIndex] = useState(0);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   // Data FAQ
   const faqData = [
@@ -84,11 +85,17 @@ export default function Home() {
         <div className="nav-left">
           <img src={logo} alt="logo" />
         </div>
-        <div className="nav-right">
-          <span>Contact Us</span>
-          <span>Testimoni</span>
-          <span>FAQ</span>
-          <button onClick={() => navigate("/login")}>Sign in</button>
+        
+        {/* HAMBURGER BUTTON */}
+        <button className="hamburger-btn" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+          {isMenuOpen ? "✕" : "☰"}
+        </button>
+
+        <div className={`nav-right ${isMenuOpen ? "open" : ""}`}>
+          <span onClick={() => setIsMenuOpen(false)}>Contact Us</span>
+          <span onClick={() => setIsMenuOpen(false)}>Testimoni</span>
+          <span onClick={() => setIsMenuOpen(false)}>FAQ</span>
+          <button onClick={() => { setIsMenuOpen(false); navigate("/login"); }}>Sign in</button>
         </div>
       </div>
 

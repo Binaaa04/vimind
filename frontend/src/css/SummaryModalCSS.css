@@ -58,6 +58,41 @@
   overflow-y: auto;
 }
 
+@media (max-width: 768px) {
+    .sm-body {
+        grid-template-columns: 1fr;
+        padding: 16px;
+    }
+    .sm-card {
+        max-height: 95vh;
+    }
+    .gauge-graphic {
+        width: 220px;
+        height: 110px;
+        border-radius: 110px 110px 0 0;
+    }
+}
+
+/* RESPONSIVE SUMMARY MODAL */
+@media (max-width: 768px) {
+    .sm-body {
+        grid-template-columns: 1fr;
+        padding: 16px;
+    }
+    .sm-card {
+        max-height: 98vh;
+        border-radius: 0;
+    }
+    .summary-gauge-container {
+        padding: 16px;
+    }
+    .gauge-graphic {
+        width: 200px;
+        height: 100px;
+        border-radius: 100px 100px 0 0;
+    }
+}
+
 /* GAUGE & CHART AREA (KIRI) */
 .summary-gauge-container {
   background: white;

@@ -38,6 +38,16 @@ body {
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
 
+@media (max-width: 900px) {
+  .card {
+    flex-direction: column;
+    height: auto;
+    width: 100%;
+    padding: 30px 20px;
+    gap: 30px;
+  }
+}
+
 /* kiri */
 .card-left {
   flex: 1;
@@ -338,6 +348,32 @@ body {
   /* Supaya gak terlalu lebar */
 }
 
+@media (max-width: 600px) {
+    .options-wrapper {
+        flex-direction: column;
+        gap: 20px;
+        margin: 30px 0;
+    }
+    .label-left, .label-right {
+        text-align: center;
+        max-width: 100%;
+        font-size: 14px;
+    }
+    .circles {
+        gap: 15px;
+    }
+    .circle {
+        width: 35px;
+        height: 35px;
+        min-width: 35px;
+        min-height: 35px;
+    }
+    .question-container h1 {
+        font-size: 22px;
+        padding: 0 20px;
+    }
+}
+
 .label-right {
   text-align: left;
   font-size: 18px;
@@ -430,6 +466,18 @@ body {
   font-weight: 800;
   margin-bottom: 20px;
   letter-spacing: -0.5px;
+}
+
+@media (max-width: 768px) {
+  .result-header {
+    flex-direction: column;
+    text-align: center;
+    padding: 60px 20px;
+    gap: 30px;
+  }
+  .result-badge h2 {
+    font-size: 20px;
+  }
 }
 
 .result-badge {

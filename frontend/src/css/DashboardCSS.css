@@ -573,6 +573,18 @@ body {
         background-color: #ffffff;
         padding: 15px;
     }
+
+    /* Fix overlap berita di mobile */
+    .promo-content h2 {
+        font-size: 1.2rem !important;
+        line-height: 1.3;
+        margin-bottom: 15px;
+    }
+
+    .promo-right-content .academy-logo {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+    }
 }
 
 /* FLOAT BUTTON */
