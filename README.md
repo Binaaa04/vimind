@@ -33,6 +33,14 @@ ViMind addresses this issue by providing an accessible platform for early detect
 - Displays latest mental health articles
 - Fetched dynamically from Google News
 
+### 🔄 Seamless Guest Synchronization
+- Users can start tests as a Guest
+- Test results automatically sync to the user profile after Login/Registration
+
+### 🔐 Account Management
+- Self-service **Forgot Password** (Email reset link)
+- Account Deletion (Right to be Forgotten)
+
 ## ⚙️ Tech Stack
 
 | Category              | Technology                   |
@@ -105,11 +113,11 @@ Open in browser:
 
 ### 🔐 Authentication
 
-Powered by Supabase Auth
-Supports Google Login
+Powered by Supabase Auth. Supports Google Login and Email/Password with **Automatic Password Reset** flow.
 
-Set Redirect URI:
-`https://[PROJECT_REF].supabase.co/auth/v1/callback`
+Set Redirect URI in Supabase Dashboard:
+`http://localhost:5173/reset-password` (for local development)
+`https://[PROJECT_URL]/reset-password` (for production)
 
 ## 🧠 Core Algorithm — Certainty Factor (CF)
 
@@ -156,11 +164,17 @@ All conditions are evaluated simultaneously. Highest CF value is selected as the
 * Phase 1: General screening
 * Phase 2: Targeted follow-up questions
 
-### 🔁 Returning Users
+### 🔄 Data Persistence & Synchronization
+ViMind features a seamless data flow for unregistered users:
+* **Guest Flow**: Test results are stored in `localStorage`.
+* **Auto-Sync**: Upon login/registration, the `onAuthStateChange` listener in `App.jsx` detects the session and automatically triggers an API call to migrate `pending_answers` to the database.
+* **Result Redirect**: After successful sync, users are automatically redirected to their full dashboard/results.
 
-* Direct targeted questions
-* Uses previous diagnosis (history-based)
-* Applies CF baseline (+0.5)
+### 🧠 Adaptive Discovery Logic (Returning Users)
+When a returning user starts a test, the system behaves intelligently:
+* **Context Recognition**: The backend fetches the last diagnosed condition.
+* **Targeted Questions**: If a prior condition exists (e.g., Depression), the system skips general screening and presents symptoms specific to that condition for deeper analysis.
+* **History Bias**: A Certainty Factor baseline of **+0.5** is applied to the prior condition, anchoring the new diagnosis to the user's history for better trend tracking.
 
 ## 📰 News System Optimization
 
@@ -170,10 +184,59 @@ All conditions are evaluated simultaneously. Highest CF value is selected as the
 
 ## 🛡️ Security Features
 
-* Rate Limiting (100 requests / 15 minutes / IP)
-* SQL Injection Protection (parameterized queries)
-* Security Headers (Helmet middleware)
-* Supabase Session Validation
+* **Strict Rate Limiting** (50 requests / 1 minute / IP) to prevent DDoS and Brute Force spam.
+* **Middleware Recover**: System resilience layer that prevents the Go server from crashing during internal panics.
+* **Input Range Validation**: Backend-side enforcement (0.0–1.0) for symptom values to prevent data manipulation.
+* **SQL Injection Protection**: Fully parameterized queries via Golang's database/sql.
+* **Security Headers**: Integrated Helmet middleware for XSS, Sniffing, and Clickjacking protection.
+
+---
+
+## 📁 Technical API Reference
+
+<details>
+<summary><b>Click to expand Backend API Details</b></summary>
+
+### 📡 Diagnostic Endpoints
+
+#### `GET /api/questions`
+Fetches questions based on the user's current session or intent.
+- **Query Params**:
+  - `mode`: (`screening`|`refined`)
+  - `email`: (optional) used to fetch history for refined mode.
+- **Response**: List of questions, `is_refined` flag, and `history_disease_id`.
+
+#### `POST /api/diagnose`
+Submits answers and calculates the CF result.
+- **Request Body**:
+  ```json
+  {
+    "answers": [{"symptom_id": 1, "value": 0.8}],
+    "user_email": "user@example.com",
+    "refined_disease_id": 0
+  }
+  ```
+- **Response**: `top_result` (highest CF) and `all_results`.
+
+### 👤 Profile & History
+
+#### `GET /api/profile?email={email}`
+Fetches user information and avatar.
+
+#### `GET /api/history?email={email}`
+Fetches the full diagnostic history of a user.
+
+#### `DELETE /api/profile?email={email}`
+Permanently deletes user account and all associated diagnostic data (cascade delete).
+
+### 📰 News
+
+#### `GET /api/news`
+Fetches mental health news from Google News RSS with 15-minute server-side caching.
+
+</details>
+
+---
 
 ## 🚀 Future Development
 
