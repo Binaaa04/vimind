@@ -51,6 +51,12 @@ func (h *Handler) GetQuestions(c *fiber.Ctx) error {
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch questions"})
 	}
+
+	// If refined mode returned nothing (e.g. Guest or Invalid ID), fallback to screening
+	if len(questions) == 0 && mode == "refined" {
+		questions, _ = h.Repo.GetQuestions("screening", nil)
+	}
+
 	// Include is_refined flag and history_disease_id so frontend knows whether to skip Phase 2
 	// and which disease ID to anchor the final diagnosis to
 	historyDiseaseID := 0
@@ -112,11 +118,12 @@ func (h *Handler) Diagnose(c *fiber.Ctx) error {
 		}
 	}
 
-	// Non-refined mode: apply historical weight to last diagnosed disease
-	if !isRefinedAnchor && req.UserEmail != "" {
+	// Only apply historical weight IF we are in refined/anchored mode (Tracking)
+	if isRefinedAnchor && req.UserEmail != "" {
 		if lastDiseaseID, err := h.Repo.GetLatestDiagnosisDiseaseID(req.UserEmail); err == nil && lastDiseaseID > 0 && lastDiseaseID != 10 {
 			if entry, ok := resultsMap[lastDiseaseID]; ok {
 				// Add historical bias: combine 0.5 prior with current CF
+				// This makes the tracking consistent but doesn't override new diseases in 'New Test' mode
 				combined := 0.5 + entry.CF*(1-0.5)
 				entry.CF = combined
 			}

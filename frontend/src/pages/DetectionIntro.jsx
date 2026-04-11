@@ -12,7 +12,7 @@ export default function DetectionIntro() {
       </div>
 
       <div className="question-container">
-        <h1>DETEKSI DEPRESI</h1>
+        <h1>EVALUASI KESEHATAN MENTAL</h1>
         <p style={{ marginTop: "10px" }}>A. Mood dan Emosi</p>
 
         <button
