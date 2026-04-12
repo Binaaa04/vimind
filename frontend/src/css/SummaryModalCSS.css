@@ -1,4 +1,6 @@
-/* TEMA WARNA & MODAL OVERLAY */
+/* ==========================================
+   TEMA WARNA & MODAL OVERLAY
+   ========================================== */
 .modal-overlay {
   position: fixed;
   inset: 0;
@@ -8,7 +10,8 @@
   justify-content: center;
   align-items: center;
   z-index: 9999;
-  padding: 20px;
+  padding: clamp(10px, 3vw, 20px); /* Menyesuaikan padding luar agar tidak mentok layar */
+  box-sizing: border-box;
 }
 
 /* KARTU UTAMA */
@@ -16,26 +19,29 @@
   background: #f8fbff;
   width: 100%;
   max-width: 900px;
-  border-radius: 28px;
+  border-radius: clamp(16px, 4vw, 28px);
   box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  max-height: 94vh;
+  max-height: 90vh; /* Sedikit dikurangi agar tidak tertutup UI browser HP */
 }
 
-/* HEADER */
+/* ==========================================
+   HEADER
+   ========================================== */
 .sm-header {
-  padding: 20px 32px;
+  padding: clamp(16px, 4vw, 20px) clamp(20px, 5vw, 32px);
   background: white;
   display: flex;
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid #edf2f7;
+  gap: 12px;
 }
 
 .sm-title {
-  font-size: 20px;
+  font-size: clamp(18px, 4vw, 20px);
   font-weight: 800;
   color: #1a202c;
   display: flex;
@@ -43,71 +49,59 @@
 }
 
 .sm-title p {
-  font-size: 13px;
+  font-size: clamp(12px, 3vw, 13px);
   font-weight: 400;
   color: #718096;
   margin-top: 2px;
 }
 
-/* BODY LAYOUT (GRID) */
+/* EXPORT BUTTON (HEADER) */
+.sm-export-btn {
+  background: #8b5cf6;
+  color: white;
+  border: none;
+  padding: clamp(8px, 2vw, 10px) clamp(12px, 3vw, 20px);
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: clamp(12px, 3vw, 14px);
+  cursor: pointer;
+  transition: 0.3s;
+  white-space: nowrap; /* Mencegah tombol patah ke bawah */
+}
+
+.sm-export-btn:hover {
+  background: #7c3aed;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+}
+
+/* ==========================================
+   BODY LAYOUT (GRID)
+   ========================================== */
 .sm-body {
-  padding: 24px;
+  padding: clamp(16px, 4vw, 24px);
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 24px;
+  gap: clamp(16px, 4vw, 24px);
   overflow-y: auto;
-}
-
-@media (max-width: 768px) {
-    .sm-body {
-        grid-template-columns: 1fr;
-        padding: 16px;
-    }
-    .sm-card {
-        max-height: 95vh;
-    }
-    .gauge-graphic {
-        width: 220px;
-        height: 110px;
-        border-radius: 110px 110px 0 0;
-    }
-}
-
-/* RESPONSIVE SUMMARY MODAL */
-@media (max-width: 768px) {
-    .sm-body {
-        grid-template-columns: 1fr;
-        padding: 16px;
-    }
-    .sm-card {
-        max-height: 98vh;
-        border-radius: 0;
-    }
-    .summary-gauge-container {
-        padding: 16px;
-    }
-    .gauge-graphic {
-        width: 200px;
-        height: 100px;
-        border-radius: 100px 100px 0 0;
-    }
 }
 
 /* GAUGE & CHART AREA (KIRI) */
 .summary-gauge-container {
   background: white;
-  padding: 24px;
+  padding: clamp(16px, 4vw, 24px);
   border-radius: 20px;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 }
 
 .gauge-graphic {
-  width: 260px;
-  height: 130px;
-  border-radius: 130px 130px 0 0;
+  width: clamp(200px, 40vw, 260px);
+  height: clamp(100px, 20vw, 130px);
+  border-radius: 150px 150px 0 0;
   -webkit-mask: radial-gradient(farthest-side at bottom, transparent 65%, black 66%);
   mask: radial-gradient(farthest-side at bottom, transparent 65%, black 66%);
   margin-bottom: 15px;
@@ -123,26 +117,18 @@
 }
 
 .sm-chart-label {
-    font-size: 11px;
-    font-weight: 700;
-    color: #a0aec0;
-    margin-bottom: 8px;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    width: 100%;
-}
-
-.sm-empty-msg {
-    color: #a0aec0;
-    font-size: 13px;
-    margin: 40px 0;
-    line-height: 1.5;
-    max-width: 240px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #a0aec0;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  width: 100%;
 }
 
 .sm-svg {
-    width: 100%;
-    height: 140px;
+  width: 100%;
+  height: 140px;
 }
 
 /* LIST RIWAYAT (KANAN) */
@@ -151,7 +137,7 @@
   flex-direction: column;
   gap: 12px;
   overflow-y: auto;
-  max-height: 500px;
+  max-height: 500px; /* Akan ditimpa di mobile agar bisa scroll */
   padding-right: 4px;
 }
 
@@ -163,11 +149,11 @@
 }
 
 .sm-history-list::-webkit-scrollbar {
-    width: 6px;
+  width: 6px;
 }
 .sm-history-list::-webkit-scrollbar-thumb {
-    background: #e2e8f0;
-    border-radius: 10px;
+  background: #e2e8f0;
+  border-radius: 10px;
 }
 
 .sm-history-item {
@@ -179,86 +165,72 @@
   align-items: center;
   box-shadow: 0 2px 4px rgba(0,0,0,0.02);
   border: 1px solid #f1f5f9;
+  gap: 10px;
 }
 
 .item-info {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
+  flex: 1;
 }
 
 .item-disease {
-    font-weight: 700;
-    color: #2d3748;
-    font-size: 14px;
-    line-height: 1.2;
-    max-width: 180px;
+  font-weight: 700;
+  color: #2d3748;
+  font-size: clamp(13px, 3vw, 14px);
+  line-height: 1.3;
 }
 
 .item-date {
-    font-size: 11px;
-    color: #a0aec0;
+  font-size: 11px;
+  color: #a0aec0;
 }
 
 .item-results {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
 }
 
 .item-level {
-    font-size: 10px;
-    font-weight: 700;
-    padding: 2px 8px;
-    border-radius: 20px;
-    text-transform: uppercase;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  text-align: center;
 }
 
 .item-percentage {
-    font-weight: 800;
-    color: #8b5cf6;
-    font-size: 16px;
+  font-weight: 800;
+  color: #8b5cf6;
+  font-size: 16px;
 }
 
 .item-detail-btn {
-    background: #f1f5f9;
-    border: none;
-    padding: 4px 10px;
-    border-radius: 8px;
-    font-size: 10px;
-    font-weight: 600;
-    color: #64748b;
-    cursor: pointer;
-    transition: 0.2s;
-    margin-top: 2px;
+  background: #f1f5f9;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 10px;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  transition: 0.2s;
 }
 
 .item-detail-btn:hover {
-    background: #e2e8f0;
-    color: #1a202c;
+  background: #e2e8f0;
+  color: #1a202c;
 }
 
-/* EXPORT & CLOSE BUTTONS */
-.sm-export-btn {
-  background: #8b5cf6;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.sm-export-btn:hover {
-    background: #7c3aed;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
-}
-
+/* ==========================================
+   FOOTER / STATE KOSONG
+   ========================================== */
 .sm-footer {
-  padding: 20px;
+  padding: clamp(16px, 4vw, 20px);
   display: flex;
   justify-content: center;
   background: white;
@@ -274,28 +246,85 @@
   font-weight: 700;
   cursor: pointer;
   transition: 0.2s;
+  width: 100%;
+  max-width: 300px;
 }
 
 .sm-tutup-btn:hover {
-    background: #edf2f7;
-    color: #1a202c;
+  background: #edf2f7;
+  color: #1a202c;
 }
 
 .sm-empty-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 40px 20px;
-    text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px 20px;
+  text-align: center;
+}
+
+.sm-empty-msg {
+  color: #a0aec0;
+  font-size: 13px;
+  margin: 20px 0;
+  line-height: 1.5;
+  max-width: 240px;
 }
 
 .sm-mulai-btn {
-    background: #8b5cf6;
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 12px;
-    font-weight: 600;
-    margin-top: 16px;
-    cursor: pointer;
+  background: #8b5cf6;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-weight: 600;
+  margin-top: 16px;
+  cursor: pointer;
+}
+
+/* ==========================================
+   RESPONSIVE DESIGN (MEDIA QUERIES)
+   ========================================== */
+
+/* Tablet & Mobile Layout */
+@media (max-width: 768px) {
+  .sm-body {
+    grid-template-columns: 1fr; /* Ubah grid menjadi atas-bawah */
+  }
+  
+  .sm-header {
+    flex-direction: column; /* Tombol export turun ke bawah judul */
+    align-items: flex-start;
+  }
+  
+  .sm-export-btn {
+    width: 100%; /* Tombol export penuh di layar HP */
+    text-align: center;
+  }
+  
+  .sm-history-list {
+    max-height: none; /* Biarkan modal bisa di-scroll sepuasnya tanpa double-scroll */
+  }
+}
+
+/* Small Mobile Layout (Layar sangat sempit) */
+@media (max-width: 480px) {
+  .sm-history-item {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .item-results {
+    width: 100%;
+    flex-direction: row; /* Level, persentase, dan tombol berjejer menyamping di layar kecil */
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed #e2e8f0;
+  }
+  
+  .sm-footer {
+    padding: 15px;
+  }
 }

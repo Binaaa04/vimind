@@ -2,6 +2,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { getQuestions, diagnose } from "../services/api";
 import { supabase } from "../services/supabaseClient";
+import "../css/DetectionQuestionCSS.css";
 
 export default function Detection() {
   const navigate = useNavigate();
@@ -154,6 +155,16 @@ export default function Detection() {
     }
   };
 
+  const previousQuestion = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
+      // Remove the last answer from the answers array
+      setAnswers(answers.slice(0, -1));
+      // Reset selected state
+      setSelected(null);
+    }
+  };
+
   const finalizeDiagnosis = async (finalAnswers) => {
     setSubmitting(true);
     try {
@@ -203,6 +214,12 @@ export default function Detection() {
 
   return (
     <div className="question-page">
+      {currentIndex > 0 && (
+        <button className="back-btn" onClick={previousQuestion}>
+          ← 
+        </button>
+      )}
+
       <div className="progress-bar">
         <div
           className="progress-fill"

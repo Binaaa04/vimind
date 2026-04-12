@@ -485,20 +485,28 @@ body {
         align-items: flex-start;
         padding: 15px;
         gap: 15px;
+        position: relative;
     }
 
     .nav-left {
         width: 100%;
         justify-content: space-between;
+        position: relative;
     }
 
     .dashboard-navbar .nav-logo {
         margin-left: 0;
-        height: 50px !important;
+        height: 70px !important;
     }
 
     .divider {
         display: none; /* Sembunyikan garis pembatas di HP */
+    }
+
+    .article-menu-wrapper {
+        position: absolute;
+        bottom: -60px;
+        left: 0;
     }
 
     .nav-profile-area {
@@ -702,4 +710,419 @@ body {
   border: none;
   padding: 0 16px;
   cursor: pointer;
+}
+
+/* ADDITIONAL RESPONSIVE DESIGN */
+
+/* Large tablet screens (1024px and below) */
+@media (max-width: 1024px) {
+  .dashboard-navbar {
+    padding: 8px 3vw;
+  }
+
+  .dashboard-navbar .nav-logo {
+    height: 60px !important;
+    margin-left: -30px;
+  }
+
+  .divider {
+    margin-left: -30px;
+  }
+
+  .nav-profile-area {
+    margin-right: -30px;
+  }
+
+  .dashboard-hero {
+    gap: 15px;
+  }
+
+  .hero-big, .hero-small {
+    height: 300px;
+  }
+
+  .promo-left {
+    padding: 30px;
+  }
+
+  .promo-content h2 {
+    font-size: 1.8rem;
+  }
+
+  .promo-right {
+    padding: 25px;
+  }
+
+  .academy-logo {
+    font-size: 1.6rem;
+  }
+
+  .bottom-left h2 {
+    font-size: 1.2rem;
+    min-width: 300px !important;
+  }
+
+  .feature-card {
+    min-width: 200px;
+    padding: 12px;
+  }
+
+  .feature-card h4 {
+    font-size: 0.75rem;
+  }
+
+  .feature-card p {
+    font-size: 0.7rem;
+  }
+
+  .chatbot-panel {
+    width: 300px;
+    height: 400px;
+  }
+}
+
+/* Tablet screens (900px and below) - extending existing */
+@media screen and (max-width: 900px) {
+  .dashboard-hero {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .hero-big, .hero-small {
+    height: 250px;
+  }
+
+  .promo-left, .promo-right {
+    height: auto;
+    min-height: 180px;
+  }
+
+  .promo-content h2 {
+    font-size: 1.6rem;
+  }
+
+  .promo-right-content p {
+    font-size: 0.9rem;
+  }
+
+  .bottom-left h2 {
+    font-size: 1.1rem;
+    min-width: 100% !important;
+  }
+
+  .feature-cards {
+    flex-direction: column;
+  }
+
+  .feature-card {
+    border-right: none;
+    border-bottom: 1.5px solid #e8e0f5;
+    min-width: unset;
+    padding: 12px;
+  }
+
+  .feature-card:last-child {
+    border-bottom: none;
+  }
+
+  .chatbot-panel {
+    width: 280px;
+    height: 380px;
+  }
+}
+
+/* Mobile screens (768px and below) - extending existing */
+@media screen and (max-width: 768px) {
+  .dashboard-page::before {
+    width: 60%;
+    height: 80px;
+  }
+
+  .dashboard-navbar {
+    padding: 12px 15px;
+    margin-bottom: 20px;
+  }
+
+  .nav-left {
+    gap: 15px;
+  }
+
+  .dashboard-navbar .nav-logo {
+    height: 45px !important;
+    margin-left: 0;
+  }
+
+  .divider {
+    display: none;
+  }
+
+  .nav-profile-area {
+    margin-right: 0;
+  }
+
+  .profile-trigger {
+    font-size: 0.8rem;
+  }
+
+  .profile-trigger-avatar {
+    width: 32px;
+    height: 32px;
+  }
+
+  .article-menu-dropdown {
+    width: 280px;
+  }
+
+  .hero-big, .hero-small {
+    height: 200px;
+  }
+
+  .promo-left {
+    padding: 20px;
+  }
+
+  .promo-content h2 {
+    font-size: 1.3rem;
+    margin-bottom: 12px;
+  }
+
+  .promo-image {
+    right: 10px;
+    height: 80%;
+  }
+
+  .promo-right {
+    padding: 20px;
+  }
+
+  .academy-logo {
+    font-size: 1.2rem;
+    margin-bottom: 12px;
+  }
+
+  .promo-right-content p {
+    font-size: 0.8rem;
+  }
+
+  .dots {
+    margin-top: 15px;
+    margin-bottom: 30px;
+  }
+
+  .bottom-section {
+    padding: 0 15px;
+  }
+
+  .bottom-left {
+    margin-bottom: 15px;
+  }
+
+  .bottom-left h2 {
+    font-size: 1rem;
+  }
+
+  .bottom-cards {
+    gap: 8px;
+  }
+
+  .feature-cards {
+    gap: 10px;
+  }
+
+  .feature-card {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .feature-card .icon {
+    font-size: 1.8rem;
+  }
+
+  .feature-card h4 {
+    font-size: 0.75rem;
+  }
+
+  .feature-card p {
+    font-size: 0.7rem;
+  }
+
+  .chatbot-float-btn {
+    width: 50px;
+    height: 50px;
+    bottom: 15px;
+    right: 15px;
+  }
+
+  .chatbot-float-btn img {
+    width: 50px;
+    height: 50px;
+  }
+
+  .chatbot-panel {
+    width: 280px;
+    height: 360px;
+    bottom: 75px;
+    right: 15px;
+  }
+}
+
+/* Small mobile screens (480px and below) */
+@media (max-width: 480px) {
+  .dashboard-page::before {
+    width: 80%;
+    height: 60px;
+  }
+
+  .dashboard-navbar {
+    padding: 10px 12px;
+    margin-bottom: 15px;
+  }
+
+  .nav-left {
+    gap: 10px;
+  }
+
+  .dashboard-navbar .nav-logo {
+    height: 70px !important;
+  }
+
+  .profile-trigger {
+    font-size: 0.75rem;
+    gap: 8px;
+  }
+
+  .profile-trigger-avatar {
+    width: 28px;
+    height: 28px;
+  }
+
+  .article-menu-dropdown {
+    width: 250px;
+  }
+
+  .article-menu-item {
+    padding: 10px 12px;
+    font-size: 0.8rem;
+  }
+
+  .hero-big, .hero-small {
+    height: 180px;
+  }
+
+  .promo-left {
+    padding: 15px;
+  }
+
+  .promo-content h2 {
+    font-size: 1.1rem;
+    margin-bottom: 10px;
+  }
+
+  .promo-image {
+    right: 5px;
+    height: 70%;
+  }
+
+  .sponsor-logo img {
+    height: 25px;
+  }
+
+  .promo-right {
+    padding: 15px;
+  }
+
+  .academy-logo {
+    font-size: 1rem;
+    margin-bottom: 10px;
+  }
+
+  .promo-right-content p {
+    font-size: 0.75rem;
+  }
+
+  .dots {
+    margin-top: 12px;
+    margin-bottom: 25px;
+    gap: 4px;
+  }
+
+  .dots span {
+    width: 6px;
+    height: 6px;
+  }
+
+  .dots span.active {
+    width: 16px;
+  }
+
+  .bottom-section {
+    padding: 0 10px;
+  }
+
+  .bottom-left h2 {
+    font-size: 0.9rem;
+  }
+
+  .bottom-cards {
+    gap: 6px;
+  }
+
+  .feature-cards {
+    gap: 8px;
+  }
+
+  .feature-card {
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .feature-card .icon {
+    font-size: 1.6rem;
+  }
+
+  .feature-card h4 {
+    font-size: 0.7rem;
+  }
+
+  .feature-card p {
+    font-size: 0.65rem;
+  }
+
+  .chatbot-float-btn {
+    width: 45px;
+    height: 45px;
+    bottom: 10px;
+    right: 10px;
+  }
+
+  .chatbot-float-btn img {
+    width: 45px;
+    height: 45px;
+  }
+
+  .chatbot-panel {
+    width: 260px;
+    height: 340px;
+    bottom: 65px;
+    right: 10px;
+  }
+
+  .chatbot-header {
+    padding: 10px 12px;
+    font-size: 0.9rem;
+  }
+
+  .chatbot-body {
+    padding: 12px;
+    gap: 10px;
+  }
+
+  .chatbot-input input {
+    padding: 10px;
+    font-size: 13px;
+  }
+
+  .chatbot-input button {
+    padding: 0 12px;
+  }
 }

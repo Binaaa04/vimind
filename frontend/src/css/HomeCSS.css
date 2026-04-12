@@ -76,12 +76,23 @@ body {
 @media (max-width: 768px) {
   .navbar {
     padding: 15px 20px;
+    justify-content: center;
+    position: relative;
+  }
+  .nav-left {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
   }
   .nav-left img {
-    width: 160px !important;
+    width: min(160px, 40vw) !important;
   }
   .hamburger-btn {
     display: block;
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
   }
   .nav-right {
     position: fixed;
@@ -561,10 +572,13 @@ body {
 
 /* FOOTER */
 .footer {
+  width: 100%;
+  box-sizing: border-box;
   background-color: #8A5CFF;
   color: white;
   padding: 60px 40px;
   font-family: sans-serif;
+  margin: 0;
 }
 
 .footer-container {
@@ -572,7 +586,9 @@ body {
   grid-template-columns: 1fr 1fr 1.5fr 1.5fr;
   gap: 40px;
   max-width: 1200px;
+  width: min(1200px, 100%);
   margin: 0 auto;
+  box-sizing: border-box;
 }
 
 @media (max-width: 768px) {
@@ -662,4 +678,308 @@ body {
   font-size: 14px;
   color: rgba(255, 255, 255, 0.8);
   line-height: 1.5;
+}
+
+/* ADDITIONAL RESPONSIVE DESIGN */
+
+/* Tablet screens (1024px and below) */
+@media (max-width: 1024px) {
+  .navbar {
+    padding: 20px 30px;
+  }
+
+  .nav-left img {
+    width: 180px !important;
+  }
+
+  .hero {
+    height: 550px;
+  }
+
+  .hero-content h1 {
+    font-size: 32px;
+  }
+
+  .hero-content p {
+    font-size: 16px;
+  }
+
+  .fitur {
+    padding: 60px 20px;
+  }
+
+  .fitur-header h2 {
+    font-size: 24px;
+  }
+
+  .fitur-header p {
+    font-size: 15px;
+  }
+
+  .fitur-image img {
+    width: 90%;
+  }
+
+  .marquee-container {
+    padding: 30px 0;
+  }
+
+  .testimonial-card {
+    width: 300px;
+    padding: 20px;
+  }
+
+  .testimoni-title {
+    font-size: 15px;
+  }
+
+  .testimoni-text {
+    font-size: 13px;
+  }
+
+  .faq-section {
+    padding: 60px 0;
+  }
+
+  .faq-container {
+    max-width: 800px;
+  }
+
+  .faq-title {
+    font-size: 36px;
+  }
+
+  .faq-subtitle {
+    font-size: 15px;
+  }
+
+  .faq-question {
+    padding: 18px;
+    font-size: 15px;
+  }
+
+  .faq-answer-inner {
+    font-size: 13px;
+  }
+
+  .footer {
+    padding: 50px 30px;
+  }
+
+  .footer-container {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    gap: 30px;
+  }
+}
+
+/* Mobile screens (768px and below) - extending existing */
+@media (max-width: 768px) {
+  .fitur {
+    padding: 40px 15px;
+  }
+
+  .fitur-header h2 {
+    font-size: 20px;
+  }
+
+  .fitur-header p {
+    font-size: 14px;
+  }
+
+  .fitur-image img {
+    width: 95%;
+  }
+
+  .marquee-container {
+    padding: 20px 0;
+  }
+
+  .marquee-content {
+    gap: 16px;
+  }
+
+  .testimonial-card {
+    width: 260px;
+    padding: 16px;
+  }
+
+  .testimoni-title {
+    font-size: 14px;
+  }
+
+  .testimoni-text {
+    font-size: 12px;
+  }
+
+  .testimoni-name {
+    font-size: 13px;
+  }
+
+  .faq-container {
+    padding: 0 15px;
+  }
+
+  .faq-title {
+    font-size: 28px;
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .faq-title .question-mark {
+    margin-right: 0;
+    margin-bottom: 10px;
+  }
+
+  .faq-subtitle {
+    font-size: 14px;
+    margin-bottom: 30px;
+  }
+
+  .faq-list {
+    gap: 8px;
+  }
+
+  .faq-question {
+    padding: 15px;
+    font-size: 14px;
+  }
+
+  .faq-answer-inner {
+    padding: 0 15px 15px 15px;
+    font-size: 13px;
+  }
+}
+
+/* Small mobile screens (480px and below) - extending existing */
+@media (max-width: 480px) {
+  .navbar {
+    padding: 10px 15px;
+  }
+
+  .nav-left img {
+    width: 120px !important;
+  }
+
+  .hero {
+    height: 450px;
+  }
+
+  .hero-content h1 {
+    font-size: 22px;
+  }
+
+  .hero-content p {
+    font-size: 13px;
+  }
+
+  .hero button {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+
+  .fitur {
+    padding: 30px 10px;
+  }
+
+  .badge {
+    font-size: 12px;
+    padding: 4px 10px;
+  }
+
+  .fitur-header h2 {
+    font-size: 18px;
+  }
+
+  .fitur-header p {
+    font-size: 13px;
+  }
+
+  .fitur-image img {
+    width: 100%;
+    max-width: none;
+  }
+
+  .marquee-container {
+    padding: 15px 0;
+  }
+
+  .marquee-content {
+    gap: 12px;
+  }
+
+  .testimonial-card {
+    width: 240px;
+    padding: 12px;
+  }
+
+  .testimoni-title {
+    font-size: 13px;
+  }
+
+  .testimoni-text {
+    font-size: 11px;
+  }
+
+  .testimoni-name {
+    font-size: 12px;
+  }
+
+  .faq-section {
+    padding: 40px 0;
+  }
+
+  .faq-badge {
+    padding: 6px 16px;
+    font-size: 12px;
+  }
+
+  .faq-title {
+    font-size: 24px;
+  }
+
+  .faq-subtitle {
+    font-size: 13px;
+  }
+
+  .faq-question {
+    padding: 12px;
+    font-size: 13px;
+  }
+
+  .faq-answer-inner {
+    padding: 0 12px 12px 12px;
+    font-size: 12px;
+  }
+
+  .footer {
+    padding: 30px 15px;
+  }
+
+  .footer-logo {
+    font-size: 24px;
+  }
+
+  .social-icons {
+    gap: 10px;
+  }
+
+  .social-icon {
+    font-size: 18px;
+  }
+
+  .footer-col h3 {
+    font-size: 13px;
+  }
+
+  .footer-col ul li {
+    font-size: 13px;
+  }
+
+  .contact-icon {
+    font-size: 16px;
+  }
+
+  .footer-contact p {
+    font-size: 13px;
+  }
 }

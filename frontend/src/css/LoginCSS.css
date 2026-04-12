@@ -229,3 +229,223 @@
     max-width: 80%; 
   }
 }
+
+/* RESPONSIVE DESIGN */
+
+/* Tablet screens (1024px and below) */
+@media (max-width: 1024px) {
+  .login-card {
+    max-width: 800px;
+    padding: 35px;
+    gap: 25px;
+  }
+
+  .logo-img {
+    width: 300px;
+    margin-bottom: -40px;
+  }
+
+  .subtitle.center-text {
+    font-size: 1rem;
+    margin-bottom: 25px;
+  }
+
+  .input-field {
+    padding: 12px 18px;
+    font-size: 0.9rem;
+  }
+
+  .eye-icon {
+    right: 12px;
+    font-size: 1.1rem;
+  }
+
+  .password-wrapper .input-field {
+    padding-right: 40px;
+  }
+
+  .forgot-row a {
+    font-size: 0.8rem;
+  }
+
+  .divider-text {
+    font-size: 0.8rem;
+  }
+
+  .google-btn.full {
+    padding: 18px 25px !important;
+    font-size: 0.85rem;
+  }
+
+  .google-btn img {
+    width: 18px;
+    height: 18px;
+  }
+
+  .small-text {
+    font-size: 0.8rem;
+  }
+}
+
+/* Mobile screens (768px and below) - extending existing */
+@media (max-width: 768px) {
+  .page-wrapper {
+    padding: 15px;
+  }
+
+  .login-card {
+    flex-direction: column;
+    padding: 25px 20px;
+    gap: 20px;
+    max-width: 100%;
+  }
+
+  .card-left {
+    order: -1;
+  }
+
+  .card-left img {
+    max-width: 70%;
+    margin-bottom: 10px;
+  }
+
+  .card-right {
+    flex: none;
+  }
+
+  .logo-img {
+    width: 250px;
+    margin-bottom: -30px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .subtitle.center-text {
+    font-size: 1rem;
+    margin-bottom: 20px;
+  }
+
+  .login-form {
+    margin-bottom: 0;
+  }
+
+  .input-field {
+    padding: 12px 16px;
+    font-size: 0.9rem;
+    margin-bottom: 0;
+  }
+
+  .eye-icon {
+    right: 10px;
+    font-size: 1rem;
+  }
+
+  .password-wrapper .input-field {
+    padding-right: 35px;
+  }
+
+  .forgot-row {
+    margin-bottom: 10px;
+    margin-top: 10px;
+  }
+
+  .forgot-row a {
+    font-size: 0.8rem;
+  }
+
+  .primary-btn.full {
+    margin-top: 0;
+  }
+
+  .divider-text {
+    margin: 12px 0;
+    font-size: 0.8rem;
+  }
+
+  .divider-text::before {
+    margin-right: 10px;
+  }
+
+  .divider-text::after {
+    margin-left: 10px;
+  }
+
+  .google-btn.full {
+    padding: 16px 20px !important;
+    font-size: 0.8rem;
+    margin-bottom: 10px;
+  }
+
+  .google-btn img {
+    width: 16px;
+    height: 16px;
+  }
+
+  .small-text {
+    font-size: 0.8rem;
+    padding-bottom: 15px;
+  }
+}
+
+/* Small mobile screens (480px and below) */
+@media (max-width: 480px) {
+  .page-wrapper {
+    padding: 10px;
+  }
+
+  .login-card {
+    padding: 20px 15px;
+    gap: 15px;
+  }
+
+  .card-left img {
+    max-width: 60%;
+  }
+
+  .logo-img {
+    width: 200px;
+    margin-bottom: -20px;
+  }
+
+  .subtitle.center-text {
+    font-size: 0.95rem;
+    margin-bottom: 15px;
+  }
+
+  .input-field {
+    padding: 10px 14px;
+    font-size: 0.85rem;
+  }
+
+  .eye-icon {
+    right: 8px;
+    font-size: 0.9rem;
+  }
+
+  .password-wrapper .input-field {
+    padding-right: 30px;
+  }
+
+  .forgot-row a {
+    font-size: 0.75rem;
+  }
+
+  .divider-text {
+    font-size: 0.75rem;
+  }
+
+  .google-btn.full {
+    padding: 14px 18px !important;
+    font-size: 0.75rem;
+  }
+
+  .google-btn img {
+    width: 14px;
+    height: 14px;
+  }
+
+  .small-text {
+    font-size: 0.75rem;
+    padding-bottom: 10px;
+  }
+}

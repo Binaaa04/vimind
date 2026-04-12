@@ -191,3 +191,245 @@
     font-size: 14px;
   }
 }
+
+/* ADDITIONAL RESPONSIVE DESIGN */
+
+/* Tablet screens (1024px and below) */
+@media (max-width: 1024px) {
+  .article-modal-content {
+    max-width: 800px;
+    padding: 35px;
+  }
+
+  .article-title {
+    font-size: 26px;
+  }
+
+  .article-meta {
+    font-size: 12px;
+    margin-bottom: 20px;
+  }
+
+  .article-image {
+    max-height: 350px;
+  }
+
+  .article-body {
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  .article-body p {
+    margin-bottom: 14px;
+  }
+
+  .article-topics h3 {
+    font-size: 15px;
+  }
+
+  .topics-list {
+    gap: 8px;
+  }
+
+  .topic-tag {
+    padding: 5px 10px;
+    font-size: 11px;
+  }
+
+  .related-articles h3 {
+    font-size: 15px;
+  }
+
+  .related-item {
+    padding: 10px;
+  }
+
+  .related-item p {
+    font-size: 13px;
+  }
+
+  .related-tag {
+    padding: 3px 8px;
+    font-size: 10px;
+  }
+}
+
+/* Mobile screens (768px and below) - extending existing */
+@media (max-width: 768px) {
+  .article-modal-overlay {
+    padding: 10px;
+  }
+
+  .article-modal-content {
+    width: 95%;
+    max-height: 95vh;
+    padding: 20px;
+  }
+
+  .article-modal-close {
+    top: 10px;
+    right: 10px;
+    font-size: 20px;
+  }
+
+  .article-title {
+    font-size: 20px;
+    margin-bottom: 12px;
+  }
+
+  .article-meta {
+    font-size: 12px;
+    margin-bottom: 20px;
+    gap: 6px;
+  }
+
+  .article-image {
+    max-height: 250px;
+    margin-bottom: 20px;
+  }
+
+  .article-body {
+    font-size: 14px;
+    line-height: 1.6;
+    margin-bottom: 25px;
+  }
+
+  .article-body p {
+    margin-bottom: 12px;
+  }
+
+  .article-topics {
+    margin-bottom: 25px;
+    padding-top: 15px;
+  }
+
+  .article-topics h3 {
+    font-size: 14px;
+    margin-bottom: 10px;
+  }
+
+  .topics-list {
+    gap: 8px;
+  }
+
+  .topic-tag {
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+
+  .related-articles {
+    padding-top: 15px;
+  }
+
+  .related-articles h3 {
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+
+  .related-list {
+    gap: 10px;
+  }
+
+  .related-item {
+    padding: 10px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .related-item p {
+    font-size: 13px;
+  }
+
+  .related-tag {
+    align-self: flex-end;
+    margin-left: 0;
+    margin-top: 5px;
+  }
+}
+
+/* Small mobile screens (480px and below) */
+@media (max-width: 480px) {
+  .article-modal-content {
+    width: 98%;
+    padding: 15px;
+    max-height: 98vh;
+  }
+
+  .article-modal-close {
+    top: 8px;
+    right: 8px;
+    font-size: 18px;
+  }
+
+  .article-title {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+
+  .article-meta {
+    font-size: 11px;
+    margin-bottom: 15px;
+    gap: 4px;
+  }
+
+  .article-image {
+    max-height: 200px;
+    margin-bottom: 15px;
+  }
+
+  .article-body {
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 20px;
+  }
+
+  .article-body p {
+    margin-bottom: 10px;
+  }
+
+  .article-topics {
+    margin-bottom: 20px;
+    padding-top: 12px;
+  }
+
+  .article-topics h3 {
+    font-size: 13px;
+    margin-bottom: 8px;
+  }
+
+  .topics-list {
+    gap: 6px;
+  }
+
+  .topic-tag {
+    padding: 3px 6px;
+    font-size: 9px;
+  }
+
+  .related-articles {
+    padding-top: 12px;
+  }
+
+  .related-articles h3 {
+    font-size: 13px;
+    margin-bottom: 10px;
+  }
+
+  .related-list {
+    gap: 8px;
+  }
+
+  .related-item {
+    padding: 8px;
+  }
+
+  .related-item p {
+    font-size: 12px;
+  }
+
+  .related-tag {
+    padding: 2px 6px;
+    font-size: 9px;
+  }
+}
