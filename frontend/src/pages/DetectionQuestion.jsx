@@ -9,7 +9,7 @@ export default function Detection() {
   const location = useLocation();
 
   const [questions, setQuestions] = useState([]);
-  const [answers, setAnswers] = useState([]); // All answers {symptom_id, value}
+  const [answers, setAnswers] = useState([]); 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [selected, setSelected] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -17,19 +17,19 @@ export default function Detection() {
   const [userEmail, setUserEmail] = useState(null);
 
   // Adaptive Logic States
-  const [phase, setPhase] = useState(1); // 1: Screening, 2: Discovery
-  const [phase1Results, setPhase1Results] = useState([]); // {disease_id, value}
-  const [isRefinedMode, setIsRefinedMode] = useState(false); // Skip Phase 2 for returning users
-  const [historyDiseaseID, setHistoryDiseaseID] = useState(0); // Known prior disease to anchor result
+  const [phase, setPhase] = useState(1); 
+  const [phase1Results, setPhase1Results] = useState([]); 
+  const [isRefinedMode, setIsRefinedMode] = useState(false); 
+  const [historyDiseaseID, setHistoryDiseaseID] = useState(0); 
 
   useEffect(() => {
-    let ignore = false; // StrictMode fix: ignore stale async results from unmounted render
+    let ignore = false; 
 
     const init = async () => {
       try {
         let email = "";
         const { data: { session } } = await supabase.auth.getSession();
-        if (ignore) return; // Component was unmounted mid-fetch, abort
+        if (ignore) return; 
 
         if (session?.user) {
           email = session.user.email;
@@ -40,7 +40,6 @@ export default function Detection() {
         console.log("Questionnaire Mode:", forceNewTest ? "New Test (Screening)" : "Refined/Resume");
 
         if (!forceNewTest) {
-          // Request questions (refined if logged in, backend auto-falls-back to screening)
           const response = await getQuestions("refined", [], email);
           if (ignore) return; 
 
@@ -55,13 +54,11 @@ export default function Detection() {
               if (history_disease_id > 0) setHistoryDiseaseID(history_disease_id);
             }
           } else {
-            // Fallback: no history or healthy history, use general screening
             console.log("Fallback to Screening (No History)");
             const fallback = await getQuestions("screening");
             if (!ignore) setQuestions(fallback.data?.questions || fallback.data || []);
           }
         } else {
-          // User forced a new test
           console.log("Forcing New Test (Screening Mode)");
           setIsRefinedMode(false);
           setHistoryDiseaseID(0);
@@ -78,7 +75,7 @@ export default function Detection() {
     };
 
     init();
-    return () => { ignore = true; }; // Cleanup: mark stale render, prevent setState on unmount
+    return () => { ignore = true; }; 
   }, []);
 
   const nextQuestion = async () => {
@@ -89,34 +86,27 @@ export default function Detection() {
     const currentAnswer = {
       symptom_id: currentQuestion.id,
       value: weights[selected],
-      disease_id: currentQuestion.disease_id // Keep track for screening logic
+      disease_id: currentQuestion.disease_id 
     };
 
     const newAnswers = [...answers, currentAnswer];
     setAnswers(newAnswers);
     setSelected(null);
 
-    // Transition Logic
     if (currentIndex < questions.length - 1) {
       setCurrentIndex(currentIndex + 1);
     } else if (phase === 1) {
-      // END OF PHASE 1
-
-      // REFINED MODE: User has known history → questions were already targeted → skip Phase 2
       if (isRefinedMode) {
         await finalizeDiagnosis(newAnswers);
         return;
       }
 
-      // SCREENING MODE: General questions → analyze and move to Phase 2 (Discovery)
       setLoading(true);
       
-      // Find suspect diseases (score >= 0.7)
       const suspects = newAnswers
         .filter(a => a.value >= 0.7)
         .map(a => a.disease_id);
       
-      // If no strong suspects, take top 3 highest scores
       let finalSuspects = suspects;
       if (finalSuspects.length === 0) {
         finalSuspects = [...newAnswers]
@@ -126,9 +116,8 @@ export default function Detection() {
           .map(a => a.disease_id);
       }
 
-      // If still empty (user said NO to everything), just finish
       if (finalSuspects.length === 0) {
-        finalSuspects = [1, 2]; // Fallback
+        finalSuspects = [1, 2]; 
       }
 
       try {
@@ -140,7 +129,6 @@ export default function Detection() {
           setCurrentIndex(0);
           setPhase(2);
         } else {
-          // No more specific questions? Just finish.
           await finalizeDiagnosis(newAnswers);
         }
       } catch (err) {
@@ -150,27 +138,32 @@ export default function Detection() {
         setLoading(false);
       }
     } else {
-      // END OF PHASE 2 -> FINAL DIAGNOSIS
       await finalizeDiagnosis(newAnswers);
     }
   };
 
+  // FUNGSI KEMBALI KE SOAL SEBELUMNYA (DIPERBARUI)
   const previousQuestion = () => {
     if (currentIndex > 0) {
       setCurrentIndex(currentIndex - 1);
-      // Remove the last answer from the answers array
       setAnswers(answers.slice(0, -1));
-      // Reset selected state
       setSelected(null);
+    }
+  };
+
+  // FUNGSI BARU UNTUK TOMBOL KELUAR
+  const handleExit = () => {
+    if (userEmail) {
+      navigate("/dashboard"); // Arahkan ke dashboard jika sudah login
+    } else {
+      navigate("/"); // Arahkan ke landing page jika guest
     }
   };
 
   const finalizeDiagnosis = async (finalAnswers) => {
     setSubmitting(true);
     try {
-      // Remove disease_id metadata before sending to API
       const apiAnswers = finalAnswers.map(({ symptom_id, value }) => ({ symptom_id, value }));
-      // Pass historyDiseaseID so backend anchors result to prior diagnosis in refined mode
       const result = await diagnose(apiAnswers, userEmail, historyDiseaseID);
 
       if (userEmail) {
@@ -214,11 +207,11 @@ export default function Detection() {
 
   return (
     <div className="question-page">
-      {currentIndex > 0 && (
-        <button className="back-btn" onClick={previousQuestion}>
-          ← 
-        </button>
-      )}
+      
+      {/* TOMBOL KELUAR MENGGUNAKAN HANDLE EXIT */}
+      <button className="back-btn" onClick={handleExit}>
+        Keluar
+      </button>
 
       <div className="progress-bar">
         <div
@@ -259,17 +252,26 @@ export default function Detection() {
           </div>
         </div>
 
-        <button
-          className="next-btn"
-          onClick={nextQuestion}
-          disabled={selected === null || submitting}
-          style={{
-            opacity: selected === null || submitting ? 0.5 : 1,
-            cursor: selected === null || submitting ? "not-allowed" : "pointer"
-          }}
-        >
-          {submitting ? "Mengolah..." : (currentIndex < questions.length - 1 ? "Lanjutkan" : (phase === 1 ? "Lanjut Fase Detail" : "Selesai"))}
-        </button>
+        {/* BUNGKUS TOMBOL KEMBALI DAN LANJUTKAN DI SINI */}
+        <div className="action-buttons">
+          {currentIndex > 0 && (
+            <button className="prev-btn" onClick={previousQuestion}>
+              Kembali
+            </button>
+          )}
+          
+          <button
+            className="next-btn"
+            onClick={nextQuestion}
+            disabled={selected === null || submitting}
+            style={{
+              opacity: selected === null || submitting ? 0.5 : 1,
+              cursor: selected === null || submitting ? "not-allowed" : "pointer"
+            }}
+          >
+            {submitting ? "Mengolah..." : (currentIndex < questions.length - 1 ? "Lanjutkan" : (phase === 1 ? "Lanjut Fase Detail" : "Selesai"))}
+          </button>
+        </div>
       </div>
 
       <div className="logo-bottom">Vimind</div>

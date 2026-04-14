@@ -1,31 +1,12 @@
 /* ==========================================
    BASE & LAYOUT
    ========================================== */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap');
+
 body {
   margin: 0;
-  font-family: sans-serif;
-  background-color: #fcfbfe; /* Warna background super terang sesuai desain */
-}
-
-.back-btn {
-  position: absolute;
-  top: 20px;
-  left: 20px;
-  background: #8a5cff;
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 8px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  z-index: 10;
-}
-
-.back-btn:hover {
-  background: #7a5cff;
-  transform: translateY(-2px);
+  font-family: 'Poppins', sans-serif;
+  background-color: #f8f8fc; /* Warna background super terang sedikit keunguan */
 }
 
 .question-page {
@@ -37,6 +18,31 @@ body {
   position: relative;
   padding: 20px;
   background-color: #fcfbfe;
+}
+
+/* ==========================================
+   TOMBOL KELUAR (KIRI ATAS)
+   ========================================== */
+.back-btn {
+  position: absolute;
+  top: 25px;
+  left: 25px;
+  background: #8a5cff;
+  color: #8a5cff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  z-index: 10;
+  box-shadow: 0 2px 4px rgba(138, 92, 255, 0.2);
+}
+
+.back-btn:hover {
+  background: #7241eb;
+  transform: translateY(-1px);
 }
 
 /* ==========================================
@@ -72,12 +78,12 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 30px; /* Jarak antar elemen (judul, pilihan, tombol) */
+  gap: 35px; /* Jarak proporsional antar elemen */
 }
 
 .question-container h1 {
-  font-size: 32px;
-  color: #2e1c6b; /* Ungu gelap untuk teks */
+  font-size: 30px;
+  color: #2b1b54; /* Ungu gelap pekat sesuai gambar */
   font-weight: 800;
   line-height: 1.4;
   margin: 0;
@@ -91,15 +97,14 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 40px; /* Jarak antara Teks Setuju - Bulatan - Teks Tidak Setuju */
-  margin-top: 10px;
+  gap: 30px; 
 }
 
 .label-left, 
 .label-right {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 700;
-  color: #4a5568;
+  color: #6b7280; /* Warna abu-abu sesuai desain */
   text-align: center;
   line-height: 1.3;
 }
@@ -107,7 +112,7 @@ body {
 .circles {
   display: flex;
   align-items: center;
-  gap: 20px; /* Jarak antar lingkaran */
+  gap: 15px; 
 }
 
 /* Lingkaran Dasar */
@@ -119,21 +124,19 @@ body {
   transition: all 0.2s ease-in-out;
 }
 
-/* MENYESUAIKAN DESAIN (Ukuran lingkaran: Besar - Kecil - Kecil - Besar) 
-*/
+/* Ukuran: Besar - Kecil - Kecil - Besar */
 .circle:nth-child(1), 
 .circle:nth-child(4) {
-  width: 55px;
-  height: 55px;
+  width: 50px;
+  height: 50px;
 }
 
 .circle:nth-child(2), 
 .circle:nth-child(3) {
-  width: 45px;
-  height: 45px;
+  width: 40px;
+  height: 40px;
 }
 
-/* Efek Hover & Aktif */
 .circle:hover {
   background-color: rgba(138, 92, 255, 0.1);
 }
@@ -141,164 +144,136 @@ body {
 .circle.active {
   background-color: #8a5cff;
   border-color: #8a5cff;
-  box-shadow: 0 0 12px rgba(138, 92, 255, 0.3); /* Memberikan efek glow tipis */
-  transform: scale(1.05); /* Membesar sedikit saat diklik */
 }
 
 /* ==========================================
-   BUTTON LANJUTKAN
+   ACTION BUTTONS (KEMBALI & LANJUTKAN)
    ========================================== */
+.action-buttons {
+  display: flex;
+  gap: 10px; /* Sesuai gambar, tombol jaraknya dekat */
+  margin-top: 5px;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Tombol Kembali - Outline */
+.prev-btn {
+  background-color: transparent !important;
+  color: #8a5cff !important;
+  border: 2px solid #8a5cff !important;
+  border-radius: 12px;
+  margin-top: 40px;
+  padding: 12px 46px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 120px;
+}
+
+.prev-btn:hover {
+  background-color: transparent !important;
+  transform: translateY(-3px);
+  box-shadow: 0 4px 8px rgba(138, 92, 255, 0.1);
+  /* background-color: rgba(138, 92, 255, 0.1);
+  color: white !important; */
+}
+
+/* Tombol Lanjutkan - Filled */
 .next-btn {
   background-color: #8a5cff;
   color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 10px 30px;
-  font-size: 14px;
+  border: 1px solid #8a5cff;
+  border-radius: 6px;
+  padding: 6px 16px;
+  font-size: 11px;
   font-weight: 600;
-  margin-top: 10px;
+  cursor: pointer;
   transition: background-color 0.2s;
+  min-width: 80px;
 }
 
 .next-btn:hover:not(:disabled) {
   background-color: #7241eb;
+  border-color: #7241eb;
 }
 
 /* ==========================================
-   LOGO BOTTOM RIGHT
+   LOGO BOTTOM RIGHT (VIMIND)
    ========================================== */
 .logo-bottom {
   position: absolute;
-  bottom: 30px;
-  right: 40px;
-  font-size: 20px;
-  font-weight: 800;
-  color: #2e1c6b;
+  bottom: 25px;
+  right: 35px;
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
-/* Membuat tiruan icon kotak biru/ungu dengan logo di sebelah teks Vimind */
-.logo-bottom::before {
-  content: "v"; /* Icon placeholder */
+.logo-bottom span {
+  font-size: 20px;
+  font-weight: 800;
+  color: #2b1b54;
+}
+
+.logo-icons {
+  display: flex;
+  gap: 4px;
+}
+
+.icon-box {
   background: #8a5cff;
   color: white;
-  width: 28px;
-  height: 28px;
-  display: inline-flex;
+  width: 22px;
+  height: 22px;
+  display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 6px;
-  font-size: 16px;
-  font-family: monospace;
+  border-radius: 4px;
 }
 
 /* ==========================================
    RESPONSIVE DESIGN
    ========================================== */
-
 @media (max-width: 768px) {
   .back-btn {
-    top: 15px;
-    left: 15px;
-    padding: 8px 12px;
-    font-size: 12px;
+    top: 15px; left: 15px;
   }
-
-  .progress-bar {
-    top: 30px;
-    width: 90%;
+  .progress-bar-container {
+    top: 22px; width: 85%;
   }
-
   .question-container {
     padding: 0 20px;
   }
-
-  h1 {
-    font-size: 1.5rem;
+  .question-container h1 {
+    font-size: 24px;
   }
-
-  .options-wrapper {
-    max-width: 300px;
-  }
-
-  .circles {
-    gap: 15px;
-  }
-
-  .circle {
-    width: 35px;
-    height: 35px;
-  }
-
-  .next-btn {
-    padding: 12px 20px;
-    font-size: 14px;
-  }
-
+  .circle:nth-child(1), .circle:nth-child(4) { width: 45px; height: 45px; }
+  .circle:nth-child(2), .circle:nth-child(3) { width: 35px; height: 35px; }
   .logo-bottom {
-    bottom: 20px;
-    right: 20px;
-    font-size: 16px;
-  }
-
-  .logo-bottom::before {
-    width: 24px;
-    height: 24px;
-    font-size: 14px;
+    bottom: 20px; right: 20px;
   }
 }
 
 @media (max-width: 480px) {
   .back-btn {
-    top: 10px;
-    left: 10px;
-    padding: 6px 10px;
-    font-size: 11px;
+    top: 15px; left: 15px; padding: 4px 12px; font-size: 10px;
   }
-
-  .progress-bar {
-    top: 25px;
-    width: 95%;
-    height: 4px;
+  .progress-bar-container {
+    top: 20px; width: 70%;
   }
-
-  .question-container {
-    padding: 0 15px;
+  .question-container h1 {
+    font-size: 20px;
   }
-
-  h1 {
-    font-size: 1.3rem;
-  }
-
   .options-wrapper {
-    max-width: 250px;
+    gap: 15px;
   }
-
-  .circles {
-    gap: 10px;
-  }
-
-  .circle {
-    width: 30px;
-    height: 30px;
-  }
-
-  .next-btn {
-    padding: 10px 18px;
-    font-size: 13px;
-  }
-
+  .circle:nth-child(1), .circle:nth-child(4) { width: 40px; height: 40px; }
+  .circle:nth-child(2), .circle:nth-child(3) { width: 30px; height: 30px; }
   .logo-bottom {
-    bottom: 15px;
-    right: 15px;
-    font-size: 14px;
+    bottom: 15px; right: 15px;
   }
-
-  .logo-bottom::before {
-    width: 20px;
-    height: 20px;
-    font-size: 12px;
-  }
+  .logo-bottom span { font-size: 16px; }
+  .icon-box { width: 18px; height: 18px; }
 }
