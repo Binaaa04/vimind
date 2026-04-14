@@ -1,5 +1,5 @@
 import React from "react";
-import "../css/DashboardCSS.css"; // We can reuse basic styles if any or fallback to standard CSS
+import "../css/TestOptionsModalCSS.css";
 
 const TestOptionsModal = ({ onResume, onNewTest, onClose }) => {
   return (
@@ -25,7 +25,7 @@ const TestOptionsModal = ({ onResume, onNewTest, onClose }) => {
       </div>
     </div>
   );
-};
+}; 
 
 // Inline styles fallback to ensure it looks good if classes are missing
 const overlayStyle = {
@@ -59,9 +59,9 @@ const primaryBtnStyle = {
 };
 
 const secondaryBtnStyle = {
-  backgroundColor: "#F1F5F9",
-  color: "#5B4A78",
-  border: "1px solid #E2E8F0",
+  backgroundColor: "#7a5cff",
+  color: "#ffffff",
+  border: "none",
   padding: "12px 20px",
   borderRadius: "8px",
   fontWeight: "600",
