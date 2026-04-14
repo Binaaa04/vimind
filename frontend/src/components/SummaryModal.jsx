@@ -199,7 +199,7 @@ export default function SummaryModal({ onClose }) {
         </div>
       </body>
       </html>
-    `);
+    `); 
     printWindow.document.close();
   };
 
