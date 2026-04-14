@@ -217,7 +217,7 @@ export default function SummaryModal({ onClose }) {
 
         {/* BODY */}
         <div className="sm-body">
-          <div className="summary-gauge-container">
+          <div className="summary-gauge-container" style={{ touchAction: "pan-y" }}>
             <div className="sm-chart-label">Kondisi Terakhir Anda</div>
             {/* 1. GAUGE GRAFIK */}
             <div
@@ -295,7 +295,7 @@ export default function SummaryModal({ onClose }) {
           {/* HISTORY LIST */}
           <div className="sm-history-list">
             <h4>Riwayat Lengkap</h4>
-            {loading ? (
+            {loading ? ( 
               <p className="sm-empty-msg">Sedang mengambil riwayat...</p>
             ) : history.length === 0 ? (
               <div className="sm-empty-container">

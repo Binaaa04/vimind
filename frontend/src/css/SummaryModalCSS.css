@@ -216,7 +216,7 @@
   border-radius: 8px;
   font-size: 10px;
   font-weight: 600;
-  color: #64748b;
+  color: white;
   cursor: pointer;
   transition: 0.2s;
 }
@@ -238,9 +238,9 @@
 }
 
 .sm-tutup-btn {
-  background: #f7fafc;
-  color: #4a5568;
-  border: 1px solid #e2e8f0;
+  background: #7a5cff;
+  color: white;
+  border: none;
   padding: 10px 48px;
   border-radius: 14px;
   font-weight: 700;
