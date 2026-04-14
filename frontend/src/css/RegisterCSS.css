@@ -1,19 +1,89 @@
-/* 1. Subtitle kembalikan ke tengah sesuai desain (Hanya untuk Register) */
+
+.register-page p,
+.register-page span:not(.eye-icon),
+.register-page h1,
+.register-page h2,
+.register-page .subtitle,
+.register-page .divider-text,
+.register-page .small-text {
+  transform: none !important;
+  transition: none !important;
+  box-shadow: none !important;
+  cursor: default; 
+}
+
+/* Mengunci link agar tidak membesar/berubah aneh jika ada a:hover di App.css */
+.register-page a {
+  text-decoration: none;
+  color: #8a5cff; 
+  font-weight: 600;
+  transform: none !important;
+}
+
+.register-page a:hover {
+  text-decoration: underline; 
+  transform: none !important;
+}
+
+
+/* =========================================
+   2. STYLING SPESIFIK HALAMAN REGISTER
+   ========================================= */
+
+/* --- OVERRIDE CARD CONTAINER --- */
+/* Mengubah warna background card dan mematikan efek hover-nya */
+.register-page .card {
+  background-color: rgb(233, 213, 255) !important;
+}
+
+/* Mematikan efek transform (membesar/naik) saat card di-hover */
+.register-page .card:hover {
+  transform: none !important; 
+}
+/* ------------------------------- */
+
+/* =========================================
+   PENGATURAN LOGO VIMIND
+   ========================================= */
+
+/* Mengatur posisi bungkus logo */
+.register-page .logo-container {
+  display: flex;
+  justify-content: center; 
+  margin-top: 60px;        
+  margin-right: 90px;       
+}
+
+/* Mengatur ukuran gambar logonya */
+.register-page .logo-img {
+  width: 240px;  
+  height: auto;  
+}
+
+/* --- (Opsional) Jika ingin logonya mengecil di HP --- */
+@media (max-width: 768px) {
+  .register-page .logo-img {
+    width: 90px; 
+  }
+}
+
+/* Subtitle kembalikan ke tengah sesuai desain */
 .register-page .subtitle {
   text-align: center;
   color: #5B4A78; 
   font-size: 1.1rem;
-  margin-bottom: 18px;
+  margin-bottom: 8px;
+  margin-top: -20px;
   font-weight: 600;
 }
 
-/* 2. Tombol Utama (Daftar)*/
+/* Tombol Utama (Daftar) */
 .register-page .primary-btn {
   width: 100%;
   margin-top: 18px; 
 }
 
-/* 3. Teks di bawah tombol rata kiri (sesuai gambar) */
+/* Teks di bawah tombol rata kiri (sesuai gambar) */
 .register-page .small-text {
   text-align: left; 
   margin-top: 10px;
@@ -21,7 +91,7 @@
   color: #5B4A78;
 }
 
-/* 4. Teks "Or" di tengah (Tanpa Garis Kiri-Kanan) */
+/* Teks "Or" di tengah (Tanpa Garis Kiri-Kanan) */
 .register-page .divider-text {
   display: block; 
   text-align: center;
@@ -36,11 +106,11 @@
   display: none; 
 }
 
-/* 5. Tombol Google membulat (Pill Shape) & Di Tengah */
+/* Tombol Google membulat (Pill Shape) & Di Tengah */
 .register-page .google-btn {
   width: fit-content !important;
   margin-top: -12px;
-  margin-bottom: 28px; 
+  margin-bottom: 50px; 
   margin-left: auto; 
   margin-right: auto;
   display: flex;
@@ -54,6 +124,7 @@
   border: 1px solid #E6D5FF !important;
   font-weight: 500;
   font-size: 0.9rem;
+  cursor: pointer;
 }
 
 .register-page .google-btn img {
@@ -61,7 +132,15 @@
   height: 18px;
 }
 
-/* RESPONSIVE DESIGN */
+.register-page .google-btn:hover {
+  background-color: #f9f9f9 !important; /* Efek hover simpel untuk tombol Google */
+  transform: translateY(-2px) !important; /* Biarkan tombol google tetap bisa naik dikit */
+}
+
+
+/* =========================================
+   3. RESPONSIVE DESIGN
+   ========================================= */
 
 /* Tablet screens (1024px and below) */
 @media (max-width: 1024px) {
@@ -69,27 +148,22 @@
     font-size: 1rem;
     margin-bottom: 16px;
   }
-
   .register-page .primary-btn {
     margin-top: 16px;
   }
-
   .register-page .small-text {
     font-size: 0.8rem;
     margin-top: 8px;
   }
-
   .register-page .divider-text {
     font-size: 0.8rem;
     margin-top: -10px;
     margin-bottom: 20px;
   }
-
   .register-page .google-btn {
     padding: 18px 25px !important;
     font-size: 0.85rem;
   }
-
   .register-page .google-btn img {
     width: 16px;
     height: 16px;
@@ -102,28 +176,23 @@
     font-size: 0.95rem;
     margin-bottom: 14px;
   }
-
   .register-page .primary-btn {
     margin-top: 14px;
   }
-
   .register-page .small-text {
     font-size: 0.75rem;
     margin-top: 6px;
   }
-
   .register-page .divider-text {
     font-size: 0.75rem;
     margin-top: -8px;
     margin-bottom: 16px;
   }
-
   .register-page .google-btn {
     padding: 16px 20px !important;
     font-size: 0.8rem;
     margin-bottom: 20px;
   }
-
   .register-page .google-btn img {
     width: 14px;
     height: 14px;
@@ -136,28 +205,23 @@
     font-size: 0.9rem;
     margin-bottom: 12px;
   }
-
   .register-page .primary-btn {
     margin-top: 12px;
   }
-
   .register-page .small-text {
     font-size: 0.7rem;
     margin-top: 4px;
   }
-
   .register-page .divider-text {
     font-size: 0.7rem;
     margin-top: -6px;
     margin-bottom: 12px;
   }
-
   .register-page .google-btn {
     padding: 14px 18px !important;
     font-size: 0.75rem;
     margin-bottom: 16px;
   }
-
   .register-page .google-btn img {
     width: 12px;
     height: 12px;

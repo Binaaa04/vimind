@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import "../App.css";
-import "../css/RegisterCSS.css"; // Pastikan ini mengarah ke file CSS yang benar
+import "../App.css"; // Tetap di-import untuk kerangka layout (.card, .page-wrapper)
+import "../css/RegisterCSS.css"; // CSS Spesifik yang sudah kita perbaiki
 
 import illustration from "../assets/logovimind.png";
 import logo from "../assets/logovimind2.png";
@@ -76,7 +76,7 @@ const Register = () => {
   };
 
   return (
-    // 👇 TAMBAHKAN 'register-page' DI SINI 👇
+    // Penambahan 'register-page' di wrapper utama akan mengisolasi CSS kita
     <div className="page-wrapper register-page">
       <div className="card">
 
@@ -130,6 +130,7 @@ const Register = () => {
               <span
                 className="eye-icon"
                 onClick={() => setShowPassword(!showPassword)}
+                style={{ cursor: "pointer" }}
               >
                 {showPassword ? "🙈" : "👁️"}
               </span>
