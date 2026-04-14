@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import "../css/NicknameCSS.css";
 import confetti from "canvas-confetti";
 
-const NicknameModal = ({ isOpen, onClose, onSave }) => {
+const NicknameModal = ({ isOpen, onClose }) => {
   const [nickname, setNickname] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
@@ -20,8 +20,6 @@ const NicknameModal = ({ isOpen, onClose, onSave }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!nickname.trim()) return;
-
-    // onSave(nickname);
 
     setShowSuccess(true);
 
@@ -54,25 +52,22 @@ const NicknameModal = ({ isOpen, onClose, onSave }) => {
             </h2>
 
             <form onSubmit={handleSubmit}>
-              <label htmlFor="nickname">Masukan Nickname Kamu</label>
+              <label>Masukan Nickname Kamu</label>
 
               <input
-                id="nickname"
                 type="text"
-                placeholder="Nickname"
                 value={nickname}
                 onChange={(e) => setNickname(e.target.value)}
               />
 
-              {/* BUTTON GROUP FIX */}
-              <div className="button-group">
-                <button type="submit" className="save-btn">
+              <div className="nickname-button-group">
+                <button type="submit" className="nickname-save-btn">
                   Simpan
                 </button>
 
                 <button
                   type="button"
-                  className="back-btn"
+                  className="nickname-back-btn"
                   onClick={onClose}
                 >
                   Kembali
@@ -87,7 +82,6 @@ const NicknameModal = ({ isOpen, onClose, onSave }) => {
         <div className={`success-overlay ${isClosing ? "fade-out" : "fade-in"}`}>
           <div className={`success-modal ${isClosing ? "animate-pop-out" : "animate-pop"}`}>
             <div className="success-icon">✓</div>
-
             <h2>Selamat !</h2>
             <p>Nama Pengguna baru berhasil disimpan</p>
 
