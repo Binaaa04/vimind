@@ -24,6 +24,8 @@ const Dashboard = () => {
   const [showResult, setShowResult] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
   const [showArticleMenu, setShowArticleMenu] = useState(false);
+  const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [showMobileArticleList, setShowMobileArticleList] = useState(false);
   const [showArticleModal, setShowArticleModal] = useState(false);
   const [selectedArticle, setSelectedArticle] = useState(null);
   const [showNicknameModal, setShowNicknameModal] = useState(false);
@@ -114,6 +116,7 @@ const Dashboard = () => {
   const handleArticleClick = (article) => {
     setSelectedArticle(article);
     setShowArticleMenu(false);
+    setShowMobileArticleList(false);
     setShowArticleModal(true);
   };
 
@@ -235,7 +238,8 @@ const Dashboard = () => {
                 className="nav-menu"
                 onClick={() => setShowArticleMenu(!showArticleMenu)}
               >
-                Artikel Kesehatan Mental ▾
+                <span>Artikel Kesehatan Mental</span>
+                <span className="dropdown-arrow">▾</span>
               </button>
 
               {/* DROPDOWN MENU */}
@@ -266,6 +270,82 @@ const Dashboard = () => {
               )}
             </div>
           </div>
+
+          <button
+            className="mobile-menu-btn"
+            onClick={() => setShowMobileMenu(!showMobileMenu)}
+            aria-label="Buka menu mobile"
+          >
+            <span />
+            <span />
+            <span />
+          </button>
+
+          {showMobileMenu && (
+            <div className="mobile-menu-dropdown">
+              <button
+                type="button"
+                className="mobile-menu-item"
+                onClick={() => {
+                  setShowSidebar(true);
+                  setShowMobileArticleList(false);
+                  setShowMobileMenu(false);
+                }}
+              >
+                Profile
+              </button>
+              <button
+                type="button"
+                className="mobile-menu-item"
+                onClick={() => {
+                  setShowMobileArticleList(true);
+                  setShowMobileMenu(false);
+                }}
+              >
+                Artikel...
+              </button>
+            </div>
+          )}
+
+          {showMobileArticleList && (
+            <div className="mobile-article-list-dropdown">
+              <div className="mobile-article-list-header">
+                <span>Daftar Artikel</span>
+                <button
+                  type="button"
+                  className="mobile-article-list-close"
+                  onClick={() => setShowMobileArticleList(false)}
+                >
+                  ✕
+                </button>
+              </div>
+              {news.length > 0 ? (
+                news.map((item) => (
+                  <div
+                    key={item.id}
+                    className="article-menu-item"
+                    onClick={() => {
+                      window.open(item.link, "_blank");
+                      setShowMobileArticleList(false);
+                    }}
+                  >
+                    {item.title}
+                  </div>
+                ))
+              ) : (
+                articlesList.map((article) => (
+                  <div
+                    key={article.id}
+                    className="article-menu-item"
+                    onClick={() => handleArticleClick(article)}
+                  >
+                    {article.title}
+                  </div>
+                ))
+              )}
+            </div>
+          )}
+
           {/* PROFILE AREA */}
           <div className="nav-profile-area">
             <button
@@ -279,22 +359,21 @@ const Dashboard = () => {
                 className="profile-trigger-avatar"
               />
             </button>
-
-            {/* SIDEBAR */}
-            <ProfileSidebar
-              isOpen={showSidebar}
-              onClose={() => setShowSidebar(false)}
-              onOpenNicknameModal={() => setShowNicknameModal(true)}
-              onOpenLogoutModal={() => setShowLogoutModal(true)}
-              nickname={nickname}
-              avatarUrl={avatarUrl}
-              userEmail={userEmail}
-              onAvatarUpdate={(newUrl) => {
-                setAvatarUrl(newUrl);
-                localStorage.setItem("avatar_url", newUrl);
-              }}
-            />
           </div>
+
+          <ProfileSidebar
+            isOpen={showSidebar}
+            onClose={() => setShowSidebar(false)}
+            onOpenNicknameModal={() => setShowNicknameModal(true)}
+            onOpenLogoutModal={() => setShowLogoutModal(true)}
+            nickname={nickname}
+            avatarUrl={avatarUrl}
+            userEmail={userEmail}
+            onAvatarUpdate={(newUrl) => {
+              setAvatarUrl(newUrl);
+              localStorage.setItem("avatar_url", newUrl);
+            }}
+          />
         </div>
 
         {/* HERO CAROUSEL */}
@@ -467,75 +546,53 @@ const Dashboard = () => {
       {showChatbot && (
         <div className="chatbot-panel">
           <div className="chatbot-header">
-            <div style={{display: 'flex', alignItems: 'center', gap: '8px'}}>
-              <span>Vivi <small style={{fontWeight: 'normal', opacity: 0.8}}>AI Bot</small></span>
+            <div className="chatbot-header-title">
+              <span>Vivi <small>AI Bot</small></span>
             </div>
-            <button onClick={() => setShowChatbot(false)} style={{background:'none', border:'none', color:'white', fontSize:'18px', cursor:'pointer'}}>✕</button>
+            <button 
+              className="chatbot-close-btn" 
+              onClick={() => setShowChatbot(false)}
+            >
+              ✕
+            </button>
           </div>
 
           <div className="chatbot-body">
             {chatMessages.length === 0 && (
-              <div style={{
-                background: '#EDE9FE', 
-                alignSelf: 'flex-start', 
-                padding: '12px 16px', 
-                borderRadius: '16px 16px 16px 4px', 
-                maxWidth: '85%', 
-                color: '#4C1D95', 
-                fontSize: '14px', 
-                boxShadow:'0 2px 4px rgba(0,0,0,0.05)',
-                lineHeight: '1.5'
-              }}>
+              <div className="chatbot-msg chatbot-msg-welcome">
                 Halo{nickname !== 'User' ? ` ${nickname}` : ''}! Aku Vivi 😊 <br/>Ada yang ingin kamu ceritakan hari ini?
               </div>
             )}
             
             {chatMessages.map((msg, idx) => (
-              <div key={idx} style={{
-                background: msg.role === 'user' ? 'linear-gradient(135deg, #8B5CF6, #7C3AED)' : '#FFFFFF',
-                color: msg.role === 'user' ? 'white' : '#1E293B',
-                alignSelf: msg.role === 'user' ? 'flex-end' : 'flex-start',
-                padding: '12px 16px',
-                borderRadius: msg.role === 'user' ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
-                maxWidth: '85%',
-                fontSize: '14px',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                border: msg.role === 'user' ? 'none' : '1px solid #F1F5F9',
-                lineHeight: '1.5'
-              }}>
-                <div style={{whiteSpace: 'pre-wrap'}}>{msg.content}</div>
+              <div 
+                key={idx} 
+                className={`chatbot-msg ${msg.role === 'user' ? 'chatbot-msg-user' : 'chatbot-msg-assistant'}`}
+              >
+                <div className="chatbot-msg-content">{msg.content}</div>
               </div>
             ))}
             
             {isChatLoading && (
-              <div style={{
-                background: '#FFFFFF', 
-                alignSelf: 'flex-start', 
-                padding: '10px 16px', 
-                borderRadius: '16px 16px 16px 4px', 
-                color: '#8B5CF6', 
-                fontSize: '14px',
-                boxShadow: '0 2px 8px rgba(0,0,0,0.06)',
-                border: '1px solid #F1F5F9'
-              }}>
+              <div className="chatbot-msg-loading">
                 <span className="dot-typing">Vivi sedang mengetik</span>
               </div>
             )}
             <div ref={chatEndRef} />
           </div>
 
-          <form className="chatbot-input" onSubmit={handleSendChat} style={{display: 'flex', borderTop: '1px solid #E5E7EB', padding: '10px', background: 'white'}}>
+          <form className="chatbot-input" onSubmit={handleSendChat}>
             <input 
+              className="chatbot-input-field"
               placeholder="Ceritakan kondisimu..." 
               value={chatInput}
               onChange={(e) => setChatInput(e.target.value)}
               disabled={isChatLoading}
-              style={{flex: 1, border: 'none', background: '#F3F4F6', padding: '10px 14px', borderRadius: '20px', outline: 'none', fontSize: '14px'}}
             />
             <button 
+              className="chatbot-send-btn"
               type="submit" 
               disabled={isChatLoading || !chatInput.trim()}
-              style={{background: 'none', border: 'none', color: '#8B5CF6', marginLeft: '8px', cursor: (isChatLoading || !chatInput.trim()) ? 'not-allowed' : 'pointer', fontSize: '20px', opacity: (isChatLoading || !chatInput.trim()) ? 0.5 : 1}}
             >
               ➤
             </button>
