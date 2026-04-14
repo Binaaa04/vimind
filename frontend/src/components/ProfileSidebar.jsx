@@ -15,7 +15,6 @@ const ProfileSidebar = ({
   userEmail,
   onAvatarUpdate
 }) => {
-
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -65,8 +64,20 @@ const ProfileSidebar = ({
       />
 
       <aside className={`profile-sidebar ${isOpen ? "open" : ""}`}>
-        <div className="profile-top">
+        
+        {/* === TOMBOL BACK/CLOSE DIPINDAH KE SINI === */}
+        <button
+          className="profile-close"
+          onClick={() => {
+            onClose();
+            navigate("/dashboard");
+          }}
+        >
+          ← 
+        </button>
+        {/* ========================================= */}
 
+        <div className="profile-top">
           <div className="profile-header">
             <h3>Hai, {nickname}</h3>
           </div>
