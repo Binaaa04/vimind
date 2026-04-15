@@ -1,14 +1,16 @@
 # ViMind — Early Mental Health Detection Platform for Students
 
-ViMind is a web-based mental health application designed to help users—especially Gen Z and university students—detect early signs of mental health conditions. The platform provides self-assessment tools, mood tracking, and progress monitoring in a private and stigma-free environment.
+>## Detect early. Track continuously. Understand your mental health—privately and intelligently.
+
+ViMind is a web-based mental health platform that combines an expert system (Certainty Factor) and AI-powered chatbot to help users—especially Gen Z and students—identify early signs of mental health conditions and monitor their well-being over time.
 
 ## 🧭 Overview
 
-ViMind is designed as a digital mental health companion that enables users to understand and monitor their psychological condition independently.
+ViMind acts as a digital mental health companion, enabling users to assess, understand, and track their psychological condition independently.
 
-In Indonesia, mental health is still considered a sensitive topic. Many people hesitate to visit psychologists due to social stigma, often being labeled negatively. As a result, early symptoms are frequently ignored.
+In Indonesia, mental health is still often stigmatized. Many individuals hesitate to seek professional help due to fear of judgment, causing early symptoms to go unnoticed.
 
-ViMind addresses this issue by providing an accessible platform for early detection and continuous monitoring. Users can evaluate their condition, track progress, and receive recommendations when professional help may be needed.
+ViMind addresses this gap by providing an accessible, private, and intelligent platform for early detection and continuous monitoring—empowering users to take control of their mental well-being and seek help when needed.
 
 ## ✨ Main Features
 
@@ -17,9 +19,23 @@ ViMind addresses this issue by providing an accessible platform for early detect
 - Generates early diagnosis with percentage results
 - Powered by Certainty Factor (CF) algorithm
 
+### 🔄 Test Flow (After Login)
+Users can choose:
+
+- **Continue Previous Condition**  
+  Resume the last test without restarting  
+
+- **Detect New Condition**  
+  Start a new diagnosis with updated symptoms  
+
 ### 😊 Mood Condition Summary
 - Provides an overview of user emotional states
 - Helps identify mood patterns over time
+
+### 💬 AI Mental Health Chatbot
+- Provides real-time mental health assistance  
+- Uses latest test results as contextual input  
+- Designed for quick, private, and accessible support  
 
 ### 📈 Test Progress Tracking
 - Displays history of test results
@@ -40,6 +56,13 @@ ViMind addresses this issue by providing an accessible platform for early detect
 ### 🔐 Account Management
 - Self-service **Forgot Password** (Email reset link)
 - Account Deletion (Right to be Forgotten)
+
+### 👑 Admin Features
+- Role-based access (Admin)
+- Manage system data (diseases, symptoms, CF rules, FAQ)
+- Customize landing page (Hero Section)
+
+➡️ Ensures system flexibility and scalability
 
 ## ⚙️ Tech Stack
 
@@ -271,6 +294,7 @@ Fetches mental health news from Google News RSS with 15-minute server-side cachi
 
 ## Mental Health Check (Self-Assessment)
 <p align="center">
+<img src="frontend\src\assets\Test Flow.PNG" width="250"/>
 <img src="frontend\src\assets\question.PNG" width="250"/>
 <img src="frontend\src\assets\question2.PNG" width="250"/>
 </p>
@@ -284,11 +308,17 @@ Fetches mental health news from Google News RSS with 15-minute server-side cachi
 ## Test Progress Tracking
 <p align="center">
 <img src="frontend\src\assets\Test Progress Tracking.PNG" width="250"/>
+<img src="frontend\src\assets\export.PNG" width="250"/>
 </p>
 
 ## Early Warning Recommendation
 <p align="center">
 <img src="frontend\src\assets\Picture3.png" width="250"/>
+</p>
+
+## AI Mental Health Chatbot
+<p align="center">
+<img src="frontend\src\assets\ai.PNG" width="250"/>
 </p>
 
 ## Mental Health News
@@ -302,6 +332,8 @@ Fetches mental health news from Google News RSS with 15-minute server-side cachi
 <img src="frontend\src\assets\change name.PNG" width="250"/>
 <img src="frontend\src\assets\change name2.PNG" width="250"/>
 <img src="frontend\src\assets\change picture.PNG" width="250"/>
+<img src="frontend\src\assets\forget password.PNG" width="250"/>
+<img src="frontend\src\assets\deleteAccount.PNG" width="250"/>
 <img src="frontend\src\assets\logout.PNG" width="250"/>
 </p>
 
