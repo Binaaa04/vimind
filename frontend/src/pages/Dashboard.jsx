@@ -130,7 +130,7 @@ const Dashboard = () => {
       setIsChatLoading(true);
       const emailToUse = userEmail || "guest";
       const res = await sendChatMessage(emailToUse, newMessages);
-      
+
       setChatMessages((prev) => [
         ...prev,
         { role: "assistant", content: res.data.reply }
@@ -152,10 +152,10 @@ const Dashboard = () => {
 
     const newMsg = { role: "user", content: chatInput };
     const updatedMessages = [...chatMessages, newMsg];
-    
+
     setChatMessages(updatedMessages);
     setChatInput("");
-    
+
     fetchChatbotReply(updatedMessages);
   };
 
@@ -352,7 +352,17 @@ const Dashboard = () => {
           )}
 
           {/* PROFILE AREA */}
-          <div className="nav-profile-area">
+          <div className="nav-profile-area" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+
+            {/* ADMIN BUTTON */}
+            <button
+              className="admin-btn"
+              onClick={() => navigate("/admin")}
+            >
+              Admin
+            </button>
+
+            {/* PROFILE */}
             <button
               className={`profile-trigger ${showSidebar ? "active" : ""}`}
               onClick={() => setShowSidebar(!showSidebar)}
@@ -554,8 +564,8 @@ const Dashboard = () => {
             <div className="chatbot-header-title">
               <span>Vivi <small>AI Bot</small></span>
             </div>
-            <button 
-              className="chatbot-close-btn" 
+            <button
+              className="chatbot-close-btn"
               onClick={() => setShowChatbot(false)}
             >
               ✕
@@ -565,19 +575,19 @@ const Dashboard = () => {
           <div className="chatbot-body">
             {chatMessages.length === 0 && (
               <div className="chatbot-msg chatbot-msg-welcome">
-                Halo{nickname !== 'User' ? ` ${nickname}` : ''}! Aku Vivi 😊 <br/>Ada yang ingin kamu ceritakan hari ini?
+                Halo{nickname !== 'User' ? ` ${nickname}` : ''}! Aku Vivi 😊 <br />Ada yang ingin kamu ceritakan hari ini?
               </div>
             )}
-            
+
             {chatMessages.map((msg, idx) => (
-              <div 
-                key={idx} 
+              <div
+                key={idx}
                 className={`chatbot-msg ${msg.role === 'user' ? 'chatbot-msg-user' : 'chatbot-msg-assistant'}`}
               >
                 <div className="chatbot-msg-content">{msg.content}</div>
               </div>
             ))}
-            
+
             {isChatLoading && (
               <div className="chatbot-msg-loading">
                 <span className="dot-typing">Vivi sedang mengetik</span>
@@ -587,16 +597,16 @@ const Dashboard = () => {
           </div>
 
           <form className="chatbot-input" onSubmit={handleSendChat}>
-            <input 
+            <input
               className="chatbot-input-field"
-              placeholder="Ceritakan kondisimu..." 
+              placeholder="Ceritakan kondisimu..."
               value={chatInput}
               onChange={(e) => setChatInput(e.target.value)}
               disabled={isChatLoading}
             />
-            <button 
+            <button
               className="chatbot-send-btn"
-              type="submit" 
+              type="submit"
               disabled={isChatLoading || !chatInput.trim()}
             >
               ➤

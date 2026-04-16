@@ -13,6 +13,9 @@ import ResetPassword from "./pages/ResetPassword";
 import ResetSuccess from "./pages/ResetSuccess";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import AdminDashboard from "./pages/AdminDashboard";
+import AdminFAQ from "./pages/AdminFAQ";
+import AdminTest from "./pages/AdminTest";
 import AuthCallback from "./pages/AuthCallback";
 import { useEffect } from "react";
 import { supabase } from "./services/supabaseClient";
@@ -61,6 +64,9 @@ function App() {
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/reset-success" element={<ResetSuccess />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/admin/*" element={<AdminDashboard />} />
+        <Route path="/admin/faq" element={<AdminFAQ />} />
+        <Route path="/admin/test" element={<AdminTest />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
       </Routes>
     </BrowserRouter>

@@ -1379,3 +1379,17 @@ body {
     padding: 0 12px;
   }
 }
+.admin-btn {
+  padding: 6px 14px;
+  background: #8B5CF6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.admin-btn:hover {
+  background: #7C3AED;
+}
