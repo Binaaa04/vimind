@@ -1,13 +1,33 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import "../css/AdminDashboard.css";
 import logo from "../assets/logovimind2.png";
+import { useState, useEffect } from "react";
+
 const AdminSidebar = ({ nickname = "Udean", avatarUrl }) => {
     const navigate = useNavigate();
+
+    // ✅ PINDAH KE DALAM COMPONENT
+    const [showProfileMenu, setShowProfileMenu] = useState(false);
 
     const handleLogout = () => {
         localStorage.clear();
         navigate("/login");
     };
+
+    // ✅ OPTIONAL: auto close kalau klik luar
+    useEffect(() => {
+        const handleClick = (e) => {
+            if (
+                !e.target.closest(".sidebar-user") &&
+                !e.target.closest(".profile-popup")
+            ) {
+                setShowProfileMenu(false);
+            }
+        };
+
+        document.addEventListener("click", handleClick);
+        return () => document.removeEventListener("click", handleClick);
+    }, []);
 
     return (
         <div className="admin-sidebar">
@@ -58,7 +78,10 @@ const AdminSidebar = ({ nickname = "Udean", avatarUrl }) => {
             <div className="sidebar-bottom">
 
                 {/* PROFILE MINI */}
-                <div className="sidebar-user">
+                <div
+                    className="sidebar-user clickable"
+                    onClick={() => setShowProfileMenu(!showProfileMenu)}
+                >
                     <img
                         src={
                             avatarUrl ||
@@ -69,6 +92,31 @@ const AdminSidebar = ({ nickname = "Udean", avatarUrl }) => {
                     />
                     <span>{nickname}</span>
                 </div>
+
+                {/* ✅ POPUP PROFILE */}
+                {showProfileMenu && (
+                    <div className="profile-popup">
+                        <h4>Hai, {nickname}</h4>
+
+                        <img
+                            src={
+                                avatarUrl ||
+                                "https://cdn-icons-png.flaticon.com/512/4140/4140048.png"
+                            }
+                            alt="avatar"
+                            className="popup-avatar"
+                        />
+
+                        <button className="btn-primary">Ubah Foto</button>
+
+                        <button className="popup-btn">Change Nickname</button>
+                        <button className="popup-btn">Forgot Password</button>
+
+                        <div className="logo">
+                            <img src={logo} alt="Vimind Logo" className="logo-img" />
+                        </div>
+                    </div>
+                )}
 
                 {/* LOGOUT */}
                 <button className="logout-btn" onClick={handleLogout}>

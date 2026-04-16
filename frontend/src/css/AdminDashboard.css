@@ -320,3 +320,82 @@ td input {
   height: 30px;
   object-fit: contain;
 }
+.admin-sidebar {
+  position: relative;
+}
+
+/* ================= POPUP ================= */
+.profile-popup {
+  position: absolute;
+  left: 220px;
+  bottom: 90px;
+
+  width: 200px;
+  background: white;
+  border-radius: 14px;
+  padding: 16px;
+
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+  text-align: center;
+
+  z-index: 9999;
+}
+
+/* TITLE */
+.profile-popup h4 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+/* AVATAR */
+.popup-avatar {
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 6px auto 10px;
+  display: block;
+}
+
+/* BUTTON UTAMA */
+.btn-primary {
+  width: 100%;
+  padding: 7px;
+  font-size: 12px;
+
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+  color: white;
+  border: none;
+  border-radius: 999px;
+
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+
+/* BUTTON SECONDARY */
+.popup-btn {
+  width: 100%;
+  padding: 7px;
+  font-size: 12px;
+
+  border-radius: 999px;
+  border: 1px solid #e5e7eb;
+  background: white;
+
+  margin-bottom: 6px;
+  cursor: pointer;
+}
+
+/* HOVER */
+.popup-btn:hover {
+  background: #f5f3ff;
+}
+
+/* FOOTER */
+.popup-footer {
+  margin-top: 8px;
+  font-size: 12px;
+  color: #7c3aed;
+  font-weight: 500;
+}
