@@ -4,128 +4,137 @@ import logo from "../assets/logovimind2.png";
 import { useState, useEffect } from "react";
 
 const AdminSidebar = ({ nickname = "Udean", avatarUrl }) => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    // ✅ PINDAH KE DALAM COMPONENT
-    const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(false);
 
-    const handleLogout = () => {
-        localStorage.clear();
-        navigate("/login");
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/login");
+  };
+
+  // close popup kalau klik luar
+  useEffect(() => {
+    const handleClick = (e) => {
+      if (
+        !e.target.closest(".sidebar-user") &&
+        !e.target.closest(".profile-popup")
+      ) {
+        setShowProfileMenu(false);
+      }
     };
 
-    // ✅ OPTIONAL: auto close kalau klik luar
-    useEffect(() => {
-        const handleClick = (e) => {
-            if (
-                !e.target.closest(".sidebar-user") &&
-                !e.target.closest(".profile-popup")
-            ) {
-                setShowProfileMenu(false);
+    document.addEventListener("click", handleClick);
+    return () => document.removeEventListener("click", handleClick);
+  }, []);
+
+  return (
+    <div className={`admin-sidebar ${isCollapsed ? "collapsed" : ""}`}>
+
+      {/* 🔥 TOGGLE BUTTON */}
+      <button
+        className="toggle-btn"
+        onClick={() => setIsCollapsed(!isCollapsed)}
+      >
+        {isCollapsed ? ">" : "<"}
+      </button>
+
+      {/* LOGO */}
+      <div className="logo">
+        <img src={logo} alt="Vimind Logo" className="logo-img" />
+        {!isCollapsed && <span></span>}
+      </div>
+
+      {/* MENU */}
+      <div className="menu-section">
+        {!isCollapsed && <p className="menu-title">PROMOTION</p>}
+        <NavLink
+          to="/admin"
+          end
+          className={({ isActive }) =>
+            isActive ? "menu-item active" : "menu-item"
+          }
+        >
+          🔗 {!isCollapsed && "Link Promosi Dashboard"}
+        </NavLink>
+      </div>
+
+      <div className="menu-section">
+        {!isCollapsed && <p className="menu-title">FAQ</p>}
+        <NavLink
+          to="/admin/faq"
+          className={({ isActive }) =>
+            isActive ? "menu-item active" : "menu-item"
+          }
+        >
+          ❓ {!isCollapsed && "Ubah FAQ"}
+        </NavLink>
+      </div>
+
+      <div className="menu-section">
+        {!isCollapsed && <p className="menu-title">TEST</p>}
+        <NavLink
+          to="/admin/test"
+          className={({ isActive }) =>
+            isActive ? "menu-item active" : "menu-item"
+          }
+        >
+          💡 {!isCollapsed && "Ubah Pertanyaan Test"}
+        </NavLink>
+      </div>
+
+      {/* ================= BOTTOM ================= */}
+      <div className="sidebar-bottom">
+
+        {/* PROFILE MINI */}
+        <div
+          className="sidebar-user clickable"
+          onClick={() => setShowProfileMenu(!showProfileMenu)}
+        >
+          <img
+            src={
+              avatarUrl ||
+              "https://cdn-icons-png.flaticon.com/512/4140/4140048.png"
             }
-        };
-
-        document.addEventListener("click", handleClick);
-        return () => document.removeEventListener("click", handleClick);
-    }, []);
-
-    return (
-        <div className="admin-sidebar">
-
-            {/* LOGO */}
-            <div className="logo">
-                <img src={logo} alt="Vimind Logo" className="logo-img" />
-            </div>
-
-            {/* MENU */}
-            <div className="menu-section">
-                <p className="menu-title">PROMOTION</p>
-                <NavLink
-                    to="/admin"
-                    className={({ isActive }) =>
-                        isActive ? "menu-item active" : "menu-item"
-                    }
-                >
-                    🔗 Link Promosi Dashboard
-                </NavLink>
-            </div>
-
-            <div className="menu-section">
-                <p className="menu-title">FAQ</p>
-                <NavLink
-                    to="/admin/faq"
-                    className={({ isActive }) =>
-                        isActive ? "menu-item active" : "menu-item"
-                    }
-                >
-                    ❓ Ubah FAQ
-                </NavLink>
-            </div>
-
-            <div className="menu-section">
-                <p className="menu-title">TEST</p>
-                <NavLink
-                    to="/admin/test"
-                    className={({ isActive }) =>
-                        isActive ? "menu-item active" : "menu-item"
-                    }
-                >
-                    💡 Ubah Pertanyaan Test
-                </NavLink>
-            </div>
-
-            {/* ================= BOTTOM ================= */}
-            <div className="sidebar-bottom">
-
-                {/* PROFILE MINI */}
-                <div
-                    className="sidebar-user clickable"
-                    onClick={() => setShowProfileMenu(!showProfileMenu)}
-                >
-                    <img
-                        src={
-                            avatarUrl ||
-                            "https://cdn-icons-png.flaticon.com/512/4140/4140048.png"
-                        }
-                        alt="avatar"
-                        className="sidebar-avatar"
-                    />
-                    <span>{nickname}</span>
-                </div>
-
-                {/* ✅ POPUP PROFILE */}
-                {showProfileMenu && (
-                    <div className="profile-popup">
-                        <h4>Hai, {nickname}</h4>
-
-                        <img
-                            src={
-                                avatarUrl ||
-                                "https://cdn-icons-png.flaticon.com/512/4140/4140048.png"
-                            }
-                            alt="avatar"
-                            className="popup-avatar"
-                        />
-
-                        <button className="btn-primary">Ubah Foto</button>
-
-                        <button className="popup-btn">Change Nickname</button>
-                        <button className="popup-btn">Forgot Password</button>
-
-                        <div className="logo">
-                            <img src={logo} alt="Vimind Logo" className="logo-img" />
-                        </div>
-                    </div>
-                )}
-
-                {/* LOGOUT */}
-                <button className="logout-btn" onClick={handleLogout}>
-                    🔴 Log Out
-                </button>
-
-            </div>
+            alt="avatar"
+            className="sidebar-avatar"
+          />
+          {!isCollapsed && <span>{nickname}</span>}
         </div>
-    );
+
+        {/* POPUP PROFILE */}
+        {showProfileMenu && (
+          <div className="profile-popup">
+            <h4>Hai, {nickname}</h4>
+
+            <img
+              src={
+                avatarUrl ||
+                "https://cdn-icons-png.flaticon.com/512/4140/4140048.png"
+              }
+              alt="avatar"
+              className="popup-avatar"
+            />
+
+            <button className="btn-primary">Ubah Foto</button>
+            <button className="popup-btn">Change Nickname</button>
+            <button className="popup-btn">Forgot Password</button>
+
+            <div className="popup-footer">
+              <img src={logo} alt="logo" style={{ width: 80 }} />
+            </div>
+          </div>
+        )}
+
+        {/* LOGOUT */}
+        <button className="logout-btn" onClick={handleLogout}>
+          🔴 {!isCollapsed && "Log Out"}
+        </button>
+
+      </div>
+    </div>
+  );
 };
 
 export default AdminSidebar;

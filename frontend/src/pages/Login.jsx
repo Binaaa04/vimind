@@ -112,8 +112,8 @@ const Login = () => {
             </button>
           </div>
 
-          <img src={logoTop} alt="logo" className="logo-img" />
-
+          <img src={logoTop} alt="logo" className="login-top-logo" />
+          
           <p className="subtitle center-text">
             Bagaimanakah kesehatan mentalmu hari ini?
           </p>

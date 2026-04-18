@@ -53,6 +53,12 @@
   margin-right: auto;
   display: block;
 }
+.login-top-logo {
+  width: 140px;   /* 🔥 kontrol ukuran di sini */
+  height: auto;
+  display: block;
+  margin: 0 auto 12px;
+}
 
 .subtitle.center-text {
   text-align: center;
