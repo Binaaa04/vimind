@@ -8,13 +8,24 @@
 
 /* SIDEBAR */
 .admin-sidebar {
-  width: 220px;
-  background: #f8f7fc;
+  width: 240px;
   height: 100vh;
+  background: #f8f7fc;
+
   display: flex;
   flex-direction: column;
   padding: 20px;
+
   border-right: 2px solid #e5e0ff;
+
+  position: relative;
+  transition: width 0.3s ease;
+  overflow: visible;
+  z-index: 100;
+}
+
+.admin-sidebar.collapsed {
+  width: 80px;
 }
 
 /* LOGO */
@@ -59,6 +70,31 @@
 /*BUTTOM*/
 .sidebar-bottom {
   margin-top: auto;
+}
+
+/* ================= COLLAPSE ================= */
+.admin-sidebar.collapsed .menu-title {
+  display: none;
+}
+
+.admin-sidebar.collapsed .logo span {
+  display: none;
+}
+
+.admin-sidebar.collapsed .sidebar-user span {
+  display: none;
+}
+
+.admin-sidebar.collapsed .menu-item {
+  justify-content: center;
+}
+
+.menu-item span {
+  transition: opacity 0.2s ease;
+}
+
+.admin-sidebar.collapsed .menu-item span {
+  opacity: 0;
 }
 
 /* ================= BOTTOM PROFILE ================= */
@@ -122,10 +158,10 @@
   background: #eee;
 }
 
-/* LOGOUT */
+/* LOGOUT
 .logout-btn {
   width: 100%;
-  background: #ef4444;
+  background: linear-gradient(135deg, #8b5cf6, #7c3aed);
   border: none;
   padding: 10px;
   border-radius: 10px;
@@ -137,7 +173,7 @@
 
 .logout-btn:hover {
   opacity: 0.9;
-}
+} */
 
 /* ================= CONTENT ================= */
 .admin-content {
@@ -237,13 +273,18 @@
 /* LOGOUT */
 .logout-btn {
   width: 100%;
-  background: #ef4444;
+  background: #c5a2ff !important;
   border: none;
-  padding: 8px;
+  padding: 10px;
   border-radius: 10px;
   color: white;
   cursor: pointer;
-  font-size: 13px;
+  font-weight: 600;
+  transition: 0.2s;
+}
+
+.logout-btn:hover {
+  opacity: 0.9;
 }
 /* FAQ */
 .faq-card {

@@ -1,17 +1,31 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import "../css/AdminDashboard.css";
 import logo from "../assets/logovimind2.png";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const AdminSidebar = ({ nickname = "Udean", avatarUrl }) => {
   const navigate = useNavigate();
 
   const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isCollapsed, setIsCollapsed] = useState(true); // 🔥 default kecil
+
+  const hoverTimeout = useRef(null);
 
   const handleLogout = () => {
     localStorage.clear();
     navigate("/login");
+  };
+
+  // 🔥 hover logic (anti flicker)
+  const handleMouseEnter = () => {
+    clearTimeout(hoverTimeout.current);
+    setIsCollapsed(false);
+  };
+
+  const handleMouseLeave = () => {
+    hoverTimeout.current = setTimeout(() => {
+      setIsCollapsed(true);
+    }, 200); // delay biar smooth
   };
 
   // close popup kalau klik luar
@@ -30,9 +44,13 @@ const AdminSidebar = ({ nickname = "Udean", avatarUrl }) => {
   }, []);
 
   return (
-    <div className={`admin-sidebar ${isCollapsed ? "collapsed" : ""}`}>
+    <div
+      className={`admin-sidebar ${isCollapsed ? "collapsed" : ""}`}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
 
-      {/* 🔥 TOGGLE BUTTON */}
+      {/* 🔥 (opsional) toggle manual */}
       <button
         className="toggle-btn"
         onClick={() => setIsCollapsed(!isCollapsed)}
@@ -122,14 +140,14 @@ const AdminSidebar = ({ nickname = "Udean", avatarUrl }) => {
             <button className="popup-btn">Forgot Password</button>
 
             <div className="popup-footer">
-              <img src={logo} alt="logo" style={{ width: 80 }} />
+              <img src={logo} alt="logo" style={{ width: 60 }} />
             </div>
           </div>
         )}
 
         {/* LOGOUT */}
         <button className="logout-btn" onClick={handleLogout}>
-          🔴 {!isCollapsed && "Log Out"}
+          🚪 {!isCollapsed && "Log Out"}
         </button>
 
       </div>
