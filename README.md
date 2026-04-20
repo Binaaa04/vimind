@@ -15,41 +15,24 @@ ViMind addresses this gap by providing an accessible, private, and intelligent p
 ## ✨ Main Features
 
 ### 🧠 Mental Health Check (Self-Assessment)
-- Interactive questionnaire based on mental health symptoms
-- Generates early diagnosis with percentage results
-- Powered by Certainty Factor (CF) algorithm
+- Interactive questionnaire powered by the **Certainty Factor (CF)** algorithm.
+- **Progress Resilience**: Answers are saved automatically to `localStorage`. If the internet fails or the tab closes, users can resume their test without losing any progress.
 
-### 🔄 Test Flow (After Login)
-Users can choose:
-
-- **Continue Previous Condition**  
-  Resume the last test without restarting  
-
-- **Detect New Condition**  
-  Start a new diagnosis with updated symptoms  
-
-### 😊 Mood Condition Summary
-- Provides an overview of user emotional states
-- Helps identify mo### 💬 AI Mental Health Chatbot
-- Provides real-time mental health assistance  
-- Uses latest test results as contextual input  
-- Integrated deeply with the user dashboard for quick access
+### 💬 AI Mental Health Chatbot
+- Provides real-time mental health assistance using the latest test results as context.
+- Integrated deeply with the user dashboard for immediate support.
 
 ### 🌟 Feedback & Testimonial System
-- Post-diagnostic ratings and comments
-- Integrated feedback loop for account deletion
-- Dynamic testimonial showcase on the landing page
+- **User Comments**: Users can leave ratings and detailed comments (testimonials) after completing their assessment.
+- **Admin Moderation**: Admins can review, approve, or hide testimonials to be displayed on the landing page.
 
-### 📰 Dynamic System Management
-- Admin-controlled Banners/Promotions for the dashboard
-- Real-time FAQ updates through the admin panel
+### 🌎 Global Accessibility
+- **Auto-Translate**: Integrated Google Translate plugin (Bottom-Right) allowing users to access the platform in various languages instantly.
 
 ### 👑 Admin System (Super Admin)
-- **Role-Based Access**: Automatic redirection to `/admin` for authorized accounts.
-- **Content CRUD**: Full management of Promotions, FAQ, and Articles.
-- **Knowledge Base Management**: Direct control over the Certainty Factor rules, symptom definitions, and disease solutions.
-- **Feedback Moderation**: Review and approve user testimonials for public display.
-- **Mobile-Responsive Design**: Fully optimized UI for administrators on the go.
+- **Content Management**: Full CRUD for Promotions/Banners (including dashboard links), FAQ, and News.
+- **Knowledge Base Management**: Direct control over the Certainty Factor rules, symptom definitions, and disease descriptions.
+- **Mobile-Responsive Design**: Fully optimized UI for administrators on both desktop and mobile devices.
 
 ## ⚙️ Tech Stack
 
@@ -165,14 +148,31 @@ Moderate user testimonials for the public Landing Page.
 
 ---
 
-## 🚀 Future Development
+## 🛠️ Technical Implementation Details
 
-* 📊 **Advanced Trend Analytics**: Visualize long-term mental health progress with detailed charts.
-* 🏥 **Professional Integration**: Direct "One-Click" referral to partnered psychologists.
-* 🔒 **Data Encryption**: End-to-end encryption for diagnostic history.
-</details>
+### 💾 Progress Resilience (Anti-Internet Error)
+*   **Mechanism**: The frontend uses `localStorage` to save the state of `currentQuestionIndex` and `answers` on every interaction.
+*   **Recovery**: On component mount, the system checks for existing progress. If found, it prompts the user to resume or start fresh, ensuring no data is lost during network instability.
+*   **Data Structure**: Answers are keyed by `symptom_id` in a JSON object to maintain O(1) lookup during the diagnosis calculation.
+
+### 🌐 Global Translation (Google Translate Plugin)
+*   **Implementation**: Injected via a `<script>` tag in `index.html`.
+*   **UI Optimization**: Custom CSS is applied to override the default Google Translate `iframe` positioning (fixed at `bottom-right`) to prevent layout shifting and overlap with the Admin Sidebar.
+
+### 🌟 Feedback & Moderation Logic
+*   **Data Integrity**: Testimonials are stored with a default `is_displayed = false` status.
+*   **Filtering**: The public endpoint `/api/testimonials` uses a strict SQL filter (`WHERE is_displayed = true`) and a limit of 6 to optimize Landing Page performance (LCP).
+*   **Admin Control**: A dedicated `PUT` endpoint updates the boolean flag in the Supabase `testimonials` table, triggering an immediate update on the frontend via React's state re-fetching.
+
+### 👑 Admin CRUD & Architecture
+*   **Pattern**: Follows the **Repository Pattern** in Go. All SQL queries are parameterized to prevent SQL Injection.
+*   **Dynamic Routing**: The backend uses Fiber groups to separate `/api/public` and `/api/admin` routes, allowing for different middleware/rate-limiting strategies in the future.
+*   **Frontend Rendering**: The Admin Panel uses `Promise.all` for batch fetching (Symptoms, Diseases, Rules) to minimize loading states and provide a snappy UX.
 
 ---
+
+## 🚀 Future Development
+...
 
 ## 🚀 Future Development
 
