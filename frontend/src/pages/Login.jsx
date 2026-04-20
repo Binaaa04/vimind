@@ -7,6 +7,7 @@ import "../css/LoginCSS.css";
 import logoLeft from "../assets/logovimind.png";
 import logoTop from "../assets/logovimind2.png";
 import { supabase } from "../services/supabaseClient";
+import { getProfile } from "../services/api";
 
 const Login = () => {
 
@@ -72,13 +73,28 @@ const Login = () => {
       console.log("Login success:", data);
       localStorage.setItem("isLogin", "true");
 
+      // Fetch profile to check role
+      let userRole = "user";
+      try {
+        const profileRes = await getProfile(form.email);
+        userRole = profileRes.data?.role || "user";
+        localStorage.setItem("userRole", userRole);
+      } catch (err) {
+        console.warn("Could not fetch user role during login, defaulting to user.");
+      }
+
       // Check if there's a pending redirect (e.g., from guest result page)
       const redirectAfterLogin = localStorage.getItem("redirectAfterLogin");
       if (redirectAfterLogin) {
         localStorage.removeItem("redirectAfterLogin");
         navigate(redirectAfterLogin);
       } else {
-        navigate("/dashboard");
+        // Redirect based on role
+        if (userRole === "admin") {
+          navigate("/admin");
+        } else {
+          navigate("/dashboard");
+        }
       }
     } catch (error) {
       console.error("Login error:", error.message);

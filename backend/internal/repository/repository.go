@@ -148,11 +148,11 @@ func (r *Repository) SaveDiagnosisDetail(diagnosisID int, symptomID int, val flo
 	return err
 }
 
-func (r *Repository) GetProfile(email string) (int, string, string, string, error) {
+func (r *Repository) GetProfile(email string) (int, string, string, string, string, error) {
 	var id int
-	var name, userEmail, avatarURL string
-	err := r.pool.QueryRow(context.Background(), "SELECT user_id, name, email, COALESCE(avatar_url, '') FROM users WHERE email=$1", email).Scan(&id, &name, &userEmail, &avatarURL)
-	return id, name, userEmail, avatarURL, err
+	var name, userEmail, avatarURL, role string
+	err := r.pool.QueryRow(context.Background(), "SELECT user_id, COALESCE(name,''), email, COALESCE(avatar_url, ''), COALESCE(role, 'user') FROM users WHERE email=$1", email).Scan(&id, &name, &userEmail, &avatarURL, &role)
+	return id, name, userEmail, avatarURL, role, err
 }
 
 func (r *Repository) UpsertProfile(email, name, avatarURL string) error {

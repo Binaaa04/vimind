@@ -13,6 +13,7 @@ const ProfileSidebar = ({
   nickname,
   avatarUrl,
   userEmail,
+  isAdmin,
   onAvatarUpdate
 }) => {
   const navigate = useNavigate();
@@ -133,6 +134,20 @@ const ProfileSidebar = ({
           </button>
 
           <div className="profile-menu">
+            {/* === TOMBOL ADMIN DASHBOARD (KHUSUS ADMIN) === */}
+            {isAdmin && (
+              <button
+                className="profile-menu-btn"
+                style={{ color: '#047857', border: '1px solid #d1fae5', backgroundColor: '#ecfdf5', marginBottom: '10px' }}
+                onClick={() => {
+                  onClose();
+                  navigate("/admin");
+                }}
+              >
+                Admin Dashboard
+              </button>
+            )}
+
             <button
               className="profile-menu-btn"
               onClick={() => {

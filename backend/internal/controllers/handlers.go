@@ -223,7 +223,7 @@ func (h *Handler) GetProfile(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "Email is required"})
 	}
 
-	id, name, userEmail, avatarURL, err := h.Repo.GetProfile(email)
+	id, name, userEmail, avatarURL, role, err := h.Repo.GetProfile(email)
 	if err != nil {
 		return c.Status(404).JSON(fiber.Map{"error": "User not found"})
 	}
@@ -233,6 +233,7 @@ func (h *Handler) GetProfile(c *fiber.Ctx) error {
 		"name":       name,
 		"email":      userEmail,
 		"avatar_url": avatarURL,
+		"role":       role,
 	})
 }
 

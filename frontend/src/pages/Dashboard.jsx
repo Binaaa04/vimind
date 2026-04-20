@@ -44,6 +44,7 @@ const Dashboard = () => {
   const [isChatLoading, setIsChatLoading] = useState(false);
   const chatEndRef = useRef(null);
 
+  const [isAdmin, setIsAdmin] = useState(false);
   const [userEmail, setUserEmail] = useState("");
   const [nickname, setNickname] = useState(
     localStorage.getItem("nickname") || "User"
@@ -65,9 +66,11 @@ const Dashboard = () => {
           const res = await getProfile(session.user.email);
           const name = res.data?.name || session.user.user_metadata?.full_name || session.user.email.split("@")[0];
           const avatar = res.data?.avatar_url || "";
+          const userRole = res.data?.role || "user";
 
           setNickname(name);
           setAvatarUrl(avatar);
+          setIsAdmin(userRole === "admin");
 
           localStorage.setItem("nickname", name);
           if (avatar) {
@@ -353,15 +356,7 @@ const Dashboard = () => {
 
           {/* PROFILE AREA */}
           <div className="nav-profile-area" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-
-            {/* ADMIN BUTTON */}
-            <button
-              className="admin-btn"
-              onClick={() => navigate("/admin")}
-            >
-              Admin
-            </button>
-
+            
             {/* PROFILE */}
             <button
               className={`profile-trigger ${showSidebar ? "active" : ""}`}
@@ -384,6 +379,7 @@ const Dashboard = () => {
             nickname={nickname}
             avatarUrl={avatarUrl}
             userEmail={userEmail}
+            isAdmin={isAdmin}
             onAvatarUpdate={(newUrl) => {
               setAvatarUrl(newUrl);
               localStorage.setItem("avatar_url", newUrl);
