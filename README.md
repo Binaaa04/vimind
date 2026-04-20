@@ -30,39 +30,26 @@ Users can choose:
 
 ### 😊 Mood Condition Summary
 - Provides an overview of user emotional states
-- Helps identify mood patterns over time
-
-### 💬 AI Mental Health Chatbot
+- Helps identify mo### 💬 AI Mental Health Chatbot
 - Provides real-time mental health assistance  
 - Uses latest test results as contextual input  
-- Designed for quick, private, and accessible support  
+- Integrated deeply with the user dashboard for quick access
 
-### 📈 Test Progress Tracking
-- Displays history of test results
-- Visualizes improvement or deterioration
+### 🌟 Feedback & Testimonial System
+- Post-diagnostic ratings and comments
+- Integrated feedback loop for account deletion
+- Dynamic testimonial showcase on the landing page
 
-### ⚠️ Early Warning Recommendation
-- Detects worsening conditions
-- Recommends consulting a psychologist
+### 📰 Dynamic System Management
+- Admin-controlled Banners/Promotions for the dashboard
+- Real-time FAQ updates through the admin panel
 
-### 📰 Mental Health News
-- Displays latest mental health articles
-- Fetched dynamically from Google News
-
-### 🔄 Seamless Guest Synchronization
-- Users can start tests as a Guest
-- Test results automatically sync to the user profile after Login/Registration
-
-### 🔐 Account Management
-- Self-service **Forgot Password** (Email reset link)
-- Account Deletion (Right to be Forgotten)
-
-### 👑 Admin Features
-- Role-based access (Admin)
-- Manage system data (diseases, symptoms, CF rules, FAQ)
-- Customize landing page (Hero Section)
-
-➡️ Ensures system flexibility and scalability
+### 👑 Admin System (Super Admin)
+- **Role-Based Access**: Automatic redirection to `/admin` for authorized accounts.
+- **Content CRUD**: Full management of Promotions, FAQ, and Articles.
+- **Knowledge Base Management**: Direct control over the Certainty Factor rules, symptom definitions, and disease solutions.
+- **Feedback Moderation**: Review and approve user testimonials for public display.
+- **Mobile-Responsive Design**: Fully optimized UI for administrators on the go.
 
 ## ⚙️ Tech Stack
 
@@ -71,9 +58,9 @@ Users can choose:
 | Frontend              | React (Vite)                 |
 | Backend               | Go (Fiber)                   |
 | Database              | Supabase (PostgreSQL)        |
-| Authentication        | Supabase Auth (Google Login) |
+| Authentication        | Supabase Auth (Role-based)   |
 | API                   | REST API                     |
-| Version Control       | GitHub                       |
+| Styling               | Vanilla CSS (Glassmorphism)  |
 
 ## 🚀 Installation & Setup
 
@@ -90,12 +77,13 @@ Make sure you have installed:
 ```bash
 cd backend
 go mod tidy
-````
+```
 
 Create a `.env` file inside `backend/`:
 
 ```env
-DATABASE_URL=postgresql://postgres.[PROJECT_REF]:[YOUR_PASSWORD]@aws-1-ap-northeast-1.pooler.supabase.com:6543/postgres
+DATABASE_URL=postgresql://...
+GEMINI_API_KEY=your_api_key_here
 ```
 
 ### 🎨 Frontend Setup (React - Vite)
@@ -109,38 +97,11 @@ Create a `.env` file inside `frontend/`:
 
 ```env
 VITE_API_BASE_URL=http://127.0.0.1:8080
-VITE_SUPABASE_URL=https://[PROJECT_REF].supabase.co
-VITE_SUPABASE_ANON_KEY=[YOUR_SUPABASE_ANON_KEY]
+VITE_SUPABASE_URL=https://...
+VITE_SUPABASE_ANON_KEY=...
 ```
 
-⚠️ Use `127.0.0.1` instead of `localhost` to avoid IPv4/IPv6 issues on some systems.
-
-### ▶️ Running the Application
-
-**Terminal 1 — Backend**
-
-```bash
-cd backend
-go run main.go
-```
-
-**Terminal 2 — Frontend**
-
-```bash
-cd frontend
-npm run dev
-```
-
-Open in browser:
-[http://localhost:5173](http://localhost:5173)
-
-### 🔐 Authentication
-
-Powered by Supabase Auth. Supports Google Login and Email/Password with **Automatic Password Reset** flow.
-
-Set Redirect URI in Supabase Dashboard:
-`http://localhost:5173/reset-password` (for local development)
-`https://[PROJECT_URL]/reset-password` (for production)
+---
 
 ## 🧠 Core Algorithm — Certainty Factor (CF)
 
@@ -149,69 +110,19 @@ ViMind uses the Certainty Factor (CF) method, a classic expert system approach f
 ### 🔹 Data Components
 
 * **Expert CF (MB)** → Predefined expert weight (0–1)
-* **User Value (MD)** → User input during test:
-
-  * Strongly Agree → 1.0
-  * Agree → 0.7
-  * Neutral → 0.4
-  * Disagree → 0.0
+* **User Value (MD)** → User input during test (Strongly Agree to Disagree)
 
 ### 🔹 Calculation Logic
 
-* **A. Individual CF**
+* **CFcombine = CFold + CFnew × (1 - CFold)**
 
-```math
-CF(h,e) = User_Value × Expert_CF
-```
-
-* **B. Combination Formula**
-
-```math
-CFcombine = CFold + CFnew × (1 - CFold)
-```
-
-* **C. Final Diagnosis**
-
-All conditions are evaluated simultaneously. Highest CF value is selected as the result.
-
-### 🔹 Database Structure
-
-* **symptoms** → symptom list
-* **disease** → mental conditions & solutions
-* **cf_rules** → knowledge base mapping
-
-## 🔄 Adaptive Discovery System
-
-### 👤 New Users
-
-* Phase 1: General screening
-* Phase 2: Targeted follow-up questions
-
-### 🔄 Data Persistence & Synchronization
-ViMind features a seamless data flow for unregistered users:
-* **Guest Flow**: Test results are stored in `localStorage`.
-* **Auto-Sync**: Upon login/registration, the `onAuthStateChange` listener in `App.jsx` detects the session and automatically triggers an API call to migrate `pending_answers` to the database.
-* **Result Redirect**: After successful sync, users are automatically redirected to their full dashboard/results.
-
-### 🧠 Adaptive Discovery Logic (Returning Users)
-When a returning user starts a test, the system behaves intelligently:
-* **Context Recognition**: The backend fetches the last diagnosed condition.
-* **Targeted Questions**: If a prior condition exists (e.g., Depression), the system skips general screening and presents symptoms specific to that condition for deeper analysis.
-* **History Bias**: A Certainty Factor baseline of **+0.5** is applied to the prior condition, anchoring the new diagnosis to the user's history for better trend tracking.
-
-## 📰 News System Optimization
-
-* Fetches articles via Google News RSS
-* Uses 15-minute in-memory caching
-* Reduces API calls and improves performance
+---
 
 ## 🛡️ Security Features
 
-* **Strict Rate Limiting** (50 requests / 1 minute / IP) to prevent DDoS and Brute Force spam.
-* **Middleware Recover**: System resilience layer that prevents the Go server from crashing during internal panics.
-* **Input Range Validation**: Backend-side enforcement (0.0–1.0) for symptom values to prevent data manipulation.
-* **SQL Injection Protection**: Fully parameterized queries via Golang's database/sql.
-* **Security Headers**: Integrated Helmet middleware for XSS, Sniffing, and Clickjacking protection.
+* **Admin Security**: Patent-based admin roles with no public registration for admin accounts.
+* **API Filtering**: Public endpoints (Banners/FAQ) are strictly filtered for active status.
+* **DDoS Protection**: Integrated rate limiting and request validation.
 
 ---
 
@@ -220,43 +131,45 @@ When a returning user starts a test, the system behaves intelligently:
 <details>
 <summary><b>Click to expand Backend API Details</b></summary>
 
-### 📡 Diagnostic Endpoints
+### 📡 Diagnostic & Public Endpoints
 
-#### `GET /api/questions`
-Fetches questions based on the user's current session or intent.
-- **Query Params**:
-  - `mode`: (`screening`|`refined`)
-  - `email`: (optional) used to fetch history for refined mode.
-- **Response**: List of questions, `is_refined` flag, and `history_disease_id`.
+#### `GET /api/questions` | `POST /api/diagnose`
+Core diagnostic engine using CF algorithm.
 
-#### `POST /api/diagnose`
-Submits answers and calculates the CF result.
-- **Request Body**:
-  ```json
-  {
-    "answers": [{"symptom_id": 1, "value": 0.8}],
-    "user_email": "user@example.com",
-    "refined_disease_id": 0
-  }
-  ```
-- **Response**: `top_result` (highest CF) and `all_results`.
+#### `GET /api/banners` | `GET /api/faq` | `GET /api/testimonials`
+Dynamic public content used in Home and Dashboard pages.
 
-### 👤 Profile & History
+### 👤 Feedback System
 
-#### `GET /api/profile?email={email}`
-Fetches user information and avatar.
+#### `POST /api/testimonials`
+Submit a new user testimonial with rating (1-5).
 
-#### `GET /api/history?email={email}`
-Fetches the full diagnostic history of a user.
+#### `POST /api/account_feedbacks`
+Submit reason for account deletion.
 
-#### `DELETE /api/profile?email={email}`
-Permanently deletes user account and all associated diagnostic data (cascade delete).
+### 👑 Admin Management
 
-### 📰 News
+#### `GET /api/admin/banners` | `POST /api/admin/banners`
+Manage promotions shown to users.
 
-#### `GET /api/news`
-Fetches mental health news from Google News RSS with 15-minute server-side caching.
+#### `GET /api/admin/symptoms` | `PUT /api/admin/symptoms`
+Manage the symptom knowledge base.
 
+#### `GET /api/admin/rules` | `PUT /api/admin/rules`
+Manage expert CF weights and rule mappings.
+
+#### `PUT /api/admin/testimonials/:id/display`
+Moderate user testimonials for the public Landing Page.
+
+</details>
+
+---
+
+## 🚀 Future Development
+
+* 📊 **Advanced Trend Analytics**: Visualize long-term mental health progress with detailed charts.
+* 🏥 **Professional Integration**: Direct "One-Click" referral to partnered psychologists.
+* 🔒 **Data Encryption**: End-to-end encryption for diagnostic history.
 </details>
 
 ---
