@@ -187,7 +187,12 @@ export default function Detection() {
 
       try {
         // Pindah ke backend: Biarkan backend yang menentukan soal discovery
-        const apiAnswers = newAnswers.map(({ symptom_id, value }) => ({ symptom_id, value, disease_id: 0 }));
+        // Kita kirim symptom_id dan value, disease_id opsional karena backend akan cek di DB
+        const apiAnswers = newAnswers.map(({ symptom_id, value, disease_id }) => ({ 
+          symptom_id, 
+          value, 
+          disease_id: disease_id || 0 
+        }));
         const response = await getDiscoveryQuestions(apiAnswers);
         const newQuestions = response.data?.questions || response.data || [];
 

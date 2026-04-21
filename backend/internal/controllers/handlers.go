@@ -83,25 +83,42 @@ func (h *Handler) GetDiscoveryQuestions(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "Invalid request"})
 	}
 
-	// Logic pemilihan tersangka (sebelumnya ada di frontend untuk keamanan data)
-	suspectMap := make(map[int]bool)
+	// 1. Identifikasi gejala yang dijawab "Mungkin" ke atas (>= 0.7)
+	var strongSymptomIDs []int
 	for _, a := range body.Answers {
 		if a.Value >= 0.7 {
-			suspectMap[a.DiseaseID] = true
+			strongSymptomIDs = append(strongSymptomIDs, a.SymptomID)
 		}
 	}
 
+	// 2. Cari penyakit apa saja yang berhubungan dengan gejala-gejala tersebut di DB
+	// Ini jauh lebih aman karena tidak bergantung pada disease_id dari frontend (yang bisa jadi 0)
 	var finalSuspects []int
-	for id := range suspectMap {
-		finalSuspects = append(finalSuspects, id)
+	if len(strongSymptomIDs) > 0 {
+		ids, err := h.Repo.GetSuspectDiseases(strongSymptomIDs)
+		if err == nil {
+			finalSuspects = ids
+		}
 	}
 
-	// Fallback jika tidak ada tersangka kuat (ambil default atau logic tambahan)
+	// 3. Fallback jika tidak ada tersangka kuat (ambil default ID penyakit 1 dan 2)
+	// Pastikan finalSuspects TIDAK berisi 0
 	if len(finalSuspects) == 0 {
-		finalSuspects = []int{1, 2} // Default suspects
+		finalSuspects = []int{1, 2}
 	}
 
-	questions, err := h.Repo.GetQuestions("discovery", finalSuspects)
+	// Filter out ID 0 just in case
+	var filteredSuspects []int
+	for _, id := range finalSuspects {
+		if id > 0 {
+			filteredSuspects = append(filteredSuspects, id)
+		}
+	}
+	if len(filteredSuspects) == 0 {
+		filteredSuspects = []int{1, 2}
+	}
+
+	questions, err := h.Repo.GetQuestions("discovery", filteredSuspects)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch discovery questions"})
 	}

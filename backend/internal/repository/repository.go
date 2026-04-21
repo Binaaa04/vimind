@@ -130,6 +130,25 @@ func (r *Repository) GetDiseaseNameByID(id int) (string, error) {
 	return name, err
 }
 
+func (r *Repository) GetSuspectDiseases(symptomIDs []int) ([]int, error) {
+	rows, err := r.pool.Query(context.Background(), `
+		SELECT DISTINCT disease_id FROM cf_rules WHERE symptoms_id = ANY($1)
+	`, symptomIDs)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var ids []int
+	for rows.Next() {
+		var id int
+		if err := rows.Scan(&id); err == nil {
+			ids = append(ids, id)
+		}
+	}
+	return ids, nil
+}
+
 func (r *Repository) SaveDiagnosis(uid int, diseaseID int, levelID int, cfValue float64, percentage float64) (int, error) {
 	var diagnosisID int
 	err := r.pool.QueryRow(context.Background(), `
