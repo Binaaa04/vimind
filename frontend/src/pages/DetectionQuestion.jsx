@@ -333,8 +333,8 @@ export default function Detection() {
         ></div>
       </div>
 
-      <div className="question-container">
-        <div className="phase-indicator" style={{
+      <div className="question-container" key={questions[currentIndex]?.id || currentIndex}>
+        <div key={phase} className="phase-indicator" style={{
           fontSize: "0.8rem",
           color: "#888",
           marginBottom: "10px",
@@ -345,8 +345,9 @@ export default function Detection() {
           {phase === 1 ? "TAHAP 1: PENGECEKAN UMUM" : "TAHAP 2: PENDALAMAN GEJALA"}
         </div>
 
-        <h1>
-          {currentIndex + 1}. {questions[currentIndex]?.name}
+        <h1 key={questions[currentIndex]?.id}>
+          <span className="notranslate">{currentIndex + 1}. </span>
+          {questions[currentIndex]?.name}
         </h1>
 
         <div className="options-wrapper">
@@ -373,6 +374,7 @@ export default function Detection() {
           )}
 
           <button
+            key={currentIndex}
             className="next-btn"
             onClick={nextQuestion}
             disabled={selected === null || submitting || (isOffline && currentIndex === questions.length - 1)}

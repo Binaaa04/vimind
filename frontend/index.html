@@ -116,62 +116,137 @@
     color: #8B5CF6;
     padding-left: 22px;
 }
+      /* ✨ NEW: INVISIBLE OVERLAY TRIGGER */
       #google_translate_widget_wrapper {
         position: fixed;
         bottom: 24px;
         right: 86px;
         z-index: 9999;
-        background: rgba(255, 255, 255, 0.75);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-        border-radius: 20px;
-        border: 1px solid rgba(139, 92, 246, 0.2);
-        box-shadow: 0 8px 32px rgba(139, 92, 246, 0.1);
-        padding: 6px 16px;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(10px);
+        border: 2px solid white;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
         display: flex;
         align-items: center;
-        gap: 10px;
-        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        justify-content: center;
         cursor: pointer;
+        transition: all 0.3s ease;
+        overflow: visible !important;
       }
 
       #google_translate_widget_wrapper:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 12px 40px rgba(139, 92, 246, 0.2);
-        border-color: rgba(139, 92, 246, 0.6);
-        background: rgba(255, 255, 255, 0.95);
+        transform: scale(1.1);
+        box-shadow: 0 15px 35px rgba(139, 92, 246, 0.2);
       }
 
       #google_translate_widget_wrapper .translate-icon {
-        font-size: 20px;
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        overflow: hidden;
+        pointer-events: none; /* Let clicks pass through to the select overlay */
       }
 
-      /* 🎨 NATIVE COMBO STYLING */
-      .goog-te-gadget { 
-        font-family: 'Poppins', sans-serif !important;
-        font-size: 0 !important; 
-      }
-      
-      .goog-te-gadget .goog-te-combo {
-        margin: 0 !important;
-        padding: 4px 6px !important;
-        font-family: 'Poppins', sans-serif !important;
-        font-size: 13px !important;
-        font-weight: 600 !important;
-        border: none !important;
-        background: transparent !important;
-        color: #4b5563 !important;
-        cursor: pointer;
-        outline: none !important;
+      #google_translate_widget_wrapper .translate-icon img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
       }
 
-      .goog-logo-link, .goog-te-gadget span { display: none !important; }
+      /* 🕵️ THE INVISIBLE SELECT OVERLAY */
+      #google_translate_element {
+        position: absolute !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        opacity: 0 !important; /* Fully invisible but clickable */
+        z-index: 10 !important;
+        cursor: pointer !important;
+      }
+
+      .goog-te-gadget, .goog-te-gadget-simple, .goog-te-combo {
+        width: 100% !important;
+        height: 100% !important;
+        cursor: pointer !important;
+      }
+
+      /* 🚫 ABSOLUTE CLEANUP */
+      .goog-logo-link, .goog-te-gadget span, #google_translate_element img, .goog-te-banner-frame { 
+        display: none !important; 
+      }
     </style>
+
+    <script>
+      // 🎌 DYNAMIC FLAG SWITCHER LOGIC (WIDGET + CHROME NATIVE)
+      function updateFlag() {
+        const combo = document.querySelector('.goog-te-combo');
+        const flagImg = document.querySelector('#current-flag');
+        if (!flagImg) return;
+
+        const langMap = {
+          'id': 'id',
+          'en': 'us',
+          'ar': 'sa',
+          'zh-CN': 'cn',
+          'ja': 'jp',
+          'ko': 'kr',
+          'ms': 'my',
+          'fr': 'fr',
+          'de': 'de',
+          'es': 'es'
+        };
+
+        // 🎯 Priority 1: Check native Chrome translation attribute
+        let currentLang = document.documentElement.lang || 'id';
+        
+        // 🎯 Priority 2: Check Google Widget Combo (if available)
+        if (combo && combo.value) {
+          currentLang = combo.value;
+        }
+
+        const countryCode = langMap[currentLang] || 'id';
+        
+        const flagUrl = currentLang === 'id' 
+          ? '/flag-id.png' 
+          : `https://flagcdn.com/w160/${countryCode}.png`;
+          
+        flagImg.src = flagUrl;
+      }
+
+      // Watch for BOTH Widget Changes and HTML Lang Attribute Changes
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (mutation.type === 'attributes' && mutation.attributeName === 'lang') {
+            updateFlag();
+          }
+          if (document.querySelector('.goog-te-combo')) {
+            const combo = document.querySelector('.goog-te-combo');
+            combo.removeEventListener('change', updateFlag);
+            combo.addEventListener('change', updateFlag);
+            updateFlag();
+          }
+        });
+      });
+
+      // Target the HTML element specifically for 'lang' changes
+      observer.observe(document.documentElement, { attributes: true });
+      // Also watch body for async widget injection
+      observer.observe(document.body, { childList: true, subtree: true });
+
+      // Initial run
+      window.addEventListener('load', updateFlag);
+    </script>
   </head>
   <body>
     <!-- Google Translate floating widget -->
     <div id="google_translate_widget_wrapper">
-      <span class="translate-icon">🌐</span>
+      <div class="translate-icon">
+        <img id="current-flag" src="/flag-id.png" alt="ID" />
+      </div>
       <div id="google_translate_element"></div>
     </div>
 
