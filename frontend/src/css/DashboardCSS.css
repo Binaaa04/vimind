@@ -72,53 +72,7 @@ body {
     margin-left: -40px;
 }
 
-/* Dropdown Artikel */
-.article-menu-wrapper {
-    position: relative;
-}
-
-.nav-menu {
-    background-color: transparent !important;
-    border: none !important;
-    color: #5B4A78 !important;
-    font-weight: 600;
-    font-size: 0.95rem;
-    cursor: pointer;
-    padding: 8px 5px;
-    margin-top: 1px;
-    box-shadow: none !important;
-}
-
-.article-menu-dropdown {
-    position: absolute;
-    top: 100%;
-    left: 0;
-    background: #ffffff;
-    border: 1px solid #F1F5F9;
-    border-radius: 8px;
-    box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.05);
-    width: 320px;
-    margin-top: 15px;
-    z-index: 100;
-    overflow: hidden;
-}
-
-.article-menu-item {
-    padding: 12px 15px;
-    border-bottom: 1px solid #F1F5F9;
-    cursor: pointer;
-    font-size: 0.85rem;
-    color: #333333;
-    transition: background 0.2s ease;
-}
-
-.article-menu-item:last-child {
-    border-bottom: none;
-}
-
-.article-menu-item:hover {
-    background-color: #F8FAFC;
-}
+/* Dropdown Artikel styling moved to global index.html for better consistency */
 
 /* Profile Trigger */
 .nav-profile-area {
