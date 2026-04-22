@@ -37,10 +37,17 @@ const adminConfig = (email) => ({
 // Admin - Banners
 export const adminGetBanners = (email) => api.get("/api/admin/banners", adminConfig(email));
 export const adminUpsertBanner = (email, data) => api.post("/api/admin/banners", data, adminConfig(email));
+export const adminDeleteBanner = (email, id) => api.delete(`/api/admin/banners/${id}`, adminConfig(email));
 
 // Admin - FAQ
 export const adminGetFAQ = (email) => api.get("/api/admin/faq", adminConfig(email));
 export const adminUpsertFAQ = (email, data) => api.post("/api/admin/faq", data, adminConfig(email));
+export const adminDeleteFAQ = (email, id) => api.delete(`/api/admin/faq/${id}`, adminConfig(email));
+
+// Admin - News (Articles)
+export const adminGetNews = (email) => api.get("/api/admin/news", adminConfig(email));
+export const adminUpsertNews = (email, data) => api.post("/api/admin/news", data, adminConfig(email));
+export const adminDeleteNews = (email, id) => api.delete(`/api/admin/news/${id}`, adminConfig(email));
 
 // Admin - Knowledge Base
 export const adminGetSymptoms = (email) => api.get("/api/admin/symptoms", adminConfig(email));

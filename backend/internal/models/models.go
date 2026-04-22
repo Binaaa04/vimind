@@ -73,7 +73,7 @@ type NewsItem struct {
 
 // Matches existing `promotion` table in Supabase
 type Banner struct {
-	ID           int    `json:"id"`
+	ID           string `json:"id"`
 	Title        string `json:"title"`
 	ImageURL     string `json:"image_url"`
 	LinkURL      string `json:"link_url"`
@@ -82,7 +82,7 @@ type Banner struct {
 }
 
 type BannerUpsertReq struct {
-	ID           int    `json:"id"` // 0 = insert, >0 = update
+	ID           string `json:"id"` // Empty = insert, Else = update
 	Title        string `json:"title"`
 	ImageURL     string `json:"image_url"`
 	LinkURL      string `json:"link_url"`
@@ -90,17 +90,39 @@ type BannerUpsertReq struct {
 	DisplayOrder int    `json:"display_order"`
 }
 
-// Matches existing `faq` table in Supabase (no position column)
+// Matches existing `faq` table in Supabase
 type FAQItem struct {
-	ID       int    `json:"id"`
+	ID       string `json:"id"`
 	Question string `json:"question"`
 	Answer   string `json:"answer"`
 }
 
 type FAQUpsertReq struct {
-	ID       int    `json:"id"`
+	ID       string `json:"id"`
 	Question string `json:"question"`
 	Answer   string `json:"answer"`
+}
+
+// 📰 Article models for News management
+type Article struct {
+	ID        string    `json:"id"`
+	Title     string    `json:"title"`
+	Content   string    `json:"content"`
+	ImageURL  string    `json:"image_url"`
+	LinkURL   string    `json:"link_url"`
+	Source    string    `json:"source"`
+	IsActive  bool      `json:"is_active"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+type ArticleUpsertReq struct {
+	ID       string `json:"id"`
+	Title    string `json:"title"`
+	Content  string `json:"content"`
+	ImageURL string `json:"image_url"`
+	LinkURL  string `json:"link_url"`
+	Source   string `json:"source"`
+	IsActive bool   `json:"is_active"`
 }
 
 // ============================================================

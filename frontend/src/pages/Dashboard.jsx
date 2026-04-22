@@ -416,7 +416,7 @@ const Dashboard = () => {
                 <div
                   className="hero-big promo-left"
                   onClick={() => slide.link !== "#" && window.open(slide.link, "_blank")}
-                  style={{ cursor: slide.link !== "#" ? "pointer" : "default", display: "flex", justifyContent: "center", textAlign: "center" }}
+                  style={{ cursor: slide.link !== "#" ? "pointer" : "default", display: "flex", justifyContent: "center", textAlign: "center", position: "relative" }}
                 >
                   <div className="promo-content">
                     <h2>
@@ -426,6 +426,12 @@ const Dashboard = () => {
                       <img src={kemenkesLogo} alt="Sponsor" />
                     </div>
                   </div>
+                  
+                  {slide.image && (
+                    <div className="promo-image">
+                      <img src={slide.image} alt="Promo" />
+                    </div>
+                  )}
                 </div>
 
                 {/* Banner Kanan */}

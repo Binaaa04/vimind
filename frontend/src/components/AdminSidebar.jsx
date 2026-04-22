@@ -75,7 +75,19 @@ const AdminSidebar = ({ avatarUrl }) => {
             isActive ? "menu-item active" : "menu-item"
           }
         >
-          🔗 {!isCollapsed && "Link Promosi Dashboard"}
+          🔗 {!isCollapsed && "Banner Dashboard"}
+        </NavLink>
+      </div>
+
+      <div className="menu-section">
+        {!isCollapsed && <p className="menu-title">NEWS & ARTICLES</p>}
+        <NavLink
+          to="/admin/news"
+          className={({ isActive }) =>
+            isActive ? "menu-item active" : "menu-item"
+          }
+        >
+          📰 {!isCollapsed && "Kelola Berita/Artikel"}
         </NavLink>
       </div>
 

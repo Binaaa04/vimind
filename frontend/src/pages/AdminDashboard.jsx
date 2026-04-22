@@ -5,6 +5,7 @@ import AdminSidebar from "../components/AdminSidebar";
 import AdminFAQ from "./AdminFAQ";
 import AdminTest from "./AdminTest";
 import AdminFeedback from "./AdminFeedback";
+import AdminNews from "./AdminNews";
 import { adminGetBanners, adminUpsertBanner } from "../services/api";
 import "../css/AdminDashboard.css";
 
@@ -17,7 +18,7 @@ const BannerCard = ({ bannerData, index, adminEmail }) => {
   const [saved, setSaved] = useState(false);
 
   const bannerPayload = () => ({
-    id: bannerData?.id || 0,
+    id: bannerData?.id || "",
     title,
     image_url: imageUrl,
     link_url: linkUrl,
@@ -152,11 +153,8 @@ const AdminDashboard = () => {
 
           {/* FAQ */}
           <Route path="faq" element={<AdminFAQ adminEmail={adminEmail} />} />
-
-          {/* TEST */}
+          <Route path="news" element={<AdminNews adminEmail={adminEmail} />} />
           <Route path="test" element={<AdminTest adminEmail={adminEmail} />} />
-
-          {/* FEEDBACK */}
           <Route path="feedback" element={<AdminFeedback adminEmail={adminEmail} />} />
         </Routes>
       </div>

@@ -298,7 +298,7 @@ func (r *Repository) GetPublicBanners() ([]models.Banner, error) {
 }
 
 func (r *Repository) UpsertBanner(req models.BannerUpsertReq) error {
-	if req.ID > 0 {
+	if req.ID != "" {
 		// Update existing row
 		_, err := r.pool.Exec(context.Background(), `
 			UPDATE promotion
@@ -312,6 +312,55 @@ func (r *Repository) UpsertBanner(req models.BannerUpsertReq) error {
 		INSERT INTO promotion (title, image_url, link_url, is_active, display_order)
 		VALUES ($1, $2, $3, $4, $5)
 	`, req.Title, req.ImageURL, req.LinkURL, req.IsActive, req.DisplayOrder)
+	return err
+}
+
+// ============================================================
+// Admin: Articles (News Management)
+// ============================================================
+
+func (r *Repository) GetArticles(onlyActive bool) ([]models.Article, error) {
+	query := `SELECT article_id, title, COALESCE(content,''), COALESCE(image_url,''), COALESCE(link_url,''), COALESCE(source,''), is_active, created_at 
+	          FROM articles`
+	if onlyActive {
+		query += " WHERE is_active = true"
+	}
+	query += " ORDER BY created_at DESC"
+
+	rows, err := r.pool.Query(context.Background(), query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var articles []models.Article
+	for rows.Next() {
+		var a models.Article
+		if err := rows.Scan(&a.ID, &a.Title, &a.Content, &a.ImageURL, &a.LinkURL, &a.Source, &a.IsActive, &a.CreatedAt); err != nil {
+			continue
+		}
+		articles = append(articles, a)
+	}
+	return articles, nil
+}
+
+func (r *Repository) UpsertArticle(req models.ArticleUpsertReq) error {
+	if req.ID != "" {
+		_, err := r.pool.Exec(context.Background(), `
+			UPDATE articles SET title=$1, content=$2, image_url=$3, link_url=$4, source=$5, is_active=$6, updated_at=NOW()
+			WHERE article_id=$7
+		`, req.Title, req.Content, req.ImageURL, req.LinkURL, req.Source, req.IsActive, req.ID)
+		return err
+	}
+	_, err := r.pool.Exec(context.Background(), `
+		INSERT INTO articles (title, content, image_url, link_url, source, is_active)
+		VALUES ($1, $2, $3, $4, $5, $6)
+	`, req.Title, req.Content, req.ImageURL, req.LinkURL, req.Source, req.IsActive)
+	return err
+}
+
+func (r *Repository) DeleteArticle(id string) error {
+	_, err := r.pool.Exec(context.Background(), "DELETE FROM articles WHERE article_id=$1", id)
 	return err
 }
 
@@ -342,7 +391,7 @@ func (r *Repository) GetFAQ() ([]models.FAQItem, error) {
 }
 
 func (r *Repository) UpsertFAQ(req models.FAQUpsertReq) error {
-	if req.ID > 0 {
+	if req.ID != "" {
 		// Update existing FAQ
 		_, err := r.pool.Exec(context.Background(), `
 			UPDATE faq SET question=$1, answer=$2, updated_at=NOW() WHERE faq_id=$3
@@ -353,6 +402,11 @@ func (r *Repository) UpsertFAQ(req models.FAQUpsertReq) error {
 	_, err := r.pool.Exec(context.Background(), `
 		INSERT INTO faq (question, answer) VALUES ($1, $2)
 	`, req.Question, req.Answer)
+	return err
+}
+
+func (r *Repository) DeleteFAQ(id string) error {
+	_, err := r.pool.Exec(context.Background(), "DELETE FROM faq WHERE faq_id=$1", id)
 	return err
 }
 
