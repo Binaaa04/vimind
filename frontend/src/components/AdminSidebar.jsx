@@ -84,17 +84,6 @@ const AdminSidebar = ({ avatarUrl, nickname = "Admin" }) => {
         </NavLink>
       </div>
 
-      <div className="menu-section">
-        {!isCollapsed && <p className="menu-title">NEWS & ARTICLES</p>}
-        <NavLink
-          to="/admin/news"
-          className={({ isActive }) =>
-            isActive ? "menu-item active" : "menu-item"
-          }
-        >
-          📰 {!isCollapsed && "Kelola Berita/Artikel"}
-        </NavLink>
-      </div>
 
       <div className="menu-section">
         {!isCollapsed && <p className="menu-title">FAQ</p>}
@@ -118,19 +107,16 @@ const AdminSidebar = ({ avatarUrl, nickname = "Admin" }) => {
         >
           💡 {!isCollapsed && "Ubah Pertanyaan Test"}
         </NavLink>
-      </div>
-
-      <div className="menu-section">
-        {!isCollapsed && <p className="menu-title">FEEDBACK</p>}
         <NavLink
           to="/admin/feedback"
           className={({ isActive }) =>
             isActive ? "menu-item active" : "menu-item"
           }
         >
-          💬 {!isCollapsed && "User Feedback"}
+          💬 {!isCollapsed && "User Feedbacks"}
         </NavLink>
       </div>
+
 
       {/* ================= BOTTOM ================= */}
       <div className="sidebar-bottom">

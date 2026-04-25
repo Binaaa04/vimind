@@ -51,11 +51,16 @@ export const adminDeleteNews = (email, id) => api.delete(`/api/admin/news/${id}`
 
 // Admin - Knowledge Base
 export const adminGetSymptoms = (email) => api.get("/api/admin/symptoms", adminConfig(email));
-export const adminUpdateSymptom = (email, data) => api.put("/api/admin/symptoms", data, adminConfig(email));
+export const adminUpsertSymptom = (email, data) => api.post("/api/admin/symptoms", data, adminConfig(email));
+export const adminDeleteSymptom = (email, id) => api.delete(`/api/admin/symptoms/${id}`, adminConfig(email));
+
 export const adminGetDiseases = (email) => api.get("/api/admin/diseases", adminConfig(email));
-export const adminUpdateDisease = (email, data) => api.put("/api/admin/diseases", data, adminConfig(email));
+export const adminUpsertDisease = (email, data) => api.post("/api/admin/diseases", data, adminConfig(email));
+export const adminDeleteDisease = (email, id) => api.delete(`/api/admin/diseases/${id}`, adminConfig(email));
+
 export const adminGetRules = (email) => api.get("/api/admin/rules", adminConfig(email));
-export const adminUpdateRule = (email, data) => api.put("/api/admin/rules", data, adminConfig(email));
+export const adminUpsertRule = (email, data) => api.post("/api/admin/rules", data, adminConfig(email));
+export const adminDeleteRule = (email, id) => api.delete(`/api/admin/rules/${id}`, adminConfig(email));
 
 // Feedback (Public)
 export const getPublicTestimonials = () => api.get("/api/testimonials");

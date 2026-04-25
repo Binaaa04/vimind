@@ -205,24 +205,29 @@ const Dashboard = () => {
 
   // Data isi carousel (Prioritaskan Banners dari Admin, lalu gabung News API)
   const carouselSlides = [
-    ...(banners || []).map((b) => ({
-      id: `banner-${b.id}`,
-      title: b.title,
-      highlight: "Promo",
-      rightText: "Konten pilihan admin khusus buat kamu.",
-      bgRight: "#8B5CF6",
-      image: b.image_url,
-      link: b.link_url
-    })),
-    ...(news || []).slice(0, 2).map((item, index) => ({
-      id: `news-${index}`,
-      title: item.title,
-      highlight: item.highlight || "Update",
-      rightText: "Mari baca berita kesehatan selengkapnya untuk wawasan lebih luas.",
-      bgRight: index === 0 ? "#E9004C" : "#10B981",
-      image: item.image,
-      link: item.link
-    }))
+    ...(banners || [])
+      .filter((b) => b.title?.trim() || b.image_url?.trim()) // ⚡ HANYA TAMPILIN YANG ADA ISINYA
+      .map((b) => ({
+        id: `banner-${b.id}`,
+        title: b.title || "Vimind Promo",
+        highlight: "Promo",
+        rightText: "Konten pilihan admin khusus buat kamu.",
+        bgRight: "#8B5CF6",
+        image: b.image_url,
+        link: b.link_url
+      })),
+    ...(news || [])
+      .filter((item) => item.title?.trim()) // ⚡ PASTIKAN BERITA ADA JUDULNYA
+      .slice(0, 2)
+      .map((item, index) => ({
+        id: `news-${index}`,
+        title: item.title,
+        highlight: item.highlight || "Update",
+        rightText: "Mari baca berita kesehatan selengkapnya untuk wawasan lebih luas.",
+        bgRight: index === 0 ? "#E9004C" : "#10B981",
+        image: item.image,
+        link: item.link
+      }))
   ];
   
   // Fallback if empty
@@ -416,22 +421,53 @@ const Dashboard = () => {
                 <div
                   className="hero-big promo-left"
                   onClick={() => slide.link !== "#" && window.open(slide.link, "_blank")}
-                  style={{ cursor: slide.link !== "#" ? "pointer" : "default", display: "flex", justifyContent: "center", textAlign: "center", position: "relative" }}
+                  style={{ 
+                    cursor: slide.link !== "#" ? "pointer" : "default", 
+                    position: "relative",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "flex-start",
+                    overflow: "hidden",
+                    borderRadius: "20px"
+                  }}
                 >
-                  <div className="promo-content">
-                    <h2>
-                      {slide.title} <span className="highlight">{slide.highlight}</span>
-                    </h2>
-                    <div className="sponsor-logo" style={{ justifyContent: "center", display: "flex" }}>
-                      <img src={kemenkesLogo} alt="Sponsor" />
-                    </div>
-                  </div>
-                  
                   {slide.image && (
-                    <div className="promo-image">
-                      <img src={slide.image} alt="Promo" />
-                    </div>
+                    <img 
+                      src={slide.image} 
+                      alt="Promo" 
+                      style={{ 
+                        width: "100%", 
+                        height: "100%", 
+                        objectFit: "cover",
+                        position: "absolute",
+                        zIndex: 1
+                      }} 
+                    />
                   )}
+                  
+                  {/* Overlay Content (Akan nampil di atas gambar kalau ada gambar) */}
+                  <div className="promo-content" style={{ 
+                    position: "relative", 
+                    zIndex: 2, 
+                    padding: "30px", 
+                    background: slide.image ? "linear-gradient(90deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%)" : "transparent",
+                    width: "100%",
+                    height: "100%",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "flex-start",
+                    textAlign: "left"
+                  }}>
+                    <h2 style={{ color: slide.image ? "white" : "inherit", textShadow: slide.image ? "2px 2px 4px rgba(0,0,0,0.5)" : "none" }}>
+                      {slide.title} <span className="highlight" style={{ color: slide.image ? "#ffeb3b" : undefined }}>{slide.highlight}</span>
+                    </h2>
+                    {!slide.image && (
+                      <div className="sponsor-logo">
+                        <img src={kemenkesLogo} alt="Sponsor" />
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Banner Kanan */}
