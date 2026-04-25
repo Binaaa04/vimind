@@ -33,28 +33,19 @@ func (r *Repository) GetQuestions(mode string, diseaseIDs []int) ([]models.Quest
 			WHERE r.rank = 1
 			ORDER BY RANDOM();
 		`
-	} else if mode == "discovery" && len(diseaseIDs) > 0 {
-		// Fase 2: Ambil gejala tambahan untuk penyakit spesifik yang dicurigai
+	} else if (mode == "discovery" || mode == "refined") && len(diseaseIDs) > 0 {
+		// Ambil TOP 5 Gejala terkuat untuk setiap penyakit yang dicurigai
 		query = `
-			SELECT DISTINCT s.symptoms_id, s.symptoms_code, s.symptoms_name, r.disease_id
+			SELECT s.symptoms_id, s.symptoms_code, s.symptoms_name, r.disease_id
 			FROM symptoms s
-			JOIN cf_rules r ON s.symptoms_id = r.symptoms_id
-			WHERE r.disease_id = ANY($1)
-			AND r.expert_cf_value >= 0.6
-			ORDER BY RANDOM()
-			LIMIT 8;
-		`
-		args = append(args, diseaseIDs)
-	} else if mode == "refined" && len(diseaseIDs) > 0 {
-		// Refined Diagnosis: Ambil soal spesifik untuk history penyakit user
-		query = `
-			SELECT DISTINCT s.symptoms_id, s.symptoms_code, s.symptoms_name, r.disease_id
-			FROM symptoms s
-			JOIN cf_rules r ON s.symptoms_id = r.symptoms_id
-			WHERE r.disease_id = ANY($1)
-			AND r.expert_cf_value >= 0.4
-			ORDER BY RANDOM()
-			LIMIT 10;
+			JOIN (
+				SELECT symptoms_id, disease_id,
+					   ROW_NUMBER() OVER(PARTITION BY disease_id ORDER BY expert_cf_value DESC) as rank
+				FROM cf_rules
+				WHERE disease_id = ANY($1)
+			) r ON s.symptoms_id = r.symptoms_id
+			WHERE r.rank <= 5
+			ORDER BY RANDOM();
 		`
 		args = append(args, diseaseIDs)
 	} else {
@@ -525,10 +516,21 @@ func (r *Repository) GetAllSymptoms() ([]models.AdminSymptom, error) {
 	return list, nil
 }
 
-func (r *Repository) UpdateSymptom(s models.AdminSymptom) error {
+func (r *Repository) UpsertSymptom(s models.AdminSymptom) error {
+	if s.ID == 0 {
+		_, err := r.pool.Exec(context.Background(), `
+			INSERT INTO symptoms (symptoms_code, symptoms_name) VALUES ($1, $2)
+		`, s.Code, s.Name)
+		return err
+	}
 	_, err := r.pool.Exec(context.Background(), `
 		UPDATE symptoms SET symptoms_code=$1, symptoms_name=$2 WHERE symptoms_id=$3
 	`, s.Code, s.Name, s.ID)
+	return err
+}
+
+func (r *Repository) DeleteSymptom(id int) error {
+	_, err := r.pool.Exec(context.Background(), "DELETE FROM symptoms WHERE symptoms_id=$1", id)
 	return err
 }
 
@@ -552,10 +554,21 @@ func (r *Repository) GetAllDiseases() ([]models.AdminDisease, error) {
 	return list, nil
 }
 
-func (r *Repository) UpdateDisease(d models.AdminDisease) error {
+func (r *Repository) UpsertDisease(d models.AdminDisease) error {
+	if d.ID == 0 {
+		_, err := r.pool.Exec(context.Background(), `
+			INSERT INTO disease (disease_name, description, general_solutions) VALUES ($1, $2, $3)
+		`, d.Name, d.Description, d.Solutions)
+		return err
+	}
 	_, err := r.pool.Exec(context.Background(), `
 		UPDATE disease SET disease_name=$1, description=$2, general_solutions=$3 WHERE disease_id=$4
 	`, d.Name, d.Description, d.Solutions, d.ID)
+	return err
+}
+
+func (r *Repository) DeleteDisease(id int) error {
+	_, err := r.pool.Exec(context.Background(), "DELETE FROM disease WHERE disease_id=$1", id)
 	return err
 }
 
@@ -579,10 +592,21 @@ func (r *Repository) GetAllCFRules() ([]models.AdminRule, error) {
 	return list, nil
 }
 
-func (r *Repository) UpdateCFRule(rule models.AdminRule) error {
+func (r *Repository) UpsertRule(rule models.AdminRule) error {
+	if rule.RuleID == 0 {
+		_, err := r.pool.Exec(context.Background(), `
+			INSERT INTO cf_rules (disease_id, symptoms_id, expert_cf_value) VALUES ($1, $2, $3)
+		`, rule.DiseaseID, rule.SymptomID, rule.CFValue)
+		return err
+	}
 	_, err := r.pool.Exec(context.Background(), `
-		UPDATE cf_rules SET expert_cf_value=$1 WHERE rules_id=$2
-	`, rule.CFValue, rule.RuleID)
+		UPDATE cf_rules SET disease_id=$1, symptoms_id=$2, expert_cf_value=$3 WHERE rules_id=$4
+	`, rule.DiseaseID, rule.SymptomID, rule.CFValue, rule.RuleID)
+	return err
+}
+
+func (r *Repository) DeleteRule(id int) error {
+	_, err := r.pool.Exec(context.Background(), "DELETE FROM cf_rules WHERE rules_id=$1", id)
 	return err
 }
 
