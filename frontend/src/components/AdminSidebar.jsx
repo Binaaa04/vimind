@@ -2,7 +2,6 @@ import { NavLink, useNavigate } from "react-router-dom";
 import "../css/AdminSidebar.css";
 import logo from "../assets/logovimind2.png";
 import logoSmall from "../assets/logo.png";
-import { useState, useEffect } from "react";
 import arrowVector from "../assets/arrowVector.svg";
 
 // Import SVG untuk menu
@@ -10,7 +9,9 @@ import linkIcon from "../assets/link.svg";
 import faqIcon from "../assets/faq.svg";
 import testIcon from "../assets/test.svg";
 import feedbackIcon from "../assets/feedback.svg";
-import logoutIcon from "../assets/LogOut.svg"; // ✅ FIX: samakan nama
+import logoutIcon from "../assets/LogOut.svg"; 
+
+// Hook React digabung jadi satu di sini biar gak error "already been declared"
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "../services/supabaseClient";
 
@@ -90,10 +91,8 @@ const AdminSidebar = ({ avatarUrl, nickname = "Admin" }) => {
             className="menu-icon-img"
           />
           {!isCollapsed && <span>Promosi Dashboard</span>}
-          🔗 {!isCollapsed && "Banner Dashboard"}
         </NavLink>
       </div>
-
 
       <div className="menu-section">
         {!isCollapsed && <p className="menu-title">FAQ</p>}
@@ -127,6 +126,7 @@ const AdminSidebar = ({ avatarUrl, nickname = "Admin" }) => {
           />
           {!isCollapsed && <span>Ubah Pertanyaan Test</span>}
         </NavLink>
+        
         <NavLink
           to="/admin/feedback"
           className={({ isActive }) =>
@@ -139,7 +139,6 @@ const AdminSidebar = ({ avatarUrl, nickname = "Admin" }) => {
             className="menu-icon-img"
           />
           {!isCollapsed && <span>User Feedback</span>}
-          💬 {!isCollapsed && "User Feedbacks"}
         </NavLink>
       </div>
 
