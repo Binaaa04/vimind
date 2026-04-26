@@ -27,14 +27,16 @@ func main() {
 	handler := controllers.NewHandler(repo)
 
 	// 3. Setup Fiber
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		BodyLimit: 50 * 1024 * 1024, // 50MB (Bener-bener lega buat gambar Base64)
+	})
 
 	// Middlewares
 	app.Use(recover.New()) // Prevent server from crashing on panics
 	app.Use(helmet.New())  // Security headers (Anti-XSS, etc.)
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "*", // Keep it open for dev, or specify frontend URL
-		AllowHeaders: "Origin, Content-Type, Accept",
+		AllowOrigins: "*",
+		AllowHeaders: "*", // ALLOW SEMUA HEADER BIAR GAK REWEL!
 	}))
 
 	// Rate Limiting (Anti-DDoS & Anti-Spam)

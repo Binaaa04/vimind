@@ -11,17 +11,23 @@ import faqIcon from "../assets/faq.svg";
 import testIcon from "../assets/test.svg";
 import feedbackIcon from "../assets/feedback.svg";
 import logoutIcon from "../assets/LogOut.svg"; // ✅ FIX: samakan nama
+import { useState, useEffect, useRef } from "react";
+import { supabase } from "../services/supabaseClient";
 
-const AdminSidebar = ({ avatarUrl }) => {
-  const nickname = localStorage.getItem("nickname") || "Admin";
+const AdminSidebar = ({ avatarUrl, nickname = "Admin" }) => {
   const navigate = useNavigate();
 
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(true);
 
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate("/login");
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+      localStorage.clear();
+      navigate("/login");
+    } catch (error) {
+      console.error("Logout error:", error.message);
+    }
   };
 
   useEffect(() => {
@@ -84,8 +90,10 @@ const AdminSidebar = ({ avatarUrl }) => {
             className="menu-icon-img"
           />
           {!isCollapsed && <span>Promosi Dashboard</span>}
+          🔗 {!isCollapsed && "Banner Dashboard"}
         </NavLink>
       </div>
+
 
       <div className="menu-section">
         {!isCollapsed && <p className="menu-title">FAQ</p>}
@@ -119,10 +127,6 @@ const AdminSidebar = ({ avatarUrl }) => {
           />
           {!isCollapsed && <span>Ubah Pertanyaan Test</span>}
         </NavLink>
-      </div>
-
-      <div className="menu-section">
-        {!isCollapsed && <p className="menu-title">FEEDBACK</p>}
         <NavLink
           to="/admin/feedback"
           className={({ isActive }) =>
@@ -135,8 +139,10 @@ const AdminSidebar = ({ avatarUrl }) => {
             className="menu-icon-img"
           />
           {!isCollapsed && <span>User Feedback</span>}
+          💬 {!isCollapsed && "User Feedbacks"}
         </NavLink>
       </div>
+
 
       {/* ================= BOTTOM ================= */}
       <div className="sidebar-bottom">

@@ -57,20 +57,26 @@ func RegisterRoutes(app *fiber.App, handler *controllers.Handler) {
 	// Banners
 	admin.Get("/banners", handler.GetBanners)
 	admin.Post("/banners", handler.UpsertBanner)
+	admin.Delete("/banners/:id", handler.DeleteBanner)
 
 	// FAQ
 	admin.Get("/faq", handler.GetFAQ)
 	admin.Post("/faq", handler.UpsertFAQ)
+	admin.Delete("/faq/:id", handler.DeleteFAQ)
 
 	// Knowledge Base
 	admin.Get("/symptoms", handler.GetAdminSymptoms)
-	admin.Put("/symptoms", handler.UpdateAdminSymptom)
+	admin.Post("/symptoms", handler.UpsertAdminSymptom)
+	admin.Delete("/symptoms/:id", handler.DeleteAdminSymptom)
 
 	admin.Get("/diseases", handler.GetAdminDiseases)
-	admin.Put("/diseases", handler.UpdateAdminDisease)
+	admin.Post("/diseases", handler.UpsertAdminDisease)
+	admin.Delete("/diseases/:id", handler.DeleteAdminDisease)
 
 	admin.Get("/rules", handler.GetAdminRules)
-	admin.Put("/rules", handler.UpdateAdminRule)
+	admin.Post("/rules", handler.UpsertAdminRule)
+	admin.Delete("/rules/:id", handler.DeleteAdminRule)
+
 
 	// Feedbacks & Testimonials (Admin)
 	admin.Get("/testimonials", handler.GetAllTestimonials)
