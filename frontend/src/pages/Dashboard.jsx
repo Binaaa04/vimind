@@ -16,9 +16,8 @@ import logo from "../assets/logovimind2.png";
 import kemenkesLogo from "../assets/kemenkes_logo.png";
 import familyBanner from "../assets/family_banner.png";
 import chatbotIcon from "../assets/chatbot.png";
-import "../css/DashboardCSS.css";
-
-
+// Pastikan path ini sesuai dengan lokasi file CSS-mu
+import "../css/DashboardCSS.css"; 
 
 const Dashboard = () => {
   useEffect(() => {
@@ -408,55 +407,63 @@ const Dashboard = () => {
 
         {/* HERO CAROUSEL */}
         <div className="carousel-container">
-          {/* TRACK CAROUSEL */}
-          <div className="carousel-track">
-            {carouselSlides.map((slide, index) => (
-              <div
-                className="dashboard-hero"
-                key={slide.id}
-                style={{
-                  transform: `translateX(-${currentSlide * 100}%)`
-                }}
-              >
-                {/* Banner Kiri */}
-                <div
-                  className="hero-big promo-left"
-                  onClick={() => slide.link !== "#" && window.open(slide.link, "_blank")}
-                  style={{ cursor: slide.link !== "#" ? "pointer" : "default" }}
-                >
-                  {slide.image && (
-                    <img
-                      src={slide.image}
-                      alt="Promo Left"
-                      className="promo-image-cover"
-                    />
-                  )}
-                  <div
-                    className="promo-content"
-                    style={{
-                      background: slide.image ? "linear-gradient(90deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%)" : "transparent"
-                    }}
-                  >
-                    <h2 style={{ color: slide.image ? "white" : "inherit" }}>{slide.title}</h2>
-                  </div>
-                </div>
+          {/* TRACK CAROUSEL: Pindahkan transform ke sini agar gap juga terhitung saat bergeser */}
+          <div 
+            className="carousel-track"
+            style={{
+              transform: `translateX(calc(-${currentSlide * 100}% - ${currentSlide * 15}px))`
+            }}
+          >
+            {carouselSlides.map((slide, index) => {
+              // Ambil data slide selanjutnya untuk efek "peek" di kolom kanan
+              const nextSlide = carouselSlides[(index + 1) % carouselSlides.length];
 
-                {/* Banner Kanan */}
-                <div
-                  className="hero-small promo-right"
-                  onClick={() => slide.link !== "#" && window.open(slide.link, "_blank")}
-                  style={{ cursor: slide.link !== "#" ? "pointer" : "default" }}
-                >
-                  {slide.imageRight && (
-                    <img
-                      src={slide.imageRight}
-                      alt="Promo Right"
-                      className="promo-image-cover"
-                    />
-                  )}
+              return (
+                <div className="dashboard-hero" key={slide.id}>
+                  
+                  {/* Banner Kiri (Slide Aktif) */}
+                  <div
+                    className="hero-big promo-left"
+                    onClick={() => slide.link !== "#" && window.open(slide.link, "_blank")}
+                    style={{ cursor: slide.link !== "#" ? "pointer" : "default" }}
+                  >
+                    {slide.image && (
+                      <img
+                        src={slide.image}
+                        alt="Promo Left"
+                        className="promo-image-cover"
+                      />
+                    )}
+                    <div
+                      className="promo-content"
+                      style={{
+                        background: slide.image 
+                          ? "linear-gradient(90deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%)" 
+                          : "transparent"
+                      }}
+                    >
+                      <h2 style={{ color: slide.image ? "white" : "inherit" }}>{slide.title}</h2>
+                    </div>
+                  </div>
+
+                  {/* Banner Kanan (Peek Image Selanjutnya) */}
+                  <div
+                    className="hero-small promo-right"
+                    onClick={() => nextSlide.link !== "#" && window.open(nextSlide.link, "_blank")}
+                    style={{ cursor: nextSlide.link !== "#" ? "pointer" : "default" }}
+                  >
+                    {nextSlide.image && (
+                      <img
+                        src={nextSlide.image}
+                        alt="Promo Right Peek"
+                        className="promo-image-cover"
+                      />
+                    )}
+                  </div>
+
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
