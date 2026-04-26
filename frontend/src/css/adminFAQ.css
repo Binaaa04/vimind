@@ -1,0 +1,135 @@
+/* ================= FAQ PAGE STYLES ================= */
+.faq-container {
+  width: 100%;
+}
+
+.faq-loading {
+  color: #aaa;
+  padding: 20px;
+}
+
+.faq-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.faq-add-btn {
+  background: #4caf50;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.2s;
+}
+
+.faq-add-btn:hover {
+  background: #45a049;
+}
+
+.faq-empty {
+  text-align: center;
+  color: #666;
+  padding: 40px;
+}
+
+.faq-card {
+  position: relative;
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  margin-bottom: 20px;
+}
+
+.faq-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.faq-card-header h3 {
+  margin: 0;
+  color: #333;
+}
+
+.faq-delete-btn {
+  background: transparent !important;
+  border: 1px solid #ff4d4d !important;
+  color: #ff4d4d !important;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: bold;
+  transition: all 0.2s;
+}
+
+.faq-delete-btn:hover {
+  background: #ff4d4d !important;
+  color: white !important;
+  border-color: transparent !important;
+}
+
+.faq-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.faq-input {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+}
+
+.faq-input:focus {
+  border-color: #8b5cf6;
+}
+
+.faq-textarea {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  background: #fff;
+  color: #333;
+  border: 1px solid #ccc;
+  min-height: 80px;
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+  outline: none;
+}
+
+.faq-textarea:focus {
+  border-color: #8b5cf6;
+}
+
+.faq-submit-btn {
+  align-self: flex-start;
+  background: linear-gradient(90deg, #8b5cf6, #7c3aed);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: opacity 0.2s;
+}
+
+.faq-submit-btn:hover {
+  opacity: 0.9;
+}
+
+.faq-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

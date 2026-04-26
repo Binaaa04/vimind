@@ -1,0 +1,77 @@
+/* Container Utama Tabel */
+.table-box {
+  width: 100%;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid #eaeaea;
+  overflow-x: auto; /* Memastikan tabel bisa di-scroll secara horizontal di layar kecil */
+  margin-top: 10px;
+}
+
+/* Pengaturan Dasar Tabel */
+.table-box table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  min-width: 700px; /* Mencegah kolom terlalu berhimpitan di layar kecil */
+}
+
+/* Header Tabel */
+.table-box thead {
+  background-color: #f8fafc;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.table-box th {
+  padding: 16px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Sel Tabel (Isi Data) */
+.table-box td {
+  padding: 16px 20px;
+  font-size: 15px;
+  color: #334155;
+  border-bottom: 1px solid #f1f5f9;
+  vertical-align: middle;
+}
+
+/* Menghilangkan border bawah pada baris terakhir */
+.table-box tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Efek Hover pada Baris Tabel */
+.table-box tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.table-box tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+/* Efek Hover dan Transisi untuk semua tombol (melengkapi inline style) */
+button {
+  transition: all 0.2s ease-in-out;
+}
+
+button:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+/* Styling Judul (Opsional, agar senada) */
+h1 {
+  color: #1e293b;
+  font-size: 28px;
+  margin-bottom: 24px;
+}

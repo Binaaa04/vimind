@@ -16,9 +16,8 @@ import logo from "../assets/logovimind2.png";
 import kemenkesLogo from "../assets/kemenkes_logo.png";
 import familyBanner from "../assets/family_banner.png";
 import chatbotIcon from "../assets/chatbot.png";
-import "../css/DashboardCSS.css";
-
-
+// Pastikan path ini sesuai dengan lokasi file CSS-mu
+import "../css/DashboardCSS.css"; 
 
 const Dashboard = () => {
   useEffect(() => {
@@ -229,7 +228,7 @@ const Dashboard = () => {
         link: item.link
       }))
   ];
-  
+
   // Fallback if empty
   if (carouselSlides.length === 0) {
     carouselSlides.push({
@@ -375,7 +374,7 @@ const Dashboard = () => {
 
           {/* PROFILE AREA */}
           <div className="nav-profile-area" style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-            
+
             {/* PROFILE */}
             <button
               className={`profile-trigger ${showSidebar ? "active" : ""}`}
@@ -407,89 +406,74 @@ const Dashboard = () => {
         </div>
 
         {/* HERO CAROUSEL */}
-        <div style={{ overflow: "hidden", width: "100%", marginBottom: "15px" }}>
-          <div
+        <div className="carousel-container">
+          {/* TRACK CAROUSEL: Pindahkan transform ke sini agar gap juga terhitung saat bergeser */}
+          <div 
+            className="carousel-track"
             style={{
-              display: "flex",
-              transition: "transform 0.5s ease-in-out",
-              transform: `translateX(-${currentSlide * 100}%)`
+              transform: `translateX(calc(-${currentSlide * 100}% - ${currentSlide * 15}px))`
             }}
           >
-            {carouselSlides.map((slide, index) => (
-              <div className="dashboard-hero" key={slide.id} style={{ minWidth: "100%", flexShrink: 0, marginBottom: 0 }}>
-                {/* Banner Kiri */}
-                <div
-                  className="hero-big promo-left"
-                  onClick={() => slide.link !== "#" && window.open(slide.link, "_blank")}
-                  style={{ 
-                    cursor: slide.link !== "#" ? "pointer" : "default", 
-                    position: "relative",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "flex-start",
-                    overflow: "hidden",
-                    borderRadius: "20px"
-                  }}
-                >
-                  {slide.image && (
-                    <img 
-                      src={slide.image} 
-                      alt="Promo" 
-                      style={{ 
-                        width: "100%", 
-                        height: "100%", 
-                        objectFit: "cover",
-                        position: "absolute",
-                        zIndex: 1
-                      }} 
-                    />
-                  )}
+            {carouselSlides.map((slide, index) => {
+              // Ambil data slide selanjutnya untuk efek "peek" di kolom kanan
+              const nextSlide = carouselSlides[(index + 1) % carouselSlides.length];
+
+              return (
+                <div className="dashboard-hero" key={slide.id}>
                   
-                  {/* Overlay Content (Akan nampil di atas gambar kalau ada gambar) */}
-                  <div className="promo-content" style={{ 
-                    position: "relative", 
-                    zIndex: 2, 
-                    padding: "30px", 
-                    background: slide.image ? "linear-gradient(90deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%)" : "transparent",
-                    width: "100%",
-                    height: "100%",
-                    display: "flex",
-                    flexDirection: "column",
-                    justifyContent: "center",
-                    alignItems: "flex-start",
-                    textAlign: "left"
-                  }}>
-                    <h2 style={{ color: slide.image ? "white" : "inherit", textShadow: slide.image ? "2px 2px 4px rgba(0,0,0,0.5)" : "none" }}>
-                      {slide.title}
-                    </h2>
-                    {!slide.image && (
-                      <div className="sponsor-logo">
-                        <img src={kemenkesLogo} alt="Sponsor" />
-                      </div>
+                  {/* Banner Kiri (Slide Aktif) */}
+                  <div
+                    className="hero-big promo-left"
+                    onClick={() => slide.link !== "#" && window.open(slide.link, "_blank")}
+                    style={{ cursor: slide.link !== "#" ? "pointer" : "default" }}
+                  >
+                    {slide.image && (
+                      <img
+                        src={slide.image}
+                        alt="Promo Left"
+                        className="promo-image-cover"
+                      />
+                    )}
+                    <div
+                      className="promo-content"
+                      style={{
+                        background: slide.image 
+                          ? "linear-gradient(90deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%)" 
+                          : "transparent"
+                      }}
+                    >
+                      <h2 style={{ color: slide.image ? "white" : "inherit" }}>{slide.title}</h2>
+                    </div>
+                  </div>
+
+                  {/* Banner Kanan (Peek Image Selanjutnya) */}
+                  <div
+                    className="hero-small promo-right"
+                    onClick={() => nextSlide.link !== "#" && window.open(nextSlide.link, "_blank")}
+                    style={{ cursor: nextSlide.link !== "#" ? "pointer" : "default" }}
+                  >
+                    {nextSlide.image && (
+                      <img
+                        src={nextSlide.image}
+                        alt="Promo Right Peek"
+                        className="promo-image-cover"
+                      />
                     )}
                   </div>
-                </div>
 
-                {/* Banner Kanan */}
-                <div className="hero-small promo-right" style={{ backgroundColor: slide.bgRight }}>
-                  <div className="promo-right-content">
-                    <h2 className="academy-logo">🧠 Vimind <span>academy</span></h2>
-                    <p>{slide.rightText}</p>
-                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
 
-        {/* DOTS (Bisa diklik manual juga) */}
+        {/* DOTS NAVIGATION */}
         <div className="dots">
           {carouselSlides.map((_, index) => (
             <span
               key={index}
-              className={currentSlide === index ? "active" : ""}
               onClick={() => setCurrentSlide(index)}
-              style={{ cursor: "pointer" }}
+              className={currentSlide === index ? "active" : ""}
             />
           ))}
         </div>

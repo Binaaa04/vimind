@@ -16,21 +16,32 @@ const BannerCard = ({ bannerData, index, adminEmail }) => {
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
 
-  const bannerPayload = () => ({
-    id: bannerData?.id || "",
-    title,
-    image_url: imageUrl,
-    link_url: linkUrl,
-    is_active: isActive,
-    display_order: bannerData?.display_order || index + 1,
-  });
+  // FIX: Hanya kirimkan ID jika banner ini sudah pernah disimpan di DB
+  const bannerPayload = () => {
+    const payload = {
+      title,
+      image_url: imageUrl,
+      link_url: linkUrl,
+      is_active: isActive,
+      display_order: bannerData?.display_order || index + 1,
+    };
+    if (bannerData?.id) {
+      payload.id = bannerData.id;
+    }
+    return payload;
+  };
 
   const handleDelete = async () => {
-    if (!bannerData?.id) return;
+    // FIX: Kalau belum disimpan di database, cukup refresh layar untuk menghapus card
+    if (!bannerData?.id) {
+      window.location.reload();
+      return;
+    }
+
     if (!window.confirm("Beneran mau hapus banner ini?")) return;
     try {
       await adminDeleteBanner(adminEmail, bannerData.id);
-      window.location.reload(); // Simple refresh for now
+      window.location.reload(); 
     } catch (err) {
       alert("Gagal menghapus banner.");
     }
@@ -43,8 +54,10 @@ const BannerCard = ({ bannerData, index, adminEmail }) => {
       await adminUpsertBanner(adminEmail, bannerPayload());
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
+      window.location.reload(); // Reload supaya dapat ID asli dari database
     } catch (err) {
-      alert("Gagal menyimpan banner.");
+      console.error(err);
+      alert("Gagal menyimpan banner. Coba periksa koneksi atau data!");
     } finally {
       setSaving(false);
     }
@@ -60,101 +73,66 @@ const BannerCard = ({ bannerData, index, adminEmail }) => {
 
   return (
     <div className="banner-card">
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+      <div className="banner-card-header">
         <h3>Banner {index + 1} {isActive && <span className="status">✔ Aktif</span>}</h3>
-        {bannerData?.id && (
-          <button onClick={handleDelete} style={{ background: "#ef4444", color: "white", border: "none", padding: "4px 8px", borderRadius: 4, cursor: "pointer", fontSize: 12 }}>
-            🗑 Hapus
-          </button>
-        )}
+        {/* FIX: Tombol hapus selalu tampil */}
+        <button onClick={handleDelete} className="delete-btn">
+          🗑 Hapus
+        </button>
       </div>
 
-      <div className="input-row" style={{ flexWrap: "wrap", gap: 8 }}>
+      <div className="input-row">
         <input
           type="text"
           placeholder="Judul Banner"
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          style={{ flex: "1 1 150px" }}
+          className="input-title"
         />
         <input
           type="text"
           placeholder="Link URL (https://...)"
           value={linkUrl}
           onChange={(e) => setLinkUrl(e.target.value)}
-          style={{ flex: "2 1 250px" }}
+          className="input-url"
         />
         <input
           type="text"
           placeholder="Paste Link Gambar (https://...)"
           value={imageUrl}
           onChange={(e) => setImageUrl(e.target.value)}
-          style={{ flex: "2 1 250px" }}
+          className="input-url"
         />
         <button className="submit-btn" onClick={handleSubmit} disabled={saving}>
           {saving ? "Menyimpan..." : saved ? "✔ Tersimpan" : "Submit"}
         </button>
       </div>
 
-      <div className="preview-box" style={{ 
-        overflow: "hidden", 
-        height: "300px", 
-        width: "100%",
-        display: "flex", 
-        flexDirection: "column", 
-        alignItems: "flex-start", 
-        justifyContent: "center", 
-        border: "1px solid #ddd", 
-        marginTop: 15, 
-        position: "relative",
-        borderRadius: "20px",
-        background: "#f0f0f0"
-      }}>
+      <div className="preview-box">
         {imageUrl ? (
           <>
             <img 
               src={imageUrl} 
               alt="Preview Banner" 
-              style={{ width: "100%", height: "100%", borderRadius: "20px", objectFit: "cover", position: "absolute", top: 0, left: 0 }} 
+              className="preview-image"
             />
-            {/* Overlay identik Dashboard User */}
-            <div style={{ 
-              position: "absolute", 
-              zIndex: 2, 
-              paddingLeft: "40px", 
-              background: "linear-gradient(90deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 100%)",
-              width: "100%",
-              height: "100%",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "flex-start",
-              textAlign: "left",
-              color: "white"
-            }}>
-              <h2 style={{ 
-                margin: 0, 
-                textShadow: "2px 2px 4px rgba(0,0,0,0.5)", 
-                fontSize: "2rem", 
-                fontWeight: "800",
-                textTransform: "uppercase",
-                fontFamily: "inherit"
-              }}>
+            <div className="preview-overlay">
+              <h2 className="preview-title">
                 {title || "IKI TEST"}
               </h2>
             </div>
           </>
         ) : (
-          <div style={{ width: "100%", textAlign: "center", color: "#999" }}>
-            <span style={{ fontSize: 14 }}>🖼️ Preview Banner (Masukkan Link Gambar)</span>
+          <div className="preview-empty">
+            <span>🖼️ Preview Banner (Masukkan Link Gambar)</span>
           </div>
         )}
         
-        <div className="action-btns" style={{ position: "absolute", bottom: 20, right: 20, zIndex: 10, display: "flex", gap: 10 }}>
-          <button className="deactive" onClick={() => handleToggle(false)} style={{ boxShadow: "0 2px 10px rgba(0,0,0,0.3)", padding: "8px 15px" }}>
+        <div className="action-btns">
+          <button className="deactive" onClick={() => handleToggle(false)}>
             Deactivate
           </button>
-          <button className="active-btn" onClick={() => handleToggle(true)} style={{ boxShadow: "0 2px 10px rgba(0,0,0,0.3)", padding: "8px 15px" }}>
+          <button className="active-btn" onClick={() => handleToggle(true)}>
             Activate
           </button>
         </div>
@@ -176,7 +154,6 @@ const AdminDashboard = () => {
       if (session?.user?.email) {
         setAdminEmail(session.user.email);
         
-        // Fetch Admin profile info
         try {
           const profileRes = await getProfile(session.user.email);
           const name = profileRes.data?.name || session.user.user_metadata?.full_name || session.user.email.split("@")[0];
@@ -187,7 +164,6 @@ const AdminDashboard = () => {
           console.warn("Could not fetch admin profile, using defaults.");
         }
 
-        // Fetch banners only after email is available
         adminGetBanners(session.user.email)
           .then((res) => setBanners(res.data || []))
           .catch(() => {})
@@ -200,9 +176,6 @@ const AdminDashboard = () => {
     fetchSession();
   }, []);
 
-  // Tampilkan minimal 3 slot banner (isi dari DB kalau ada, kosong kalau belum)
-  const bannerSlots = Array.from({ length: Math.max(3, banners.length) }, (_, i) => banners[i] || null);
-
   return (
     <div className="admin-container">
       <AdminSidebar nickname={adminName} avatarUrl={adminAvatar} />
@@ -214,11 +187,11 @@ const AdminDashboard = () => {
             path="/"
             element={
               <>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+                <div className="admin-header">
                   <h1>Promosi Dashboard</h1>
                   <button 
                     onClick={() => setBanners([...banners, {}])}
-                    style={{ background: "#8B5CF6", color: "white", border: "none", padding: "10px 20px", borderRadius: 8, cursor: "pointer", fontWeight: "bold" }}
+                    className="add-banner-btn"
                   >
                     + Tambah Banner Baru
                   </button>

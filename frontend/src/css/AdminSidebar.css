@@ -1,0 +1,331 @@
+  /* ================= SIDEBAR ================= */
+  .admin-sidebar {
+    width: 270px;
+    height: auto;
+    background: #f8f7fc;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    border-right: 2px solid #e5e0ff;
+    position: relative;
+    transition: width 0.3s ease;
+    overflow: visible;
+    z-index: 100;
+  }
+
+  .admin-sidebar.collapsed {
+    width: 80px;
+  }
+
+  /* ================= TOGGLE BUTTON ================= */
+  .toggle-btn {
+    position: absolute;
+    top: 30px;
+    right: -14px;
+    width: 28px;
+    height: 28px;
+    aspect-ratio: 1 / 1;
+    padding: 0;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    border: none;
+    background: #8b5cf6;
+    color: white;
+    font-size: 14px;
+    cursor: pointer;
+    z-index: 999;
+  }
+
+  /* ================= LOGO ================= */
+  .logo {
+    font-weight: bold;
+    font-size: 18px;
+    margin-bottom: 30px;
+    color: #333;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo-img {       
+    height: auto;        
+    max-width: 70%;     
+    transition: opacity 0.2s;
+    object-fit: contain; 
+    margin-left: 2px;
+  }
+
+  /* ================= MENU ================= */
+  .menu-section {
+    margin-bottom: 20px;
+  }
+
+  .menu-title {
+    font-size: 14px;
+    color: #999;
+    margin-bottom: 8px;
+    font-weight: 800;
+  }
+
+  .menu-item {
+    display: flex;       
+    align-items: center; 
+    padding: 10px 12px;
+    border-radius: 12px;
+    text-decoration: none;
+    color: #333;
+    margin-bottom: 10px;
+    transition: 0.2s;
+    gap: 8px;            
+  }
+
+  .menu-item:hover {
+    background: #eee;
+  }
+
+  .menu-item.active {
+    background: linear-gradient(90deg, #8b5cf6, #7c3aed);
+    color: white;
+  }
+
+  .menu-item span {
+    transition: opacity 0.2s ease;
+    white-space: nowrap;       /* Paksa teks menu jadi 1 baris */
+    overflow: hidden;          /* Sembunyikan sisa teks */
+    text-overflow: ellipsis;   /* Tambahkan titik-titik (...) */
+  }
+
+  /* ---------------- ICON SVG DENGAN FILTER (WARNA: #2E1065) ---------------- */
+  .menu-icon-img {
+    width: 20px;
+    height: 20px;
+    object-fit: contain;
+    transition: all 0.2s ease;
+    filter: brightness(0) saturate(100%) invert(13%) sepia(87%) saturate(2853%) hue-rotate(256deg) brightness(81%) contrast(103%);
+  }
+
+  .menu-item.active .menu-icon-img {
+    filter: brightness(0) invert(1); 
+  }
+
+  /* ================= BOTTOM SIDEBAR ================= */
+  .sidebar-bottom {
+    margin-top: auto;
+  }
+
+  .sidebar-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    cursor: pointer;
+  }
+
+  /* PERBAIKAN: Taruh pembatas nama user di sini */
+  .sidebar-user span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 170px; /* Batas maksimal lebar nama user */
+  }
+
+  .sidebar-avatar {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+  }
+
+  .logout-btn:hover {
+    opacity: 0.9;
+  }
+
+  /* ================= POPUP PROFILE ================= */
+  .profile-popup {
+    position: absolute;
+    left: 220px;
+    bottom: 90px;
+    width: 200px;
+    background: white;
+    border-radius: 14px;
+    padding: 16px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    z-index: 9999;
+  }
+
+  .profile-popup h4 {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 10px;
+  }
+
+  .popup-avatar {
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin: 6px auto 10px;
+    display: block;
+  }
+
+  .btn-primary {
+    width: 100%;
+    padding: 7px;
+    font-size: 12px;
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+    color: white;
+    border: none;
+    border-radius: 999px;
+    margin-bottom: 8px;
+    cursor: pointer;
+  }
+
+  .popup-btn {
+    width: 100%;
+    padding: 7px;
+    font-size: 12px;
+    border-radius: 999px;
+    border: 1px solid #e5e7eb;
+    background: white;
+    margin-bottom: 6px;
+    cursor: pointer;
+  }
+
+  .popup-btn:hover {
+    background: #f5f3ff;
+  }
+
+  .popup-footer {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #7c3aed;
+    font-weight: 500;
+  }
+
+  /* ================= COLLAPSED STATE ================= */
+  .admin-sidebar.collapsed .menu-item {
+    justify-content: center;
+    padding: 10px 0;
+  }
+
+  .admin-sidebar.collapsed .menu-item span {
+    opacity: 0;
+    display: none;
+  }
+
+  /* 1. Logo-img TIDAK boleh ada di sini agar tidak hilang */
+  .admin-sidebar.collapsed .menu-title,
+  .admin-sidebar.collapsed .logo span,
+  .admin-sidebar.collapsed .sidebar-user span {
+    display: none;
+  }
+
+  /* 2. Aturan khusus Logo saat Sidebar mengecil */
+  .admin-sidebar.collapsed .logo {
+    justify-content: center; 
+    margin-bottom: 30px;
+    padding: 0;
+  }
+
+  .admin-sidebar.collapsed .logo-img {
+    display: block !important; /* Paksa muncul */
+    width: 40px;     
+    height: auto;
+    margin: 0 auto;
+    max-width: 100%;
+  }
+
+  .admin-sidebar.collapsed .sidebar-avatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  /* ================= LOGOUT BUTTON ================= */
+.logout-btn {
+  width: 100%;
+  background: transparent !important;
+  border: none !important;
+  padding: 10px 12px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: none !important;
+  transform: none !important;
+
+
+  display: flex;
+  align-items: center;
+  justify-content: flex-start; 
+  gap: 10px; 
+}
+
+/* Hover tetap clean */
+.logout-btn:hover {
+  background-color: #eeeeee !important;
+}
+
+/* ================= LOGOUT ICON ================= */
+.logout-icon {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;;
+  filter: none;
+}
+
+/* ================= TEXT LOGOUT ================= */
+.logout-btn span {
+  color: #ef4444; 
+  font-weight: 600;
+}
+
+  /* ================= COLLAPSED STATE ================= */
+  .admin-sidebar.collapsed .logout-btn {
+    justify-content: center;
+    padding: 10px 0;
+  }
+
+  /* ================= MOBILE RESPONSIVE ================= */
+  @media screen and (max-width: 768px) {
+    .admin-sidebar {
+      height: auto;
+      width: 100%;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      z-index: 1000;
+      border-right: none;
+      border-top: 1px solid #e5e0ff;
+      padding: 10px;
+      flex-direction: row;
+      justify-content: space-around;
+    }
+
+    .admin-sidebar.collapsed {
+      width: 100%;
+      height: 70px;
+    }
+
+    .logo, .menu-title, .sidebar-bottom, .toggle-btn {
+      display: none !important;
+    }
+
+    .menu-section {
+      display: flex;
+      flex-direction: row;
+      margin-bottom: 0;
+      width: 100%;
+      justify-content: space-evenly;
+    }
+    
+    .menu-item {
+      margin-bottom: 0;
+      padding: 10px;
+    }
+
+    .menu-item span {
+      display: none; 
+    }
+  }

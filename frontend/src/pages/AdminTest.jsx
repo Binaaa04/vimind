@@ -4,7 +4,7 @@ import {
   adminGetSymptoms, adminUpsertSymptom, adminDeleteSymptom,
   adminGetDiseases, adminUpsertDisease, adminDeleteDisease,
 } from "../services/api";
-import "../css/AdminDashboard.css";
+import "../css/AdminTest.css";
 
 const AdminTest = ({ adminEmail }) => {
   const [rules, setRules] = useState([]);
@@ -61,63 +61,94 @@ const AdminTest = ({ adminEmail }) => {
     }
   };
 
-  if (loading) return <p style={{ color: "#aaa", padding: 20 }}>Memuat data knowledge base...</p>;
+  if (loading) return <p className="test-loading">Memuat data knowledge base...</p>;
 
   return (
-    <div style={{ padding: 20 }}>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+    <div className="admin-test-container">
+      <div className="admin-test-header">
         <h1>Knowledge Base Management</h1>
-        <button onClick={fetchData} className="refresh-btn">🔄 Refresh Data</button>
+        <button onClick={fetchData} className="btn-refresh">
+          Refresh Data
+        </button>
       </div>
 
       {/* ================= RULE TABLE ================= */}
       <div className="section-header">
         <h3>Tabel CF (Rules)</h3>
-        <button onClick={() => setRules([{ rule_id: 0, disease_id: 1, symptom_id: 1, cf_value: 0.5 }, ...rules])} className="add-btn">
+        <button 
+          onClick={() => setRules([{ rule_id: 0, disease_id: 1, symptom_id: 1, cf_value: 0.5 }, ...rules])} 
+          className="btn-add"
+        >
           + Tambah Rule Baru
         </button>
       </div>
-      <div className="table-box">
-        <table>
+      <div className="test-table-container">
+        <table className="test-table">
           <thead>
             <tr>
-              <th>Rule ID</th>
-              <th>Penyakit (ID)</th>
-              <th>Gejala (ID)</th>
-              <th>Expert CF</th>
-              <th>Actions</th>
+              <th style={{ width: "10%" }}>Rule ID</th>
+              <th style={{ width: "25%" }}>Penyakit (ID)</th>
+              <th style={{ width: "25%" }}>Gejala (ID)</th>
+              <th style={{ width: "25%" }}>Expert CF</th>
+              <th style={{ width: "15%" }}>Actions</th>
             </tr>
           </thead>
           <tbody>
             {rules.map((item, index) => (
               <tr key={item.rule_id || `new-rule-${index}`}>
-                <td>{item.rule_id === 0 ? <span className="new-tag">NEW</span> : item.rule_id}</td>
+                <td>{item.rule_id === 0 ? <span className="tag-new">NEW</span> : item.rule_id}</td>
                 <td>
-                  <input type="number" value={item.disease_id} onChange={(e) => {
-                    const newRules = [...rules];
-                    newRules[index].disease_id = parseInt(e.target.value);
-                    setRules(newRules);
-                  }} />
+                  <input 
+                    type="number" 
+                    className="test-input"
+                    value={item.disease_id} 
+                    onChange={(e) => {
+                      const newRules = [...rules];
+                      newRules[index].disease_id = parseInt(e.target.value);
+                      setRules(newRules);
+                    }} 
+                  />
                 </td>
                 <td>
-                  <input type="number" value={item.symptom_id} onChange={(e) => {
-                    const newRules = [...rules];
-                    newRules[index].symptom_id = parseInt(e.target.value);
-                    setRules(newRules);
-                  }} />
+                  <input 
+                    type="number" 
+                    className="test-input"
+                    value={item.symptom_id} 
+                    onChange={(e) => {
+                      const newRules = [...rules];
+                      newRules[index].symptom_id = parseInt(e.target.value);
+                      setRules(newRules);
+                    }} 
+                  />
                 </td>
                 <td>
-                  <input type="number" step="0.1" value={item.cf_value} onChange={(e) => {
-                    const newRules = [...rules];
-                    newRules[index].cf_value = parseFloat(e.target.value);
-                    setRules(newRules);
-                  }} />
+                  <input 
+                    type="number" 
+                    step="0.1" 
+                    className="test-input"
+                    value={item.cf_value} 
+                    onChange={(e) => {
+                      const newRules = [...rules];
+                      newRules[index].cf_value = parseFloat(e.target.value);
+                      setRules(newRules);
+                    }} 
+                  />
                 </td>
                 <td>
-                  <button onClick={() => handleSaveItem("rule", item)} className="mini-save-btn">Simpan</button>
-                  {item.rule_id !== 0 && (
-                    <button onClick={() => handleDelete("rule", item.rule_id)} className="mini-del-btn">Hapus</button>
-                  )}
+                  <div className="test-actions">
+                    <button onClick={() => handleSaveItem("rule", item)} className="btn-save">Save</button>
+                    {item.rule_id !== 0 && (
+                      <button 
+                        onClick={() => handleDelete("rule", item.rule_id)} 
+                        className="btn-delete-icon" 
+                        title="Hapus"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256">
+                          <path d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96ZM192,208H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z"></path>
+                        </svg>
+                      </button>
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}
@@ -128,43 +159,65 @@ const AdminTest = ({ adminEmail }) => {
       {/* ================= SYMPTOMS TABLE ================= */}
       <div className="section-header">
         <h3>Tabel Gejala (Symptoms / Pertanyaan)</h3>
-        <button onClick={() => setSymptoms([{ id: 0, code: "G00", name: "" }, ...symptoms])} className="add-btn">
+        <button 
+          onClick={() => setSymptoms([{ id: 0, code: "G00", name: "" }, ...symptoms])} 
+          className="btn-add"
+        >
           + Tambah Gejala Baru
         </button>
       </div>
-      <div className="table-box">
-        <table>
+      <div className="test-table-container">
+        <table className="test-table">
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Kode</th>
-              <th>Nama Gejala / Pertanyaan</th>
-              <th>Actions</th>
+              <th style={{ width: "10%" }}>ID</th>
+              <th style={{ width: "20%" }}>Kode</th>
+              <th style={{ width: "55%" }}>Nama Gejala / Pertanyaan</th>
+              <th style={{ width: "15%" }}>Actions</th>
             </tr>
           </thead>
           <tbody>
             {symptoms.map((item, index) => (
               <tr key={item.id || `new-sym-${index}`}>
-                <td>{item.id === 0 ? <span className="new-tag">NEW</span> : item.id}</td>
+                <td>{item.id === 0 ? <span className="tag-new">NEW</span> : item.id}</td>
                 <td>
-                  <input type="text" value={item.code} onChange={(e) => {
-                    const newSym = [...symptoms];
-                    newSym[index].code = e.target.value;
-                    setSymptoms(newSym);
-                  }} />
+                  <input 
+                    type="text" 
+                    className="test-input"
+                    value={item.code} 
+                    onChange={(e) => {
+                      const newSym = [...symptoms];
+                      newSym[index].code = e.target.value;
+                      setSymptoms(newSym);
+                    }} 
+                  />
                 </td>
                 <td>
-                  <textarea value={item.name} onChange={(e) => {
-                    const newSym = [...symptoms];
-                    newSym[index].name = e.target.value;
-                    setSymptoms(newSym);
-                  }} style={{ width: "100%", color: "#333" }} />
+                  <textarea 
+                    className="test-textarea"
+                    value={item.name} 
+                    onChange={(e) => {
+                      const newSym = [...symptoms];
+                      newSym[index].name = e.target.value;
+                      setSymptoms(newSym);
+                    }} 
+                  />
                 </td>
                 <td>
-                  <button onClick={() => handleSaveItem("symptom", item)} className="mini-save-btn">Simpan</button>
-                  {item.id !== 0 && (
-                    <button onClick={() => handleDelete("symptom", item.id)} className="mini-del-btn">Hapus</button>
-                  )}
+                  <div className="test-actions">
+                    <button onClick={() => handleSaveItem("symptom", item)} className="btn-save">Save</button>
+                    {item.id !== 0 && (
+                      <button 
+                        onClick={() => handleDelete("symptom", item.id)} 
+                        className="btn-delete-icon"
+                        title="Hapus"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256">
+                          <path d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96ZM192,208H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z"></path>
+                        </svg>
+                      </button>
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}
@@ -175,67 +228,83 @@ const AdminTest = ({ adminEmail }) => {
       {/* ================= DISEASES TABLE ================= */}
       <div className="section-header">
         <h3>Tabel Penyakit (Diseases)</h3>
-        <button onClick={() => setDiseases([{ id: 0, name: "", description: "", solutions: "" }, ...diseases])} className="add-btn">
+        <button 
+          onClick={() => setDiseases([{ id: 0, name: "", description: "", solutions: "" }, ...diseases])} 
+          className="btn-add"
+        >
           + Tambah Penyakit Baru
         </button>
       </div>
-      <div className="table-box">
-        <table>
+      <div className="test-table-container">
+        <table className="test-table">
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Nama Penyakit</th>
-              <th>Deskripsi</th>
-              <th>Solusi</th>
-              <th>Actions</th>
+              <th style={{ width: "5%" }}>ID</th>
+              <th style={{ width: "20%" }}>Nama Penyakit</th>
+              <th style={{ width: "30%" }}>Deskripsi</th>
+              <th style={{ width: "30%" }}>Solusi</th>
+              <th style={{ width: "15%" }}>Actions</th>
             </tr>
           </thead>
           <tbody>
             {diseases.map((item, index) => (
               <tr key={item.id || `new-dis-${index}`}>
-                <td>{item.id === 0 ? <span className="new-tag">NEW</span> : item.id}</td>
+                <td>{item.id === 0 ? <span className="tag-new">NEW</span> : item.id}</td>
                 <td>
-                  <input type="text" value={item.name} onChange={(e) => {
-                    const newD = [...diseases];
-                    newD[index].name = e.target.value;
-                    setDiseases(newD);
-                  }} />
+                  <input 
+                    type="text" 
+                    className="test-input"
+                    value={item.name} 
+                    onChange={(e) => {
+                      const newD = [...diseases];
+                      newD[index].name = e.target.value;
+                      setDiseases(newD);
+                    }} 
+                  />
                 </td>
                 <td>
-                  <textarea value={item.description} onChange={(e) => {
-                    const newD = [...diseases];
-                    newD[index].description = e.target.value;
-                    setDiseases(newD);
-                  }} style={{ width: "100%", color: "#333" }} />
+                  <textarea 
+                    className="test-textarea"
+                    value={item.description} 
+                    onChange={(e) => {
+                      const newD = [...diseases];
+                      newD[index].description = e.target.value;
+                      setDiseases(newD);
+                    }} 
+                  />
                 </td>
                 <td>
-                  <textarea value={item.solutions} onChange={(e) => {
-                    const newD = [...diseases];
-                    newD[index].solutions = e.target.value;
-                    setDiseases(newD);
-                  }} style={{ width: "100%", color: "#333" }} />
+                  <textarea 
+                    className="test-textarea"
+                    value={item.solutions} 
+                    onChange={(e) => {
+                      const newD = [...diseases];
+                      newD[index].solutions = e.target.value;
+                      setDiseases(newD);
+                    }} 
+                  />
                 </td>
                 <td>
-                  <button onClick={() => handleSaveItem("disease", item)} className="mini-save-btn">Simpan</button>
-                  {item.id !== 0 && (
-                    <button onClick={() => handleDelete("disease", item.id)} className="mini-del-btn">Hapus</button>
-                  )}
+                  <div className="test-actions">
+                    <button onClick={() => handleSaveItem("disease", item)} className="btn-save">Save</button>
+                    {item.id !== 0 && (
+                      <button 
+                        onClick={() => handleDelete("disease", item.id)} 
+                        className="btn-delete-icon"
+                        title="Hapus"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256">
+                          <path d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96ZM192,208H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z"></path>
+                        </svg>
+                      </button>
+                    )}
+                  </div>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
-
-      <style dangerouslySetInnerHTML={{ __html: `
-        .section-header { display: flex; justify-content: space-between; align-items: center; margin-top: 30px; margin-bottom: 10px; }
-        .add-btn { background: #10B981; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; }
-        .refresh-btn { background: #8B5CF6; color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; }
-        .mini-save-btn { background: #3B82F6; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; margin-right: 5px; }
-        .mini-del-btn { background: #EF4444; color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; }
-        .new-tag { background: #FBBF24; color: #000; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; }
-        .table-box table textarea { font-family: inherit; font-size: 12px; padding: 5px; border-radius: 4px; border: 1px solid #ddd; }
-      `}} />
     </div>
   );
 };

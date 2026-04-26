@@ -1,6 +1,17 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import "../css/AdminDashboard.css";
+import "../css/AdminSidebar.css";
 import logo from "../assets/logovimind2.png";
+import logoSmall from "../assets/logo.png";
+import arrowVector from "../assets/arrowVector.svg";
+
+// Import SVG untuk menu
+import linkIcon from "../assets/link.svg";
+import faqIcon from "../assets/faq.svg";
+import testIcon from "../assets/test.svg";
+import feedbackIcon from "../assets/feedback.svg";
+import logoutIcon from "../assets/LogOut.svg"; 
+
+// Hook React digabung jadi satu di sini biar gak error "already been declared"
 import { useState, useEffect, useRef } from "react";
 import { supabase } from "../services/supabaseClient";
 
@@ -8,9 +19,7 @@ const AdminSidebar = ({ avatarUrl, nickname = "Admin" }) => {
   const navigate = useNavigate();
 
   const [showProfileMenu, setShowProfileMenu] = useState(false);
-  const [isCollapsed, setIsCollapsed] = useState(true); // 🔥 default kecil
-
-  const hoverTimeout = useRef(null);
+  const [isCollapsed, setIsCollapsed] = useState(true);
 
   const handleLogout = async () => {
     try {
@@ -22,19 +31,6 @@ const AdminSidebar = ({ avatarUrl, nickname = "Admin" }) => {
     }
   };
 
-  // 🔥 hover logic (anti flicker)
-  const handleMouseEnter = () => {
-    clearTimeout(hoverTimeout.current);
-    setIsCollapsed(false);
-  };
-
-  const handleMouseLeave = () => {
-    hoverTimeout.current = setTimeout(() => {
-      setIsCollapsed(true);
-    }, 200); // delay biar smooth
-  };
-
-  // close popup kalau klik luar
   useEffect(() => {
     const handleClick = (e) => {
       if (
@@ -50,23 +46,32 @@ const AdminSidebar = ({ avatarUrl, nickname = "Admin" }) => {
   }, []);
 
   return (
-    <div
-      className={`admin-sidebar ${isCollapsed ? "collapsed" : ""}`}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-    >
+    <div className={`admin-sidebar ${isCollapsed ? "collapsed" : ""}`}>
 
-      {/* 🔥 (opsional) toggle manual */}
+      {/* Toggle */}
       <button
         className="toggle-btn"
         onClick={() => setIsCollapsed(!isCollapsed)}
       >
-        {isCollapsed ? ">" : "<"}
+        <img
+          src={arrowVector}
+          alt="Toggle"
+          style={{
+            width: "14px",
+            height: "14px",
+            transition: "transform 0.3s ease",
+            transform: isCollapsed ? "rotate(180deg)" : "rotate(0deg)"
+          }}
+        />
       </button>
 
       {/* LOGO */}
       <div className="logo">
-        <img src={logo} alt="Vimind Logo" className="logo-img" />
+        <img
+          src={isCollapsed ? logoSmall : logo}
+          alt="Vimind Logo"
+          className={`logo-img ${isCollapsed ? "collapsed-logo" : ""}`}
+        />
         {!isCollapsed && <span></span>}
       </div>
 
@@ -80,10 +85,14 @@ const AdminSidebar = ({ avatarUrl, nickname = "Admin" }) => {
             isActive ? "menu-item active" : "menu-item"
           }
         >
-          🔗 {!isCollapsed && "Banner Dashboard"}
+          <img
+            src={linkIcon?.src || linkIcon}
+            alt="Promotion Icon"
+            className="menu-icon-img"
+          />
+          {!isCollapsed && <span>Promosi Dashboard</span>}
         </NavLink>
       </div>
-
 
       <div className="menu-section">
         {!isCollapsed && <p className="menu-title">FAQ</p>}
@@ -93,7 +102,12 @@ const AdminSidebar = ({ avatarUrl, nickname = "Admin" }) => {
             isActive ? "menu-item active" : "menu-item"
           }
         >
-          ❓ {!isCollapsed && "Ubah FAQ"}
+          <img
+            src={faqIcon?.src || faqIcon}
+            alt="FAQ Icon"
+            className="menu-icon-img"
+          />
+          {!isCollapsed && <span>Ubah FAQ</span>}
         </NavLink>
       </div>
 
@@ -105,15 +119,26 @@ const AdminSidebar = ({ avatarUrl, nickname = "Admin" }) => {
             isActive ? "menu-item active" : "menu-item"
           }
         >
-          💡 {!isCollapsed && "Ubah Pertanyaan Test"}
+          <img
+            src={testIcon?.src || testIcon}
+            alt="Test Icon"
+            className="menu-icon-img"
+          />
+          {!isCollapsed && <span>Ubah Pertanyaan Test</span>}
         </NavLink>
+        
         <NavLink
           to="/admin/feedback"
           className={({ isActive }) =>
             isActive ? "menu-item active" : "menu-item"
           }
         >
-          💬 {!isCollapsed && "User Feedbacks"}
+          <img
+            src={feedbackIcon?.src || feedbackIcon}
+            alt="Feedback Icon"
+            className="menu-icon-img"
+          />
+          {!isCollapsed && <span>User Feedback</span>}
         </NavLink>
       </div>
 
@@ -163,7 +188,12 @@ const AdminSidebar = ({ avatarUrl, nickname = "Admin" }) => {
 
         {/* LOGOUT */}
         <button className="logout-btn" onClick={handleLogout}>
-          🚪 {!isCollapsed && "Log Out"}
+          <img
+            src={logoutIcon?.src || logoutIcon}
+            alt="Logout"
+            className="logout-icon"
+          />
+          {!isCollapsed && <span>Log Out</span>}
         </button>
 
       </div>

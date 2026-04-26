@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { adminGetFAQ, adminUpsertFAQ, adminDeleteFAQ } from "../services/api";
-import "../css/AdminDashboard.css";
+import "../css/adminFAQ.css";
 
 const AdminFAQ = ({ adminEmail }) => {
   const [faq, setFaq] = useState([]);
@@ -79,31 +79,25 @@ const AdminFAQ = ({ adminEmail }) => {
     }
   };
 
-  if (loading) return <p style={{ color: "#aaa", padding: 20 }}>Memuat data FAQ...</p>;
+  if (loading) return <p className="faq-loading">Memuat data FAQ...</p>;
 
   return (
-    <>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+    <div className="faq-container">
+      <div className="faq-header">
         <h1>Custom FAQ</h1>
-        <button 
-          onClick={handleAddNew}
-          style={{ background: "#4caf50", color: "white", padding: "10px 15px", borderRadius: 8, cursor: "pointer" }}
-        >
+        <button className="faq-add-btn" onClick={handleAddNew}>
           + Tambah Pertanyaan
         </button>
       </div>
 
       {faq.length === 0 ? (
-        <p style={{ textAlign: "center", color: "#666", padding: 40 }}>Belum ada data FAQ. Klik tambah untuk membuat.</p>
+        <p className="faq-empty">Belum ada data FAQ. Klik tambah untuk membuat.</p>
       ) : (
         faq.map((item, index) => (
-          <div key={index} className="faq-card" style={{ position: "relative" }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <div key={index} className="faq-card">
+            <div className="faq-card-header">
               <h3>Pertanyaan {index + 1}</h3>
-              <button 
-                onClick={() => handleDelete(index)}
-                style={{ background: "transparent", border: "1px solid #ff4d4d", color: "#ff4d4d", padding: "2px 8px", borderRadius: 4, cursor: "pointer", fontSize: 11 }}
-              >
+              <button className="faq-delete-btn" onClick={() => handleDelete(index)}>
                 Hapus
               </button>
             </div>
@@ -111,22 +105,23 @@ const AdminFAQ = ({ adminEmail }) => {
             <div className="faq-input-group">
               <input
                 type="text"
+                className="faq-input"
                 placeholder="Masukkan Pertanyaan"
                 value={item.question}
                 onChange={(e) => handleChange(index, "question", e.target.value)}
               />
 
               <textarea
+                className="faq-textarea"
                 placeholder="Masukkan Jawaban"
                 value={item.answer}
                 onChange={(e) => handleChange(index, "answer", e.target.value)}
-                style={{ width: "100%", padding: 10, borderRadius: 8, background: "#fff", color: "#333", border: "1px solid #ccc", minHeight: 60, marginTop: 10, fontFamily: "inherit" }}
               />
 
               <button
+                className="faq-submit-btn"
                 onClick={() => handleSubmit(index)}
                 disabled={savingIndex === index}
-                style={{ marginTop: 10 }}
               >
                 {savingIndex === index ? "Menyimpan..." : "Submit"}
               </button>
@@ -134,7 +129,7 @@ const AdminFAQ = ({ adminEmail }) => {
           </div>
         ))
       )}
-    </>
+    </div>
   );
 };
 
