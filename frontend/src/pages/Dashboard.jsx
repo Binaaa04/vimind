@@ -201,6 +201,7 @@ const Dashboard = () => {
 
   // Efek Auto-Slide setiap 3 detik (3000 ms)
   useEffect(() => {
+    if (carouselSlides.length === 0) return;
     const slideTimer = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % carouselSlides.length);
     }, 3000);
