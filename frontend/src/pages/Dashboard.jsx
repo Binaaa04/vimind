@@ -303,7 +303,7 @@ const Dashboard = () => {
                         {slide.image && (
                           <img
                             src={slide.image}
-                            alt="Promo Left"
+                            alt={slide.title || "Vimind Promo Banner"}
                             className="promo-image-cover"
                           />
                         )}
@@ -318,7 +318,7 @@ const Dashboard = () => {
                         {nextSlide.image && (
                           <img
                             src={nextSlide.image}
-                            alt="Promo Right Peek"
+                            alt={nextSlide.title || "Vimind Promo Banner Preview"}
                             className="promo-image-cover"
                           />
                         )}
