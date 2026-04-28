@@ -1,89 +1,133 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { getQuestions, diagnose } from "../services/api";
 import { supabase } from "../services/supabaseClient";
 import "../css/DetectionQuestionCSS.css";
 
-// localStorage keys untuk offline resilience
+// ============================================================
+// localStorage draft helpers
+// ============================================================
 const LS_DRAFT_KEY = "quiz_draft";
 
 function saveDraft(data) {
-  try {
-    localStorage.setItem(LS_DRAFT_KEY, JSON.stringify(data));
-  } catch (_) {}
+  try { localStorage.setItem(LS_DRAFT_KEY, JSON.stringify(data)); } catch (_) {}
 }
-
 function loadDraft() {
   try {
     const raw = localStorage.getItem(LS_DRAFT_KEY);
     return raw ? JSON.parse(raw) : null;
-  } catch (_) {
-    return null;
-  }
+  } catch (_) { return null; }
 }
-
 function clearDraft() {
   localStorage.removeItem(LS_DRAFT_KEY);
 }
 
+// ============================================================
+// Fallback label penyakit (sesuaikan dengan disease_id kamu)
+// ============================================================
+const DISEASE_LABELS = {
+  1: "Anxiety",
+  2: "PTSD",
+  3: "Depresi",
+  4: "OCD",
+  5: "Bipolar",
+  6: "Skizofrenia",
+  7: "Fobia Sosial",
+  8: "Gangguan Panik",
+  9: "ADHD",
+};
+
 export default function Detection() {
-  useEffect(() => {
-    document.title = "Tes Gejala | Vimind";
-  }, []);
+  useEffect(() => { document.title = "Tes Gejala | Vimind"; }, []);
 
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [questions, setQuestions] = useState([]);
-  const [answers, setAnswers] = useState([]);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [selected, setSelected] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
-  const [userEmail, setUserEmail] = useState(null);
-
-  // Adaptive Logic States
-  const [phase, setPhase] = useState(1);
-  const [isRefinedMode, setIsRefinedMode] = useState(false);
+  const [questions, setQuestions]               = useState([]);
+  const [selectedAnswers, setSelectedAnswers]   = useState({});
+  const [currentPage, setCurrentPage]           = useState(0);
+  const [loading, setLoading]                   = useState(true);
+  const [submitting, setSubmitting]             = useState(false);
+  const [userEmail, setUserEmail]               = useState(null);
+  const [isRefinedMode, setIsRefinedMode]       = useState(false);
   const [historyDiseaseID, setHistoryDiseaseID] = useState(0);
+  const [isOffline, setIsOffline]               = useState(!navigator.onLine);
+  const [retryAnswers, setRetryAnswers]         = useState(null);
 
-  // Offline banner state
-  const [isOffline, setIsOffline] = useState(!navigator.onLine);
-  const [retryAnswers, setRetryAnswers] = useState(null); // jawaban pending untuk di-retry
+  // ============================================================
+  // Group questions by disease_id & batasi maksimal 5 soal per halaman
+  // ============================================================
+  const pages = useMemo(() => {
+    const tempGroups = new Map();
+
+    // 1. Kumpulkan soal berdasarkan penyakit
+    questions.forEach((q) => {
+      const key = q.disease_id ?? "unknown";
+      if (!tempGroups.has(key)) {
+        tempGroups.set(key, {
+          disease_id: key,
+          disease_name: q.disease_name || DISEASE_LABELS[key] || `Penyakit ${key}`,
+          questions: [],
+        });
+      }
+      tempGroups.get(key).questions.push(q);
+    });
+
+    // 2. Pecah setiap kelompok penyakit menjadi sub-kelompok (maks 5 soal)
+    const chunkedPages = [];
+    tempGroups.forEach((group) => {
+      const totalQuestions = group.questions.length;
+      for (let i = 0; i < totalQuestions; i += 5) {
+        chunkedPages.push({
+          disease_id: group.disease_id,
+          disease_name: group.disease_name,
+          questions: group.questions.slice(i, i + 5),
+          part: Math.floor(i / 5) + 1, // Bagian ke-berapa dari penyakit ini
+          totalParts: Math.ceil(totalQuestions / 5) // Total bagian dari penyakit ini
+        });
+      }
+    });
+
+    return chunkedPages;
+  }, [questions]);
+
+  const currentGroup     = pages[currentPage] || { questions: [], disease_name: "", disease_id: null, part: 1, totalParts: 1 };
+  const currentQuestions = currentGroup.questions;
+  const totalPages       = pages.length;
 
   // ============================================================
   // Online / Offline detection
   // ============================================================
   useEffect(() => {
-    const goOnline = () => setIsOffline(false);
+    const goOnline  = () => setIsOffline(false);
     const goOffline = () => setIsOffline(true);
-    window.addEventListener("online", goOnline);
+    window.addEventListener("online",  goOnline);
     window.addEventListener("offline", goOffline);
     return () => {
-      window.removeEventListener("online", goOnline);
+      window.removeEventListener("online",  goOnline);
       window.removeEventListener("offline", goOffline);
     };
   }, []);
 
-  // Auto-retry finalize saat kembali online
+  // Auto-retry saat kembali online
   useEffect(() => {
     if (!isOffline && retryAnswers) {
       finalizeDiagnosis(retryAnswers, true);
     }
-  }, [isOffline]);
+  }, [isOffline, retryAnswers]);
 
   // ============================================================
-  // Init — load pertanyaan + cek draft tersimpan
+  // Init — load questions + cek draft
   // ============================================================
   useEffect(() => {
     let ignore = false;
 
     const init = async () => {
       try {
-        let email = "";
         const { data: { session } } = await supabase.auth.getSession();
         if (ignore) return;
 
+        let email = "";
         if (session?.user) {
           email = session.user.email;
           setUserEmail(email);
@@ -91,49 +135,53 @@ export default function Detection() {
 
         const forceNewTest = location.state?.forceNewTest;
 
-        // Cek apakah ada draft soal yang tersimpan (sesi sebelumnya putus)
+        // Pulihkan dari draft jika ada
         const draft = loadDraft();
         if (draft && !forceNewTest && draft.questions?.length > 0) {
-          // Resume dari draft
           setQuestions(draft.questions);
-          setAnswers(draft.answers || []);
-          setCurrentIndex(draft.currentIndex || 0);
-          setPhase(draft.phase || 1);
+          setSelectedAnswers(draft.selectedAnswers || {});
+          setCurrentPage(draft.currentPage || 0);
           setIsRefinedMode(draft.isRefinedMode || false);
           setHistoryDiseaseID(draft.historyDiseaseID || 0);
           setLoading(false);
           return;
         }
 
-        if (!forceNewTest) {
-          const response = await getQuestions("refined", [], email);
-          if (ignore) return;
-
-          const { questions: qs, is_refined } = response.data;
-
-          if (qs && qs.length > 0) {
-            setQuestions(qs);
-            if (is_refined) {
-              setIsRefinedMode(true);
-              const { history_disease_id } = response.data;
-              if (history_disease_id > 0) setHistoryDiseaseID(history_disease_id);
-            }
-          } else {
-            const fallback = await getQuestions("screening");
-            if (!ignore) setQuestions(fallback.data?.questions || fallback.data || []);
-          }
-        } else {
-          // Mulai tes baru — hapus draft lama
+        // Reset jika forceNewTest
+        if (forceNewTest) {
           clearDraft();
           setIsRefinedMode(false);
           setHistoryDiseaseID(0);
+        }
+
+        // Muat soal: coba refined dulu, fallback ke screening
+        let qs = [];
+        try {
+          const response = await getQuestions("refined", [], email);
+          if (ignore) return;
+
+          const { questions: refinedQs, is_refined } = response.data;
+
+          if (refinedQs && refinedQs.length > 0 && !forceNewTest) {
+            qs = refinedQs;
+            if (is_refined) {
+              setIsRefinedMode(true);
+              if (response.data.history_disease_id > 0) {
+                setHistoryDiseaseID(response.data.history_disease_id);
+              }
+            }
+          } else {
+            throw new Error("No refined questions, using screening");
+          }
+        } catch {
           const fallback = await getQuestions("screening");
-          if (!ignore) setQuestions(fallback.data?.questions || fallback.data || []);
+          if (ignore) return;
+          qs = fallback.data?.questions || fallback.data || [];
         }
+
+        if (!ignore) setQuestions(qs);
       } catch (err) {
-        if (!ignore) {
-          console.error("Initialization failed:", err);
-        }
+        if (!ignore) console.error("Initialization failed:", err);
       } finally {
         if (!ignore) setLoading(false);
       }
@@ -141,88 +189,55 @@ export default function Detection() {
 
     init();
     return () => { ignore = true; };
-  }, []);
+  }, [location.state]);
 
-  // Simpan draft ke localStorage setiap kali ada perubahan state penting
+  // Simpan draft setiap kali state penting berubah
   useEffect(() => {
     if (questions.length > 0) {
-      saveDraft({
-        questions,
-        answers,
-        currentIndex,
-        phase,
-        isRefinedMode,
-        historyDiseaseID,
-      });
+      saveDraft({ questions, selectedAnswers, currentPage, isRefinedMode, historyDiseaseID });
     }
-  }, [answers, currentIndex, phase, questions]);
+  }, [selectedAnswers, currentPage, questions, isRefinedMode, historyDiseaseID]);
 
   // ============================================================
-  // Next Question
+  // Helpers
   // ============================================================
-  const nextQuestion = async () => {
-    if (selected === null) return;
+  const isCurrentPageComplete = currentQuestions.every(
+    (q) => selectedAnswers[q.id] !== undefined
+  );
 
-    const weights = { 1: 1.0, 2: 0.7, 3: 0.4, 4: 0.0 };
-    const currentQuestion = questions[currentIndex];
-    const currentAnswer = {
-      symptom_id: currentQuestion.id,
-      value: weights[selected],
-      disease_id: currentQuestion.disease_id,
-    };
+  const handleSelectOption = (questionId, value) => {
+    setSelectedAnswers((prev) => ({ ...prev, [questionId]: value }));
+  };
 
-    const newAnswers = [...answers, currentAnswer];
-    setAnswers(newAnswers);
-    setSelected(null);
+  // ============================================================
+  // Next Page / Submit — langsung diagnosa di halaman terakhir
+  // ============================================================
+  const handleNextPage = async () => {
+    if (!isCurrentPageComplete) return;
 
-    if (currentIndex < questions.length - 1) {
-      setCurrentIndex(currentIndex + 1);
-    } else if (phase === 1) {
-      if (isRefinedMode) {
-        await finalizeDiagnosis(newAnswers);
-        return;
-      }
-
-      setLoading(true);
-
-      try {
-        // Pindah ke backend: Biarkan backend yang menentukan soal discovery
-        // Kita kirim symptom_id dan value, disease_id opsional karena backend akan cek di DB
-        const apiAnswers = newAnswers.map(({ symptom_id, value, disease_id }) => ({ 
-          symptom_id, 
-          value, 
-          disease_id: disease_id || 0 
-        }));
-        const response = await getDiscoveryQuestions(apiAnswers);
-        const newQuestions = response.data?.questions || response.data || [];
-
-        if (newQuestions.length > 0) {
-          setQuestions(newQuestions);
-          setCurrentIndex(0);
-          setPhase(2);
-        } else {
-          await finalizeDiagnosis(newAnswers);
-        }
-      } catch (err) {
-        console.error("Discovery failed:", err);
-        await finalizeDiagnosis(newAnswers);
-      } finally {
-        setLoading(false);
-      }
+    if (currentPage >= totalPages - 1) {
+      const weights = { 1: 1.0, 2: 0.7, 3: 0.4, 4: 0.0 };
+      const finalAnswers = questions.map((q) => ({
+        symptom_id: q.id,
+        value: weights[selectedAnswers[q.id]],
+        disease_id: q.disease_id || 0,
+      }));
+      await finalizeDiagnosis(finalAnswers);
     } else {
-      await finalizeDiagnosis(newAnswers);
+      setCurrentPage((prev) => prev + 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
   // ============================================================
-  // Finalize Diagnosis (dengan offline resilience)
+  // Finalize Diagnosis
   // ============================================================
   const finalizeDiagnosis = async (finalAnswers, isRetry = false) => {
     if (!isRetry) setSubmitting(true);
 
-    // Kalau offline, simpan jawaban dan tampilkan banner
+    const apiAnswers = finalAnswers.map(({ symptom_id, value }) => ({ symptom_id, value }));
+
     if (!navigator.onLine) {
-      const apiAnswers = finalAnswers.map(({ symptom_id, value }) => ({ symptom_id, value }));
       localStorage.setItem("pending_answers", JSON.stringify(apiAnswers));
       setRetryAnswers(finalAnswers);
       setSubmitting(false);
@@ -230,7 +245,6 @@ export default function Detection() {
     }
 
     try {
-      const apiAnswers = finalAnswers.map(({ symptom_id, value }) => ({ symptom_id, value }));
       const result = await diagnose(apiAnswers, userEmail, historyDiseaseID);
 
       if (userEmail) {
@@ -241,16 +255,11 @@ export default function Detection() {
         localStorage.setItem("pending_answers", JSON.stringify(apiAnswers));
       }
 
-      // Berhasil — hapus draft
       clearDraft();
       setRetryAnswers(null);
-
       navigate("/selesai", { state: { diagnosis: result.data, isGuest: !userEmail } });
     } catch (err) {
       console.error("Diagnosis failed:", err);
-
-      // Simpan jawaban agar bisa di-retry
-      const apiAnswers = finalAnswers.map(({ symptom_id, value }) => ({ symptom_id, value }));
       localStorage.setItem("pending_answers", JSON.stringify(apiAnswers));
       setRetryAnswers(finalAnswers);
       setSubmitting(false);
@@ -258,63 +267,68 @@ export default function Detection() {
   };
 
   // ============================================================
-  // Previous Question
+  // Prev Page & Exit
   // ============================================================
-  const previousQuestion = () => {
-    if (currentIndex > 0) {
-      setCurrentIndex(currentIndex - 1);
-      setAnswers(answers.slice(0, -1));
-      setSelected(null);
+  const handlePrevPage = () => {
+    if (currentPage > 0) {
+      setCurrentPage((prev) => prev - 1);
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
-  // Exit
   const handleExit = () => {
-    // Draft tetap tersimpan, user bisa resume nanti
-    if (userEmail) {
-      navigate("/dashboard");
-    } else {
-      navigate("/");
-    }
+    if (userEmail) navigate("/dashboard");
+    else navigate("/");
   };
 
   // ============================================================
-  // Render states
+  // Label tombol Next
+  // ============================================================
+  const getNextButtonLabel = () => {
+    if (submitting) return "Mengolah...";
+    if (currentPage < totalPages - 1) {
+      const nextGroup = pages[currentPage + 1];
+      if (nextGroup.disease_id === currentGroup.disease_id) {
+        return "Halaman Selanjutnya";
+      }
+      return `Selanjutnya: ${nextGroup.disease_name}`;
+    }
+    return "Selesai & Lihat Hasil";
+  };
+
+  // ============================================================
+  // Render — Loading
   // ============================================================
   if (loading) return (
-    <div className="question-page">
-      <h1>{phase === 2 ? "Menyiapkan Pertanyaan Lanjutan..." : "Memuat Pertanyaan..."}</h1>
-      <p style={{ marginTop: "10px", color: "#666" }}>
-        {phase === 2 ? "Sistem sedang mengkalibrasi soal berdasarkan jawaban Anda." : "Mohon tunggu sebentar."}
-      </p>
+    <div className="question-page" style={{ justifyContent: "center" }}>
+      <h1>Memuat Pertanyaan...</h1>
+      <p style={{ marginTop: "10px", color: "#666" }}>Mohon tunggu sebentar.</p>
     </div>
   );
 
-  if (!questions || questions?.length === 0) {
-    return (
-      <div className="question-page">
-        <h1>Terjadi Kesalahan</h1>
-        <p>Gagal memuat daftar pertanyaan. Silahkan coba lagi nanti.</p>
-        <button onClick={() => window.location.reload()} className="next-btn" style={{ marginTop: "20px" }}>
-          Muat Ulang
-        </button>
-      </div>
-    );
-  }
+  if (!questions || questions.length === 0) return (
+    <div className="question-page" style={{ justifyContent: "center" }}>
+      <h1>Terjadi Kesalahan</h1>
+      <p>Gagal memuat daftar pertanyaan. Silahkan coba lagi nanti.</p>
+      <button onClick={() => window.location.reload()} className="next-btn" style={{ marginTop: "20px" }}>
+        Muat Ulang
+      </button>
+    </div>
+  );
 
-  const progressPercent = ((currentIndex + 1) / (questions?.length || 1)) * 100;
+  const progressPercent = ((currentPage + 1) / totalPages) * 100;
 
+  // ============================================================
+  // Render — Main
+  // ============================================================
   return (
     <div className="question-page">
-
-      {/* OFFLINE BANNER */}
+      {/* BANNER OFFLINE */}
       {isOffline && (
         <div className="offline-banner">
           📵 Koneksi terputus — jawabanmu tersimpan otomatis. Akan dilanjutkan saat kembali online.
         </div>
       )}
-
-      {/* RETRY BANNER — internet mati saat submit */}
       {!isOffline && retryAnswers && (
         <div className="retry-banner">
           🔄 Koneksi kembali! Mengirim jawaban...
@@ -322,72 +336,83 @@ export default function Detection() {
       )}
 
       {/* TOMBOL KELUAR */}
-      <button className="back-btn" onClick={handleExit}>
-        Keluar
-      </button>
+      <button className="back-btn" onClick={handleExit}>Keluar</button>
 
+      {/* PROGRESS BAR */}
       <div className="progress-bar">
-        <div
-          className="progress-fill"
-          style={{ width: `${progressPercent}%` }}
-        ></div>
+        <div className="progress-fill" style={{ width: `${progressPercent}%` }}></div>
       </div>
 
-      <div className="question-container" key={questions[currentIndex]?.id || currentIndex}>
-        <div key={phase} className="phase-indicator" style={{
-          fontSize: "0.8rem",
-          color: "#888",
-          marginBottom: "10px",
-          fontWeight: "bold",
-          textTransform: "uppercase",
-          letterSpacing: "1px"
-        }}>
-          {phase === 1 ? "TAHAP 1: PENGECEKAN UMUM" : "TAHAP 2: PENDALAMAN GEJALA"}
+      <div className="question-container">
+        {/* NAMA PENYAKIT & INDIKATOR BAGIAN */}
+        <div className="phase-indicator">
+          {currentGroup.disease_name.toUpperCase()}
+          {currentGroup.totalParts > 1 ? ` (BAGIAN ${currentGroup.part})` : ""}
         </div>
 
-        <h1 key={questions[currentIndex]?.id}>
-          <span className="notranslate">{currentIndex + 1}. </span>
-          {questions[currentIndex]?.name}
-        </h1>
-
-        <div className="options-wrapper">
-          <div className="label-left">Setuju</div>
-          <div className="circles">
-            {[1, 2, 3, 4].map((i) => (
-              <div
-                key={i}
-                className={`circle ${selected === i ? "active" : ""}`}
-                onClick={() => setSelected(i)}
-              ></div>
-            ))}
-          </div>
-          <div className="label-right">
-            Tidak<br />Setuju
-          </div>
+        {/* SUB-INFO: bagian ke-berapa + jumlah soal di halaman ini */}
+        <div style={{ textAlign: "center", color: "#888", fontSize: "13px", marginBottom: "16px" }}>
+          Halaman {currentPage + 1} dari {totalPages} &nbsp;·&nbsp; {currentQuestions.length} pertanyaan
         </div>
 
+        {/* DAFTAR SOAL — dibatasi 5 soal sesuai chunking */}
+        {currentQuestions.map((q, idx) => {
+          // Kalkulasi nomor urut agar tetap berlanjut (misal halaman ke-2 mulai dari no 6)
+          const questionNumber = ((currentGroup.part - 1) * 5) + idx + 1;
+          
+          return (
+            <div key={q.id} className="question-item">
+              <h2>
+                <span style={{ color: "#aaa", fontSize: "14px", marginRight: "8px" }}>
+                  {questionNumber}.
+                </span>
+                {q.name}
+              </h2>
+
+              <div className="options-wrapper">
+                <div className="label-left">Setuju</div>
+
+                <div className="circles">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div
+                      key={i}
+                      className={`circle ${selectedAnswers[q.id] === i ? "active" : ""}`}
+                      onClick={() => handleSelectOption(q.id, i)}
+                    />
+                  ))}
+                </div>
+
+                <div className="label-right">
+                  Tidak<br />Setuju
+                </div>
+              </div>
+            </div>
+          );
+        })}
+
+        {/* TOMBOL AKSI */}
         <div className="action-buttons">
-          {currentIndex > 0 && (
-            <button className="prev-btn" onClick={previousQuestion}>
+          {currentPage > 0 && (
+            <button className="prev-btn" onClick={handlePrevPage}>
               Kembali
             </button>
           )}
 
           <button
-            key={currentIndex}
             className="next-btn"
-            onClick={nextQuestion}
-            disabled={selected === null || submitting || (isOffline && currentIndex === questions.length - 1)}
-            style={{
-              opacity: selected === null || submitting ? 0.5 : 1,
-              cursor: selected === null || submitting ? "not-allowed" : "pointer"
-            }}
+            onClick={handleNextPage}
+            disabled={
+              !isCurrentPageComplete ||
+              submitting ||
+              (isOffline && currentPage === totalPages - 1)
+            }
           >
-            {submitting ? "Mengolah..." : (currentIndex < questions.length - 1 ? "Lanjutkan" : (phase === 1 ? "Lanjut Fase Detail" : "Selesai"))}
+            {getNextButtonLabel()}
           </button>
         </div>
       </div>
 
+      {/* LOGO */}
       <div className="logo-bottom">Vimind</div>
     </div>
   );

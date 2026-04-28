@@ -6,18 +6,22 @@
 body {
   margin: 0;
   font-family: 'Poppins', sans-serif;
-  background-color: #f8f8fc; /* Warna background super terang sedikit keunguan */
+  background-color: #f8f8fc; 
+  overflow-x: hidden; 
 }
 
 .question-page {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
+  /* KUNCI PERBAIKAN 1: Gunakan block, BUKAN flex, agar saat panjang, teks tidak kepotong di atas layar */
+  display: block !important; 
+  width: 100%;
+  height: 100vh !important; /* Tinggi fix 1 layar */
+  overflow-y: auto !important; /* KUNCI PERBAIKAN 2: Paksa agar bisa di-scroll ke bawah */
+  overflow-x: hidden;
   position: relative;
-  padding: 20px;
   background-color: #fcfbfe;
+  box-sizing: border-box;
+  padding-top: 140px; /* Jarak aman dari atas agar TERHINDAR dari progress bar */
+  padding-bottom: 100px; /* Jarak aman di bawah agar logo tidak mepet */
 }
 
 /* ==========================================
@@ -44,6 +48,7 @@ body {
 
 .back-btn:hover {
   background: #7241eb;
+  color: white;
   transform: translateY(-1px);
 }
 
@@ -58,14 +63,15 @@ body {
   width: 80%;
   max-width: 900px;
   height: 6px;
-  background-color: #e9ddff; /* Trek abu-abu/ungu pudar */
+  background-color: #e9ddff; 
   border-radius: 10px;
   overflow: hidden;
+  z-index: 10;
 }
 
 .progress-fill {
   height: 100%;
-  background-color: #8a5cff; /* Warna ungu utama */
+  background-color: #8a5cff; 
   border-radius: 10px;
   transition: width 0.4s ease-in-out;
 }
@@ -74,22 +80,38 @@ body {
    QUESTION AREA
    ========================================== */
 .question-container {
-  text-align: center;
+  margin: 0 auto; /* Posisi di tengah secara horizontal */
   max-width: 800px;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 35px; /* Jarak proporsional antar elemen */
 }
 
-.question-container h1 {
-  font-size: 30px;
-  color: #2b1b54; /* Ungu gelap pekat sesuai gambar */
-  font-weight: 800;
+.phase-indicator {
+  font-size: 0.85rem;
+  color: #888;
+  margin-bottom: 40px;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  text-align: center;
+}
+
+/* Container untuk tiap pertanyaan */
+.question-item {
+  margin-bottom: 10px; 
+  width: 100%;
+}
+
+.question-item h2 {
+  font-size: 22px;
+  color: #2b1b54; 
+  font-weight: 700;
   line-height: 1.4;
-  margin: 0;
+  margin: 0 auto -30px auto; /* Jarak pas antara teks soal ke bulatan Likert */
   max-width: 700px;
+  text-align: center;
 }
 
 /* ==========================================
@@ -99,25 +121,28 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 30px; 
+  gap: 30px; /* Jarak teks label ke deretan bulatan */
 }
 
 .label-left, 
 .label-right {
   font-size: 13px;
   font-weight: 700;
-  color: #6b7280; /* Warna abu-abu sesuai desain */
+  color: #6b7280; 
   text-align: center;
   line-height: 1.3;
+  width: 60px; 
 }
+
+.label-left { text-align: right; }
+.label-right { text-align: left; }
 
 .circles {
   display: flex;
   align-items: center;
-  gap: 15px; 
+  gap: 20px; /* Jarak renggang yang pas antar bulatan ungu */
 }
 
-/* Lingkaran Dasar */
 .circle {
   border: 2px solid #8a5cff;
   border-radius: 50%;
@@ -126,189 +151,117 @@ body {
   transition: all 0.2s ease-in-out;
 }
 
-/* Ukuran: Besar - Kecil - Kecil - Besar */
-.circle:nth-child(1), 
-.circle:nth-child(4) {
-  width: 50px;
-  height: 50px;
-}
+.circle:nth-child(1), .circle:nth-child(4) { width: 50px; height: 50px; }
+.circle:nth-child(2), .circle:nth-child(3) { width: 40px; height: 40px; }
 
-.circle:nth-child(2), 
-.circle:nth-child(3) {
-  width: 40px;
-  height: 40px;
-}
-
-.circle:hover {
-  background-color: rgba(138, 92, 255, 0.1);
-}
-
-.circle.active {
-  background-color: #8a5cff;
-  border-color: #8a5cff;
-}
+.circle:hover { background-color: rgba(138, 92, 255, 0.1); }
+.circle.active { background-color: #8a5cff; border-color: #8a5cff; }
 
 /* ==========================================
-   ACTION BUTTONS (KEMBALI & LANJUTKAN)
+   ACTION BUTTONS
    ========================================== */
 .action-buttons {
-  display: flex;
-  gap: 10px; /* Sesuai gambar, tombol jaraknya dekat */
-  margin-top: 5px;
-  justify-content: center;
-  align-items: center;
+  display: flex !important;
+  gap: 16px !important;
+  margin-top: 30px !important;
+  justify-content: center !important;
+  align-items: center !important; 
+  width: 100% !important;
 }
 
-/* Tombol Kembali - Outline */
+/* Base style untuk keduanya (Hanya yang sama saja) */
+.prev-btn, .next-btn {
+  font-family: 'Poppins', sans-serif !important;
+  font-weight: 600 !important;
+  border-radius: 8px !important;
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  text-align: center !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+  box-sizing: border-box !important;
+  line-height: 1.2 !important;
+}
+
+/* --- KHUSUS TOMBOL KEMBALI (Dibuat lebih pendek) --- */
 .prev-btn {
+  width: 130px !important;
+  height: 38px !important; 
+  font-size: 14px !important;
   background-color: transparent !important;
   color: #8a5cff !important;
-  border: 2px solid #8a5cff !important;
-  border-radius: 12px;
-  margin-top: 40px;
-  padding: 12px 46px;
-  font-size: 16px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  min-width: 120px;
+  border: 1.5px solid #8a5cff !important;
+  padding: 0 !important; 
 }
 
-.prev-btn:hover {
-  background-color: transparent !important;
-  transform: translateY(-3px);
-  box-shadow: 0 4px 8px rgba(138, 92, 255, 0.1);
-  /* background-color: rgba(138, 92, 255, 0.1);
-  color: white !important; */
-}
-
-/* Tombol Lanjutkan - Filled */
+/* --- KHUSUS TOMBOL LANJUTKAN (Bisa menyesuaikan teks) --- */
 .next-btn {
-  background-color: #8a5cff;
-  color: white;
-  border: 1px solid #8a5cff;
-  border-radius: 6px;
-  padding: 6px 16px;
-  font-size: 11px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  min-width: 80px;
+  width: 160px !important;
+  min-height: 38px !important; 
+  font-size: 14px !important;
+  background-color: #8a5cff !important;
+  color: #ffffff !important;
+  border: 1.5px solid #8a5cff !important;
+  margin-bottom: 40px !important;
+  padding: 8px 15px !important; 
 }
 
-.next-btn:hover:not(:disabled) {
-  background-color: #7241eb;
-  border-color: #7241eb;
-}
+/* Hover Effects */
+.prev-btn:hover { background-color: rgba(138, 92, 255, 0.1) !important; }
+.next-btn:hover:not(:disabled) { background-color: #7241eb !important; }
+.next-btn:disabled { opacity: 0.5 !important; cursor: not-allowed !important; }
+
 
 /* ==========================================
-   LOGO BOTTOM RIGHT (VIMIND)
+   LOGO BOTTOM RIGHT
    ========================================== */
 .logo-bottom {
-  position: absolute;
+  position: fixed !important;
   bottom: 25px;
   right: 35px;
+  z-index: 100;
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #2b1b54  !important;
-}
-
-.logo-bottom span {
+  color: #2b1b54 !important;
   font-size: 20px;
   font-weight: 800;
-  color: #2b1b54 !important;
-}
-
-.logo-icons {
-  display: flex;
-  gap: 4px;
-}
-
-.icon-box {
-  background: #8a5cff;
-  color: white;
-  width: 22px;
-  height: 22px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px;
+  pointer-events: none; 
 }
 
 /* ==========================================
    RESPONSIVE DESIGN
    ========================================== */
 @media (max-width: 768px) {
-  .back-btn {
-    top: 15px; left: 15px;
-  }
-  .progress-bar-container {
-    top: 22px; width: 85%;
-  }
-  .question-container {
-    padding: 0 20px;
-  }
-  .question-container h1 {
-    font-size: 24px;
-  }
+  .back-btn { top: 15px !important; left: 15px !important; }
+  .progress-bar { top: 22px; width: 85%; }
+  .question-page { padding: 100px 20px 80px 20px; }
+  .question-item h2 { font-size: 18px; }
   .circle:nth-child(1), .circle:nth-child(4) { width: 45px; height: 45px; }
   .circle:nth-child(2), .circle:nth-child(3) { width: 35px; height: 35px; }
-  .logo-bottom {
-    bottom: 20px; right: 20px;
-  }
+  .logo-bottom { bottom: 20px; right: 20px; }
+  .action-buttons { flex-direction: column-reverse; gap: 12px; }
+  .prev-btn, .next-btn { width: 100%; max-width: 300px; }
 }
 
 @media (max-width: 480px) {
-  .back-btn {
-    top: 15px; left: 15px; padding: 4px 12px; font-size: 10px;
-  }
-  .progress-bar-container {
-    top: 20px; width: 70%;
-  }
-  .question-container h1 {
-    font-size: 20px;
-  }
-  .options-wrapper {
-    gap: 15px;
-  }
+  .back-btn { padding: 6px 12px; font-size: 12px; }
+  .question-item h2 { font-size: 16px; }
+  .options-wrapper { gap: 15px; }
+  .label-left, .label-right { font-size: 11px; width: 50px; }
   .circle:nth-child(1), .circle:nth-child(4) { width: 40px; height: 40px; }
   .circle:nth-child(2), .circle:nth-child(3) { width: 30px; height: 30px; }
-  .logo-bottom {
-    bottom: 15px; right: 15px;
-  }
-  .logo-bottom span { font-size: 16px; }
-  .icon-box { width: 18px; height: 18px; }
+  .logo-bottom { bottom: 15px; right: 15px; font-size: 16px; }
 }
 
 /* ==========================================
    OFFLINE / RETRY BANNERS
    ========================================== */
-.offline-banner,
-.retry-banner {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  z-index: 9999;
-  text-align: center;
-  font-size: 14px;
-  font-weight: 600;
-  padding: 10px 20px;
-  animation: slideDown 0.3s ease;
+.offline-banner, .retry-banner {
+  position: fixed; top: 0; left: 0; width: 100%; z-index: 9999; text-align: center;
+  font-size: 14px; font-weight: 600; padding: 10px 20px; animation: slideDown 0.3s ease;
 }
-
-.offline-banner {
-  background: linear-gradient(90deg, #ef4444, #dc2626);
-  color: #fff;
-}
-
-.retry-banner {
-  background: linear-gradient(90deg, #6366f1, #8b5cf6);
-  color: #fff;
-}
-
-@keyframes slideDown {
-  from { transform: translateY(-100%); opacity: 0; }
-  to   { transform: translateY(0);    opacity: 1; }
-}
+.offline-banner { background: linear-gradient(90deg, #ef4444, #dc2626); color: #fff; }
+.retry-banner { background: linear-gradient(90deg, #6366f1, #8b5cf6); color: #fff; }
+@keyframes slideDown { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
