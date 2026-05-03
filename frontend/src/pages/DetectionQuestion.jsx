@@ -26,15 +26,15 @@ function clearDraft() {
 // Fallback label penyakit (sesuaikan dengan disease_id kamu)
 // ============================================================
 const DISEASE_LABELS = {
-  1: "Anxiety",
-  2: "PTSD",
-  3: "Depresi",
-  4: "OCD",
-  5: "Bipolar",
-  6: "Skizofrenia",
-  7: "Fobia Sosial",
-  8: "Gangguan Panik",
-  9: "ADHD",
+  1: "Insecure",
+  2: "Fobia Sosial / Anti Sosial",
+  3: "Skizofrenia",
+  4: "Bipolar",
+  5: "Gangguan Stres Pasca-trauma (PTSD)",
+  6: "Gangguan Psikosis",
+  7: "Depression",
+  8: "Obsessive Compulsive Disorder (OCD)",
+  9: "Anxiety Disorder",
 };
 
 export default function Detection() {
