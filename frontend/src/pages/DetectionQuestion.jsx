@@ -1,6 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect, useMemo } from "react";
-import { getQuestions, diagnose } from "../services/api";
+import { getQuestions, diagnose, getLevels } from "../services/api";
 import { supabase } from "../services/supabaseClient";
 import "../css/DetectionQuestionCSS.css";
 
@@ -31,7 +31,7 @@ const DISEASE_LABELS = {
   3: "Skizofrenia",
   4: "Bipolar",
   5: "Gangguan Stres Pasca-trauma (PTSD)",
-  6: "Gangguan Psikosis",
+  6: "Agorafobia",
   7: "Depression",
   8: "Obsessive Compulsive Disorder (OCD)",
   9: "Anxiety Disorder",
@@ -53,6 +53,7 @@ export default function Detection() {
   const [historyDiseaseID, setHistoryDiseaseID] = useState(0);
   const [isOffline, setIsOffline]               = useState(!navigator.onLine);
   const [retryAnswers, setRetryAnswers]         = useState(null);
+  const [cfLevels, setCfLevels]                 = useState(null);
 
   // ============================================================
   // Group questions by disease_id & batasi maksimal 5 soal per halaman
@@ -179,6 +180,22 @@ export default function Detection() {
           qs = fallback.data?.questions || fallback.data || [];
         }
 
+        // Fetch CF levels mapping from DB
+        try {
+          const levelsRes = await getLevels();
+          if (levelsRes.data && !ignore) {
+            const levelsMap = {};
+            // Asumsikan level_id 1 (Sangat memungkinkan) = Opsi 1 (Paling Setuju)
+            // Asumsikan level_id 4 (Sedikit memungkinkan) = Opsi 4 (Tidak Setuju)
+            levelsRes.data.forEach((lvl) => {
+              levelsMap[lvl.level_id] = lvl.cf_value;
+            });
+            setCfLevels(levelsMap);
+          }
+        } catch (err) {
+          if (!ignore) console.warn("Failed to fetch CF levels, using fallback weights");
+        }
+
         if (!ignore) setQuestions(qs);
       } catch (err) {
         if (!ignore) console.error("Initialization failed:", err);
@@ -216,10 +233,11 @@ export default function Detection() {
     if (!isCurrentPageComplete) return;
 
     if (currentPage >= totalPages - 1) {
-      const weights = { 1: 1.0, 2: 0.7, 3: 0.4, 4: 0.0 };
+      // Fallback weights if DB fetch failed
+      const weights = cfLevels || { 1: 0.855, 2: 0.555, 3: 0.305, 4: 0.15 };
       const finalAnswers = questions.map((q) => ({
         symptom_id: q.id,
-        value: weights[selectedAnswers[q.id]],
+        value: weights[selectedAnswers[q.id]] || 0,
         disease_id: q.disease_id || 0,
       }));
       await finalizeDiagnosis(finalAnswers);

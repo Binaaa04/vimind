@@ -164,3 +164,13 @@ type AdminRule struct {
 	SymptomID int     `json:"symptom_id"`
 	CFValue   float64 `json:"cf_value"`
 }
+
+// ============================================================
+// Level Category (CF User Weights)
+// ============================================================
+
+type LevelCategory struct {
+	LevelID   int     `json:"level_id"`
+	LevelName string  `json:"level_name"`
+	CFValue   float64 `json:"cf_value"`
+}

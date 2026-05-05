@@ -26,6 +26,9 @@ func RegisterRoutes(app *fiber.App, handler *controllers.Handler) {
 	// Public Banners (untuk Dashboard carousel)
 	api.Get("/banners", handler.GetPublicBanners)
 
+	// Public Level Categories (CF User Weights)
+	api.Get("/levels", handler.GetLevelCategories)
+
 	// Feedback & Testimonials (Public)
 	api.Get("/testimonials", handler.GetPublicTestimonials)
 	api.Post("/testimonials", handler.SubmitTestimonial)

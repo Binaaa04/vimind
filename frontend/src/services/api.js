@@ -29,6 +29,7 @@ export const sendChatMessage = (email, messages) => api.post("/api/chat", { emai
 // Public
 export const getPublicFAQ = () => api.get("/api/faq");
 export const getPublicBanners = () => api.get("/api/banners");
+export const getLevels = () => api.get("/api/levels");
 
 // Admin - Helper for headers
 const adminConfig = (email) => ({

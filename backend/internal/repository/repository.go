@@ -623,3 +623,29 @@ func (r *Repository) DeleteRule(id int) error {
 	return err
 }
 
+// ============================================================
+// Level Category (CF User Weights)
+// ============================================================
+
+func (r *Repository) GetLevelCategories() ([]models.LevelCategory, error) {
+	rows, err := r.pool.Query(context.Background(), `
+		SELECT level_id, COALESCE(level_name,''), COALESCE(cf_value, 0)
+		FROM level_category
+		ORDER BY level_id ASC
+	`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var levels []models.LevelCategory
+	for rows.Next() {
+		var l models.LevelCategory
+		if err := rows.Scan(&l.LevelID, &l.LevelName, &l.CFValue); err != nil {
+			return nil, err
+		}
+		levels = append(levels, l)
+	}
+	return levels, nil
+}
+

@@ -353,3 +353,18 @@ func (h *Handler) GetPublicBanners(c *fiber.Ctx) error {
 	}
 	return c.JSON(list)
 }
+
+// ============================================================
+// Level Category (CF User Weights)
+// ============================================================
+
+func (h *Handler) GetLevelCategories(c *fiber.Ctx) error {
+	list, err := h.Repo.GetLevelCategories()
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to fetch level categories"})
+	}
+	if list == nil {
+		list = []models.LevelCategory{}
+	}
+	return c.JSON(list)
+}
