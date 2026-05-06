@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../services/supabaseClient";
 import { getHistory } from "../services/api";
+import logo from '../assets/logovimind2.png';
 import "../css/SummaryModalCSS.css";
 
 export default function SummaryModal({ onClose }) {
@@ -151,14 +152,16 @@ export default function SummaryModal({ onClose }) {
         </style>
       </head>
       <body>
-        <div class="header">
-          <div class="logo">Vi<span>Mind</span></div>
-          <div class="meta">
-            <p><strong>Laporan Progress Kesehatan Mental</strong></p>
-            <p>Nama: <strong>${userName}</strong></p>
-            <p>Dicetak: ${nowStr}</p>
-          </div>
-        </div>
+        return (
+  <div className="header">
+    <img src={logo} alt="Logo Vimind" />
+    <div className="meta">
+      <p><strong>Laporan Progress Kesehatan Mental</strong></p>
+      <p>Nama: <strong>{userName}</strong></p>
+      <p>Dicetak: {nowStr}</p>
+    </div>
+  </div>
+);
         <div class="summary-box">
           <div class="stat-card">
             <div class="val">${history.length}</div>
