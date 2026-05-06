@@ -1,5 +1,4 @@
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import illustration from "../assets/logovimind.png";
 import logo from "../assets/logovimind2.png";
@@ -13,6 +12,7 @@ const ResetPassword = () => {
   }, []);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const [showPass, setShowPass] = useState(false);
   const [showConf, setShowConf] = useState(false);
@@ -21,6 +21,15 @@ const ResetPassword = () => {
     password: "",
     confirm: ""
   });
+
+  // Check if user has active session
+  useEffect(() => {
+    const checkSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsLoggedIn(!!session);
+    };
+    checkSession();
+  }, []);
 
   const handleChange = (e) => {
     setForm({
@@ -50,13 +59,25 @@ const ResetPassword = () => {
 
       if (error) throw error;
 
-      alert("Password berhasil diubah! Silakan login kembali.");
-      navigate("/reset-success");
+      alert("Password berhasil diubah!");
+      if (isLoggedIn) {
+        navigate("/dashboard");
+      } else {
+        navigate("/reset-success");
+      }
     } catch (error) {
       console.error("Update password error:", error.message);
       alert("Gagal mengubah password: " + error.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleBack = () => {
+    if (isLoggedIn) {
+      navigate("/dashboard");
+    } else {
+      navigate("/login");
     }
   };
 
@@ -108,6 +129,10 @@ const ResetPassword = () => {
 
             <button type="submit" className="primary-btn" disabled={loading}>
               {loading ? "Menyimpan..." : "Simpan Password Baru"}
+            </button>
+
+            <button type="button" className="primary-btn" onClick={handleBack} style={{ backgroundColor: '#e2e8f0', color: '#475569', marginTop: '8px' }}>
+              Kembali
             </button>
 
           </form>

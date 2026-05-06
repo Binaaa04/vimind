@@ -162,10 +162,10 @@ const ProfileSidebar = ({
               className="profile-menu-btn"
               onClick={() => {
                 onClose();
-                navigate("/forgot-password");
+                navigate("/reset-password");
               }}
             >
-              Forgot Password
+              Ubah Password
             </button>
 
             {/* === TOMBOL HAPUS AKUN (MEMBUKA MODAL) === */}
