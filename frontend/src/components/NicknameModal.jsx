@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import "../css/NicknameCSS.css";
 import confetti from "canvas-confetti";
 
-const NicknameModal = ({ isOpen, onClose }) => {
+const NicknameModal = ({ isOpen, onClose, onSave }) => {
   const [nickname, setNickname] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
@@ -21,7 +21,12 @@ const NicknameModal = ({ isOpen, onClose }) => {
     e.preventDefault();
     if (!nickname.trim()) return;
 
-    setShowSuccess(true);
+    // Panggil onSave dari Dashboard.jsx (mengirim nama baru ke backend)
+    if (onSave) {
+      onSave(nickname);
+    } else {
+      setShowSuccess(true);
+    }
 
     confetti({
       particleCount: 120,
@@ -78,7 +83,7 @@ const NicknameModal = ({ isOpen, onClose }) => {
         </div>
       )}
 
-      {showSuccess && (
+      {showSuccess && !onSave && (
         <div className={`success-overlay ${isClosing ? "fade-out" : "fade-in"}`}>
           <div className={`success-modal ${isClosing ? "animate-pop-out" : "animate-pop"}`}>
             <div className="success-icon">✓</div>

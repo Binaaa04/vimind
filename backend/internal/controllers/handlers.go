@@ -307,6 +307,7 @@ func (h *Handler) UpdateProfile(c *fiber.Ctx) error {
 
 	err := h.Repo.UpsertProfile(pr.Email, pr.Name, pr.AvatarURL)
 	if err != nil {
+		fmt.Printf("Error upserting profile: %v\n", err)
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to update profile"})
 	}
 
