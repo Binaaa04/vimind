@@ -240,11 +240,11 @@ export default function Detection() {
   // Helpers
   // ============================================================
   const isCurrentPageComplete = currentQuestions.every(
-    (q) => selectedAnswers[q.id] !== undefined
+    (q) => selectedAnswers[`d${q.disease_id}_s${q.id}`] !== undefined
   );
 
-  const handleSelectOption = (questionId, value) => {
-    setSelectedAnswers((prev) => ({ ...prev, [questionId]: value }));
+  const handleSelectOption = (compositeKey, value) => {
+    setSelectedAnswers((prev) => ({ ...prev, [compositeKey]: value }));
     // Auto-save dipicu oleh useEffect di atas
   };
 
@@ -266,7 +266,7 @@ export default function Detection() {
       const weights = { 1: 1.0, 2: 0.6, 3: 0.2, 4: 0.0 };
       const finalAnswers = questions.map((q) => ({
         symptom_id: q.id,
-        value: weights[selectedAnswers[q.id]] ?? 0,
+        value: weights[selectedAnswers[`d${q.disease_id}_s${q.id}`]] ?? 0,
         disease_id: q.disease_id || 0,
       }));
       await finalizeDiagnosis(finalAnswers);
@@ -408,9 +408,10 @@ export default function Detection() {
         {/* DAFTAR SOAL — dibatasi 5 soal sesuai chunking */}
         {currentQuestions.map((q, idx) => {
           const questionNumber = ((currentGroup.part - 1) * 5) + idx + 1;
+          const compositeKey = `d${q.disease_id}_s${q.id}`;
           
           return (
-            <div key={q.id} className="question-item">
+            <div key={compositeKey} className="question-item">
               <h2>
                 <span style={{ color: "#aaa", fontSize: "14px", marginRight: "8px" }}>
                   {questionNumber}.
@@ -425,8 +426,8 @@ export default function Detection() {
                   {[1, 2, 3, 4].map((i) => (
                     <div
                       key={i}
-                      className={`circle ${selectedAnswers[q.id] === i ? "active" : ""}`}
-                      onClick={() => handleSelectOption(q.id, i)}
+                      className={`circle ${selectedAnswers[compositeKey] === i ? "active" : ""}`}
+                      onClick={() => handleSelectOption(compositeKey, i)}
                     />
                   ))}
                 </div>
