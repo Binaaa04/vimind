@@ -29,6 +29,11 @@ func RegisterRoutes(app *fiber.App, handler *controllers.Handler) {
 	// Public Level Categories (CF User Weights)
 	api.Get("/levels", handler.GetLevelCategories)
 
+	// Test Session Cache (simpan progress tes saat refresh)
+	api.Post("/test-session", handler.SaveTestSession)
+	api.Get("/test-session", handler.GetTestSession)
+	api.Delete("/test-session", handler.DeleteTestSession)
+
 	// Feedback & Testimonials (Public)
 	api.Get("/testimonials", handler.GetPublicTestimonials)
 	api.Post("/testimonials", handler.SubmitTestimonial)

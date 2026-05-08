@@ -31,6 +31,12 @@ export const getPublicFAQ = () => api.get("/api/faq");
 export const getPublicBanners = () => api.get("/api/banners");
 export const getLevels = () => api.get("/api/levels");
 
+// Test Session Cache (simpan progress tes di backend)
+const sessionParam = (email, sessionId) => email ? `email=${email}` : `session_id=${sessionId}`;
+export const saveTestSession = (email, sessionId, answers, currentPage) => api.post(`/api/test-session?${sessionParam(email, sessionId)}`, { answers, current_page: currentPage });
+export const getTestSession = (email, sessionId) => api.get(`/api/test-session?${sessionParam(email, sessionId)}`);
+export const deleteTestSession = (email, sessionId) => api.delete(`/api/test-session?${sessionParam(email, sessionId)}`);
+
 // Admin - Helper for headers
 const adminConfig = (email) => ({
   headers: { "X-Admin-Email": email }

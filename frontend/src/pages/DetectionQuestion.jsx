@@ -1,30 +1,8 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { useState, useEffect, useMemo, useRef } from "react";
-import { getQuestions, diagnose } from "../services/api";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import { getQuestions, diagnose, saveTestSession, getTestSession, deleteTestSession } from "../services/api";
 import { supabase } from "../services/supabaseClient";
 import "../css/DetectionQuestionCSS.css";
-
-// ============================================================
-// localStorage draft helpers
-// ============================================================
-const LS_DRAFT_KEY = "quiz_draft";
-
-function saveDraft(data) {
-  try { localStorage.setItem(LS_DRAFT_KEY, JSON.stringify(data)); } catch (_) {}
-}
-function loadDraft() {
-  try {
-    const raw = localStorage.getItem(LS_DRAFT_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    // Jangan restore draft yang sudah selesai (completed)
-    if (parsed.completed) return null;
-    return parsed;
-  } catch (_) { return null; }
-}
-function clearDraft() {
-  localStorage.removeItem(LS_DRAFT_KEY);
-}
 
 // ============================================================
 // Fallback label penyakit (sesuaikan dengan disease_id kamu)
@@ -46,7 +24,6 @@ export default function Detection() {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const initDone = useRef(false); // Cegah auto-save selama init
 
   const [questions, setQuestions]               = useState([]);
   const [selectedAnswers, setSelectedAnswers]   = useState({});
@@ -54,6 +31,7 @@ export default function Detection() {
   const [loading, setLoading]                   = useState(true);
   const [submitting, setSubmitting]             = useState(false);
   const [userEmail, setUserEmail]               = useState(null);
+  const [sessionId, setSessionId]               = useState(null);
   const [isRefinedMode, setIsRefinedMode]       = useState(false);
   const [historyDiseaseID, setHistoryDiseaseID] = useState(0);
   const [isOffline, setIsOffline]               = useState(!navigator.onLine);
@@ -65,7 +43,6 @@ export default function Detection() {
   const pages = useMemo(() => {
     const tempGroups = new Map();
 
-    // 1. Kumpulkan soal berdasarkan penyakit
     questions.forEach((q) => {
       const key = q.disease_id ?? "unknown";
       if (!tempGroups.has(key)) {
@@ -78,7 +55,6 @@ export default function Detection() {
       tempGroups.get(key).questions.push(q);
     });
 
-    // 2. Pecah setiap kelompok penyakit menjadi sub-kelompok (maks 5 soal)
     const chunkedPages = [];
     tempGroups.forEach((group) => {
       const totalQuestions = group.questions.length;
@@ -87,8 +63,8 @@ export default function Detection() {
           disease_id: group.disease_id,
           disease_name: group.disease_name,
           questions: group.questions.slice(i, i + 5),
-          part: Math.floor(i / 5) + 1, // Bagian ke-berapa dari penyakit ini
-          totalParts: Math.ceil(totalQuestions / 5) // Total bagian dari penyakit ini
+          part: Math.floor(i / 5) + 1,
+          totalParts: Math.ceil(totalQuestions / 5)
         });
       }
     });
@@ -122,15 +98,15 @@ export default function Detection() {
   }, [isOffline, retryAnswers]);
 
   // ============================================================
-  // Init — load questions + cek draft
+  // Init — load questions + cek backend session cache
   // ============================================================
   useEffect(() => {
     let ignore = false;
 
     const init = async () => {
-      // Reset questions dulu agar tidak ada render dengan stale data
-      setQuestions([]);
-      setSelectedAnswers({});
+      // Bersihkan sisa data lama
+      localStorage.removeItem("quiz_draft");
+      localStorage.removeItem("quiz_active");
 
       try {
         const { data: { session } } = await supabase.auth.getSession();
@@ -142,51 +118,65 @@ export default function Detection() {
           setUserEmail(email);
         }
 
-        const isGuest = !email;
+        // Guest session ID: buat baru atau pakai yang sudah ada di sessionStorage
+        let sid = sessionStorage.getItem("guest_session_id") || "";
+        if (!email && !sid) {
+          sid = crypto.randomUUID();
+          sessionStorage.setItem("guest_session_id", sid);
+        }
+        setSessionId(sid);
+
         const forceNewTest = location.state?.forceNewTest;
-        // sessionStorage hilang saat tab ditutup, tapi bertahan saat refresh
-        const isOngoingSession = sessionStorage.getItem("quiz_active") === "true";
+        const cacheKey = { email, sid }; // salah satu akan dipakai
 
-        // Helper: mulai tes bersih
-        const startFresh = async () => {
-          clearDraft();
-          setCurrentPage(0);
-          setIsRefinedMode(false);
-          setHistoryDiseaseID(0);
-          sessionStorage.setItem("quiz_active", "true");
-
-          const res = await getQuestions("all");
-          if (ignore) return;
-          const qs = res.data?.questions || res.data || [];
-          if (!ignore) setQuestions(qs);
-        };
-
-        // ── GUEST USER: Selalu mulai tes baru ──
-        if (isGuest) {
-          await startFresh();
-          return;
-        }
-
-        // ── LOGGED-IN + Eksplisit "Deteksi Penyakit Baru" ──
+        // ── "Deteksi Penyakit Baru" → hapus cache, mulai fresh ──
         if (forceNewTest === true) {
-          await startFresh();
-          return;
+          try { await deleteTestSession(email, sid); } catch {}
+          if (!email) {
+            // Guest: buat session ID baru untuk tes baru
+            const newSid = crypto.randomUUID();
+            sessionStorage.setItem("guest_session_id", newSid);
+            setSessionId(newSid);
+          }
         }
 
-        // ── LOGGED-IN + "Lanjutkan Kondisi" ATAU refresh mid-test ──
-        if (forceNewTest === false || (forceNewTest === undefined && isOngoingSession)) {
-          const draft = loadDraft();
-          if (draft && draft.questions?.length > 0) {
-            setQuestions(draft.questions);
-            setSelectedAnswers(draft.selectedAnswers || {});
-            setCurrentPage(draft.currentPage || 0);
-            setIsRefinedMode(draft.isRefinedMode || false);
-            setHistoryDiseaseID(draft.historyDiseaseID || 0);
-            sessionStorage.setItem("quiz_active", "true");
-            return;
-          }
+        // ── Refresh / URL langsung → cek backend cache ──
+        if (forceNewTest === undefined) {
+          try {
+            const cached = await getTestSession(email, sid);
+            if (cached.data?.exists && cached.data.answers && Object.keys(cached.data.answers).length > 0) {
+              const res = await getQuestions("all");
+              if (ignore) return;
+              const qs = res.data?.questions || res.data || [];
+              if (!ignore) {
+                setQuestions(qs);
+                setSelectedAnswers(cached.data.answers);
+                setCurrentPage(cached.data.current_page || 0);
+              }
+              return;
+            }
+          } catch { /* Nggak ada cache */ }
+        }
 
-          // Draft kosong → muat soal refined dari history
+        // ── "Lanjutkan Kondisi" (forceNewTest === false, logged-in) ──
+        if (email && forceNewTest === false) {
+          // Cek backend cache dulu
+          try {
+            const cached = await getTestSession(email, sid);
+            if (cached.data?.exists && cached.data.answers && Object.keys(cached.data.answers).length > 0) {
+              const res = await getQuestions("all");
+              if (ignore) return;
+              const qs = res.data?.questions || res.data || [];
+              if (!ignore) {
+                setQuestions(qs);
+                setSelectedAnswers(cached.data.answers);
+                setCurrentPage(cached.data.current_page || 0);
+              }
+              return;
+            }
+          } catch {}
+
+          // Nggak ada cache → soal refined dari history
           let qs = [];
           try {
             const response = await getQuestions("refined", [], email);
@@ -208,35 +198,43 @@ export default function Detection() {
             if (ignore) return;
             qs = fallback.data?.questions || fallback.data || [];
           }
-          sessionStorage.setItem("quiz_active", "true");
           if (!ignore) setQuestions(qs);
           return;
         }
 
-        // ── LOGGED-IN + akses langsung tanpa state, tanpa session aktif ──
-        await startFresh();
+        // ── Default (Guest fresh / Deteksi Baru) ──
+        const res = await getQuestions("all");
+        if (ignore) return;
+        const qs = res.data?.questions || res.data || [];
+        if (!ignore) setQuestions(qs);
       } catch (err) {
         if (!ignore) console.error("Initialization failed:", err);
       } finally {
-        if (!ignore) {
-          setLoading(false);
-          initDone.current = true; // Auto-save sekarang boleh jalan
-        }
+        if (!ignore) setLoading(false);
       }
     };
 
-    initDone.current = false;
     init();
     return () => { ignore = true; };
   }, [location.state]);
 
-  // Simpan draft setiap kali state penting berubah (HANYA setelah init selesai)
+  // ============================================================
+  // Auto-save progress ke backend (debounced, guest + login)
+  // ============================================================
+  const saveTimer = useRef(null);
+  const debouncedSave = useCallback(() => {
+    if (!userEmail && !sessionId) return;
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(() => {
+      saveTestSession(userEmail, sessionId, selectedAnswers, currentPage).catch(() => {});
+    }, 800);
+  }, [userEmail, sessionId, selectedAnswers, currentPage]);
+
   useEffect(() => {
-    if (!initDone.current) return;
-    if (questions.length > 0) {
-      saveDraft({ questions, selectedAnswers, currentPage, isRefinedMode, historyDiseaseID });
+    if ((userEmail || sessionId) && Object.keys(selectedAnswers).length > 0) {
+      debouncedSave();
     }
-  }, [selectedAnswers, currentPage, questions, isRefinedMode, historyDiseaseID]);
+  }, [selectedAnswers, currentPage, debouncedSave]);
 
   // ============================================================
   // Helpers
@@ -247,6 +245,7 @@ export default function Detection() {
 
   const handleSelectOption = (questionId, value) => {
     setSelectedAnswers((prev) => ({ ...prev, [questionId]: value }));
+    // Auto-save dipicu oleh useEffect di atas
   };
 
   // ============================================================
@@ -303,8 +302,10 @@ export default function Detection() {
         localStorage.setItem("pending_answers", JSON.stringify(apiAnswers));
       }
 
-      clearDraft();
-      sessionStorage.removeItem("quiz_active");
+      // Hapus session cache di backend
+      try { await deleteTestSession(userEmail, sessionId); } catch {}
+      // Hapus guest session ID
+      sessionStorage.removeItem("guest_session_id");
       setRetryAnswers(null);
       navigate("/selesai", { state: { diagnosis: result.data, isGuest: !userEmail } });
     } catch (err) {
@@ -406,7 +407,6 @@ export default function Detection() {
 
         {/* DAFTAR SOAL — dibatasi 5 soal sesuai chunking */}
         {currentQuestions.map((q, idx) => {
-          // Kalkulasi nomor urut agar tetap berlanjut (misal halaman ke-2 mulai dari no 6)
           const questionNumber = ((currentGroup.part - 1) * 5) + idx + 1;
           
           return (
