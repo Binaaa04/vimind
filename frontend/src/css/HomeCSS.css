@@ -1,153 +1,52 @@
 /* 1. NAVBAR STICKY */
 .navbar {
-  /* Tambahkan kode ini ke dalam class .navbar yang sudah ada */
-  position: sticky;
+  position: absolute; 
   top: 0;
-  z-index: 1000;
-  background-color: #ffffff; 
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); 
-}
-
-/* Container untuk memposisikan tombol dan teks di layar */
-.scroll-nav-container-3d {
-  position: fixed;
-  bottom: 30px; /* Jarak dari bawah layar */
-  right: 30px;  /* Jarak dari kanan layar */
-  display: flex;
-  align-items: center;
-  gap: 12px; /* Jarak antara tombol dan teks */
-  z-index: 1000; /* Memastikan di atas elemen lain */
-  
-  /* Logika visibilitas yang sama dengan kode asli Anda */
-  opacity: 0;
-  visibility: hidden;
-  transition: all 0.3s ease-in-out;
-}
-
-.scroll-nav-container-3d.show {
-  opacity: 1;
-  visibility: visible;
-}
-
-/* --- Gaya Tombol Lingkaran 3D --- */
-.scroll-btn-3d-circle {
-  /* Bentuk Lingkaran */
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  
-  /* Reset Style Dasar */
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  
-  /* Warna Dasar (Menggunakan warna ungu dari icon) */
-  background-color: white !important ;
-  color: white;
-  box-shadow: 
-    inset 0 -4px 0 rgba(0, 0, 0, 0.15), 
-    0 4px 8px rgba(122, 92, 255, 0.3); 
-  transition: all 0.1s ease;
-  position: relative;
-  top: 0;
-}
-
-/* Efek Hover (sedikit lebih gelap) */
-.scroll-btn-3d-circle:hover {
-  background-color: transparent !important; 
-  box-shadow: 
-    inset 0 -4px 0 rgba(0, 0, 0, 0.2),
-    0 6px 12px rgba(122, 92, 255, 0.4);
-}
-
-/* Efek Klik (Tombol terlihat tertekan) */
-.scroll-btn-3d-circle:active {
-  top: 2px; 
-  box-shadow: 
-    inset 0 -2px 0 rgba(0, 0, 0, 0.15),
-    0 1px 4px rgba(122, 92, 255, 0.3); 
-}
-
-/* Gaya Teks Logo (mengasumsikan gaya yang ada) */
-.scroll-brand {
-  font-family: sans-serif;
-  font-weight: bold;
-  color: #7a5cff; 
-  font-size: 1.2rem;
-}
-/* BASE RESET */
-* {
+  left: 0;
+  width: 100%;
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  font-family: sans-serif;
-  background-color: white !important;
-  overflow-x: hidden; /* Mencegah layar tergeser ke samping di mobile */
-}
-
-.home {
-  color: #333;
-  width: 100vw;
-  overflow-x: hidden;
-  position: relative;
-}
-
-/* NAVBAR */
-.navbar {
+  z-index: 1000;
+  background-color: transparent !important;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 60px;
-  background: white !important;
+  padding: 8px 60px;
 }
 
+.nav-links-pill {
+  position: absolute;          
+  left: 50%;                   
+  transform: translateX(-50%); 
+  display: flex;
+  align-items: center;
+  gap: 40px; 
+  background: #ffffff;
+  padding: 12px 40px;
+  border-radius: 50px; 
+  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.08); 
+  border: 1px solid #f3f4f6; 
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
+  z-index: 1001; 
+}
 .nav-left {
   display: flex;
   align-items: center;
-  gap: 12px;
 }
 
 .nav-left img {
-  width: 240px !important;
+  width: 180px !important; 
   height: auto;
   display: block;
 }
 
-.nav-left h2 {
-  font-size: 22px;
-  font-weight: 700;
-}
-
-.nav-right span {
-  font-size: 15px;
-  font-weight: 600;
-  color: #2e1c6b;
-  cursor: pointer;
-  transition: color 0.3s ease;
-}
-
-.nav-right span:hover {
-  color: #7a5cff;
-}
-
-.nav-right button {
-  background: #7a5cff;
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 10px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.nav-right button:hover {
-    background: #6d28d9;
-    transform: scale(1.05);
+.nav-links-pill.is-sticky {
+  position: fixed;
+  top: 20px;
+  z-index: 9999;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px); 
+  box-shadow: 0px 10px 30px rgba(122, 92, 255, 0.15); 
+  border: 1px solid rgba(122, 92, 255, 0.2);
 }
 
 /* MOBILE HAMBURGER */
@@ -173,7 +72,9 @@ body {
     transform: translateX(-50%);
   }
   .nav-left img {
-    width: min(160px, 40vw) !important;
+  width: 180px !important; 
+  height: auto;
+  display: block;
   }
   .hamburger-btn {
     display: block;
@@ -182,6 +83,7 @@ body {
     top: 50%;
     transform: translateY(-50%);
   }
+  
   .nav-right {
     position: fixed;
     top: 0;
@@ -193,34 +95,58 @@ body {
     display: flex;
     flex-direction: column;
     padding: 80px 30px;
-    gap: 30px;
-    transition: 0.3s ease;
+    gap: 20px;
+    transition: right 0.3s ease;
     z-index: 1000;
   }
+  
   .nav-right.open {
     right: 0;
+  }
+
+  /* Reset bentuk pill di tampilan mobile */
+  .nav-links-pill {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    padding: 0;
+    box-shadow: none;
+    border: none;
+    background: transparent;
+    align-items: flex-start;
+  }
+
+  .nav-links-pill span {
+    font-size: 16px;
+  }
+  
+  .nav-right button {
+    width: 100%;
   }
 }
 
 /* HERO */
 .hero {
   position: relative;
-  height: 600px;
+  min-height: 100vh; 
   display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
-
   background: #FFFFFF !important;
+  border-radius: 0 !important;
 }
 
 /* BACKGROUND IMAGE */
 .hero-bg {
   position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   z-index: 0;
+  object-position: bottom; 
 }
 
 /* CONTENT */
@@ -230,6 +156,7 @@ body {
   text-align: center;
   max-width: 700px;
   color: #2e1c6b;
+  margin-bottom: 130px;
 }
 
 .hero-content h1 {
@@ -688,6 +615,62 @@ body {
 
 .faq-item.active {
   border-color: #4da6ff;
+}
+
+/* SCROLL TO TOP BUTTON (STICKY BOTTOM RIGHT) */
+
+.scroll-nav-container-3d {
+  position: fixed;
+  bottom: 30px; /* Jarak dari bawah layar */
+  right: 30px;  /* Jarak dari kanan layar */
+  z-index: 9999; /* Memastikan selalu di atas elemen lain */
+  
+  /* Efek sembunyi secara default (sebelum di-scroll) */
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(20px);
+  transition: all 0.4s ease-in-out;
+}
+
+/* Class .show akan ditambahkan otomatis oleh React saat user scroll ke bawah */
+.scroll-nav-container-3d.show {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+/* Desain tombol bulatnya */
+.scroll-btn-3d-circle {
+  width: 30px !important;;  
+  height: 45px !important;;
+  border-radius: 50%;
+  /* background: linear-gradient(135deg, #7a5cff, #6d28d9);  */
+  background: transparent !important;
+  border: none !important;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(109, 40, 217, 0.3);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.scroll-btn-3d-circle:hover {
+  transform: scale(1.1); /* Efek membesar saat di-hover */
+  box-shadow: 0 6px 20px rgba(109, 40, 217, 0.5);
+  background: transparent !important;
+}
+
+/* Responsif untuk layar HP (agar tidak terlalu ke tengah) */
+@media (max-width: 768px) {
+  .scroll-nav-container-3d {
+    bottom: 20px;
+    right: 20px;
+  }
+  .scroll-btn-3d-circle {
+    width: 45px;
+    height: 45px;
+  }
 }
 
 /* FOOTER */

@@ -3,9 +3,9 @@ import { useState, useEffect } from "react";
 import "../css/HomeCSS.css";
 import { getPublicFAQ, getPublicTestimonials } from "../services/api";
 import logo from "../assets/logovimind2.png";
-import heroImg from "../assets/hero.png";
+import heroImg from "../assets/BgLanding.svg";
 import fiturImg from "../assets/fitur.png";
-import arrowUp from "../assets/arrowUp.svg";
+import arrowUp from "../assets/Upbutton.svg";
 
 export default function Home() {
   useEffect(() => {
@@ -19,36 +19,42 @@ export default function Home() {
   const [openFaqIndex, setOpenFaqIndex] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showScroll, setShowScroll] = useState(false);
+  
+  // STATE PENTING UNTUK NAVBAR MELAYANG
+  const [isPillSticky, setIsPillSticky] = useState(false);
 
-  // Deteksi scroll untuk memunculkan tombol Navigasi Scroll
+  // Deteksi scroll untuk memunculkan tombol Navigasi Scroll & Efek Sticky
   useEffect(() => {
-    const checkScrollTop = () => {
-      if (!showScroll && window.scrollY > 300) {
+    const handleScroll = () => {
+      // Logic untuk Tombol Panah Atas
+      if (window.scrollY > 300) {
         setShowScroll(true);
-      } else if (showScroll && window.scrollY <= 300) {
+      } else {
         setShowScroll(false);
+      }
+
+      // Logic untuk Navbar Kapsul Sticky
+      if (window.scrollY > 80) {
+        setIsPillSticky(true);
+      } else {
+        setIsPillSticky(false);
       }
     };
 
-    window.addEventListener("scroll", checkScrollTop);
-    return () => window.removeEventListener("scroll", checkScrollTop);
-  }, [showScroll]);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // Fungsi untuk scroll mulus ke paling atas
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Fungsi untuk scroll mulus ke paling bawah
-  const scrollToBottom = () => {
-    window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "smooth" });
-  };
-
   // Data FAQ — diambil dari API, fallback ke static
   const STATIC_FAQ = [
-    { id: 1, question: "Apa itu Vimind?", answer: "Vimind adalah aplikasi yang membantu kamu memahami kondisi kesehatan mental melalui tes psikologi sederhana, daily mood check, serta rangkuman statistik yang menunjukkan perkembangan kondisi emosimu dari waktu ke waktu." },
-    { id: 2, question: "Bagaimana cara menggunakan Vimind?", answer: "Kamu hanya perlu menjawab beberapa pertanyaan pada tes yang tersedia di Vimind. Setelah selesai, kamu akan mendapatkan gambaran kondisi mentalmu beserta insight yang dapat membantu kamu lebih memahami perasaanmu." },
-    { id: 3, question: "Apakah hasil tes di Vimind akurat?", answer: "Tes di Vimind dirancang sebagai alat refleksi diri untuk membantu kamu memahami kondisi emosionalmu. Hasilnya bukan diagnosis medis, namun dapat menjadi gambaran awal sebelum berkonsultasi dengan profesional." },
+    { id: 1, question: "Apa itu Vimind?", answer: "Vimind adalah aplikasi yang membantu kamu memahami kondisi kesehatan mental melalui tes psikologi sederhana..." },
+    { id: 2, question: "Bagaimana cara menggunakan Vimind?", answer: "Kamu hanya perlu menjawab beberapa pertanyaan pada tes yang tersedia di Vimind..." },
+    { id: 3, question: "Apakah hasil tes di Vimind akurat?", answer: "Tes di Vimind dirancang sebagai alat refleksi diri. Hasilnya bukan diagnosis medis..." },
     { id: 4, question: "Apa itu Daily Mood Test?", answer: "Daily Mood Test adalah fitur untuk mencatat perasaanmu setiap hari agar kamu bisa memantau pola emosimu." },
     { id: 5, question: "Apakah data saya aman di Vimind?", answer: "Ya, privasi dan keamanan data pengguna adalah prioritas utama kami." },
     { id: 6, question: "Apakah ada biaya berlangganan?", answer: "Saat ini fitur dasar Vimind dapat digunakan secara gratis." },
@@ -59,7 +65,6 @@ export default function Home() {
 
   // Fetch Data (FAQ & Testimonials)
   useEffect(() => {
-    // Fetch FAQ
     getPublicFAQ()
       .then((res) => {
         const data = res.data || [];
@@ -68,7 +73,6 @@ export default function Home() {
       })
       .catch(() => {});
       
-    // Fetch Testimonials
     getPublicTestimonials()
       .then((res) => {
         const data = res.data || [];
@@ -111,10 +115,15 @@ export default function Home() {
         </button>
 
         <div className={`nav-right ${isMenuOpen ? "open" : ""}`}>
-          <span onClick={() => setIsMenuOpen(false)}>Contact Us</span>
-          <span onClick={() => setIsMenuOpen(false)}>Testimoni</span>
-          <span onClick={() => setIsMenuOpen(false)}>FAQ</span>
-          <button onClick={() => { setIsMenuOpen(false); navigate("/login"); }}>Sign in</button>
+          
+          {/* PERHATIKAN BARIS INI: Penambahan isPillSticky di dalam className */}
+          <div className={`nav-links-pill ${isPillSticky ? "is-sticky" : ""}`}>
+            <span onClick={() => setIsMenuOpen(false)}>Contact Us</span>
+            <span onClick={() => setIsMenuOpen(false)}>Testimoni</span>
+            <span onClick={() => setIsMenuOpen(false)}>FAQ</span>
+          </div>
+          
+          <button className="btn-signin" onClick={() => { setIsMenuOpen(false); navigate("/login"); }}>Sign in</button>
         </div>
       </div>
 
@@ -218,10 +227,7 @@ export default function Home() {
 
           <div className="faq-list">
             {faqData.map((item, index) => (
-              <div
-                key={item.id}
-                className={`faq-item ${openFaqIndex === index ? 'active' : ''}`}
-              >
+              <div key={item.id} className={`faq-item ${openFaqIndex === index ? 'active' : ''}`}>
                 <div className="faq-question" onClick={() => toggleFaq(index)}>
                   <span>{item.question}</span>
                   <span className="faq-icon">
@@ -243,7 +249,7 @@ export default function Home() {
       </section>
 
       {/* FOOTER */}
-      <footer className="footer">
+      {/* <footer className="footer">
         <div className="footer-container">
           <div className="footer-brand">
             <h2 className="footer-logo">Vimind</h2>
@@ -288,15 +294,11 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </footer>
+      </footer> */}
 
-      {/* SCROLL NAVIGATION BUTTONS (BARU) */}
-      {/* Container tetap menampilkan teks Logo di sebelah tombol */}
       <div className={`scroll-nav-container-3d ${showScroll ? "show" : ""}`}>
-
-        {/* Tombol Panah Atas (Single, Lingkaran, 3D) */}
         <button className="scroll-btn-3d-circle" onClick={scrollToTop} title="Kembali ke atas">
-          <img src={arrowUp} alt="Panah Ke Atas" style={{ width: '24px', height: '24px' }} />
+          <img src={arrowUp} alt="Panah Ke Atas" style={{ width: '55px', height: '55px' }} />
         </button>
       </div>
     </div>
