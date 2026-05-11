@@ -186,6 +186,8 @@ func (r *Repository) GetHistory(uid int) ([]models.HistoryItem, error) {
 		SELECT 
 			d.diagnosis_id, 
 			dis.disease_name, 
+			dis.description,
+			dis.general_solutions,
 			lc.level_name, 
 			d.persentase, 
 			d.date_of_diagnosis
@@ -205,7 +207,7 @@ func (r *Repository) GetHistory(uid int) ([]models.HistoryItem, error) {
 	var history []models.HistoryItem
 	for rows.Next() {
 		var hi models.HistoryItem
-		if err := rows.Scan(&hi.ID, &hi.Disease, &hi.Level, &hi.Percentage, &hi.Date); err != nil {
+		if err := rows.Scan(&hi.ID, &hi.Disease, &hi.Description, &hi.Recommendations, &hi.Level, &hi.Percentage, &hi.Date); err != nil {
 			continue
 		}
 		history = append(history, hi)

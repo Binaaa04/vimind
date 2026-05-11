@@ -42,11 +42,13 @@ type ProfileReq struct {
 }
 
 type HistoryItem struct {
-	ID         int       `json:"id"`
-	Disease    string    `json:"disease"`
-	Level      string    `json:"level"`
-	Percentage float64   `json:"percentage"`
-	Date       time.Time `json:"date"`
+	ID              int       `json:"id"`
+	Disease         string    `json:"disease"`
+	Description     string    `json:"description"`
+	Recommendations string    `json:"recommendations"`
+	Level           string    `json:"level"`
+	Percentage      float64   `json:"percentage"`
+	Date            time.Time `json:"date"`
 }
 
 type Rule struct {

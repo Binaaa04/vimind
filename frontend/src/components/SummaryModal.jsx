@@ -321,7 +321,18 @@ export default function SummaryModal({ onClose }) {
                     <div className="item-percentage">{Math.round(item.percentage)}%</div>
                     <button 
                       className="item-detail-btn" 
-                      onClick={() => navigate("/hasil", { state: { ...item } })}
+                      onClick={() => navigate("/hasil", { 
+                        state: { 
+                          diagnosis: {
+                            top_result: {
+                              disease_name: item.disease,
+                              percentage: item.percentage,
+                              description: item.description,
+                              recommendations: item.recommendations
+                            }
+                          }
+                        } 
+                      })}
                       title="Lihat Detail & Rekomendasi"
                     >
                       👁️ Lihat Detail
