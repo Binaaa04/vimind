@@ -178,42 +178,7 @@ body {
   left: -150px;
 }
 
-/* HERO */
-.hero {
-  height: 100vh;
-  background: #f3effb;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
-}
-
-.hero-content h1 {
-  font-size: 48px;
-  color: #4b2aad;
-  margin: 25px 0;
-}
-
-.hero-content p {
-  font-size: 22px;
-  margin-bottom: 35px;
-}
-
-.hero span {
-  color: #7a5cff;
-  font-weight: bold;
-}
-
-.hero button {
-  padding: 14px 38px;
-  border: none;
-  border-radius: 12px;
-  background: linear-gradient(90deg, #7a5cff, #5c3dff);
-  color: white;
-  cursor: pointer;
-}
+/* Hero styles have been migrated and consolidated to HomeCSS.css to prevent conflicts */
 
 /* circles */
 .circle {
@@ -1685,29 +1650,7 @@ body {
   border-radius:10px;
 }
 
-/* HERO */
-.hero{
-  text-align:center;
-  padding:120px 20px;
-  background:linear-gradient(135deg,#7a5cff,#9c84ff);
-  color:white;
-  border-radius:0 0 80px 80px;
-}
-
-.hero h1{
-  max-width:600px;
-  margin:auto;
-  font-size:32px;
-}
-
-.hero button{
-  margin-top:20px;
-  padding:12px 20px;
-  border:none;
-  border-radius:12px;
-  background:white;
-  color:#7a5cff;
-}
+/* Hero section 2 styles moved to HomeCSS.css to prevent overrides */
 
 /* FITUR */
 .fitur{

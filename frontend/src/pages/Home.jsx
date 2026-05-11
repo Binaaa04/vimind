@@ -4,7 +4,6 @@ import "../css/HomeCSS.css";
 import { getPublicFAQ, getPublicTestimonials } from "../services/api";
 import logo from "../assets/logovimind2.png";
 import heroImg from "../assets/BgLanding.svg";
-import fiturImg from "../assets/fitur.png";
 import arrowUp from "../assets/Upbutton.svg";
 
 export default function Home() {
@@ -13,44 +12,34 @@ export default function Home() {
   }, []);
   const navigate = useNavigate();
 
-  // ==========================================
-  // 1. STATE & DATA
-  // ==========================================
   const [openFaqIndex, setOpenFaqIndex] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [showScroll, setShowScroll] = useState(false);
-  
-  // STATE PENTING UNTUK NAVBAR MELAYANG
   const [isPillSticky, setIsPillSticky] = useState(false);
 
-  // Deteksi scroll untuk memunculkan tombol Navigasi Scroll & Efek Sticky
   useEffect(() => {
     const handleScroll = () => {
-      // Logic untuk Tombol Panah Atas
-      if (window.scrollY > 300) {
-        setShowScroll(true);
-      } else {
-        setShowScroll(false);
-      }
-
-      // Logic untuk Navbar Kapsul Sticky
-      if (window.scrollY > 80) {
-        setIsPillSticky(true);
-      } else {
-        setIsPillSticky(false);
-      }
+      setShowScroll(window.scrollY > 300);
+      setIsPillSticky(window.scrollY > 80);
     };
-
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Fungsi untuk scroll mulus ke paling atas
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Data FAQ — diambil dari API, fallback ke static
+  const scrollToSection = (id) => {
+    setIsMenuOpen(false);
+    const element = document.getElementById(id);
+    if (element) {
+      const yOffset = -80;
+      const y = element.getBoundingClientRect().top + window.scrollY + yOffset;
+      window.scrollTo({ top: y, behavior: "smooth" });
+    }
+  };
+
   const STATIC_FAQ = [
     { id: 1, question: "Apa itu Vimind?", answer: "Vimind adalah aplikasi yang membantu kamu memahami kondisi kesehatan mental melalui tes psikologi sederhana..." },
     { id: 2, question: "Bagaimana cara menggunakan Vimind?", answer: "Kamu hanya perlu menjawab beberapa pertanyaan pada tes yang tersedia di Vimind..." },
@@ -61,27 +50,7 @@ export default function Home() {
     { id: 7, question: "Apakah saya harus login untuk menggunakan Vimind?", answer: "Ya, login diperlukan agar kami bisa menyimpan riwayat perkembangan kondisimu dengan aman." },
     { id: 8, question: "Apakah Vimind tersedia di Android dan iOS?", answer: "Saat ini Vimind dapat diakses melalui web browser di berbagai perangkat." },
   ];
-  const [faqData, setFaqData] = useState(STATIC_FAQ);
-
-  // Fetch Data (FAQ & Testimonials)
-  useEffect(() => {
-    getPublicFAQ()
-      .then((res) => {
-        const data = res.data || [];
-        const filled = data.filter((f) => f.question?.trim());
-        if (filled.length > 0) setFaqData(filled);
-      })
-      .catch(() => {});
-      
-    getPublicTestimonials()
-      .then((res) => {
-        const data = res.data || [];
-        if (data.length > 0) setTestimonialsData(data);
-      })
-      .catch(() => {});
-  }, []);
-
-  // Data Testimoni — diambil dari API, fallback ke static
+  
   const STATIC_TESTIMONIALS = [
     { id: 1, name: "Andi Wijaya", comment: "Vimind membantu saya lebih sadar dengan kondisi perasaan saya setiap hari...", rating: 5 },
     { id: 2, name: "Siti Nurhaliza", comment: "Sangat mudah dipahami dan hasilnya cukup akurat untuk introspeksi diri.", rating: 4 },
@@ -90,75 +59,97 @@ export default function Home() {
     { id: 5, name: "Eko Prasetyo", comment: "Operasional jadi lebih cepat dan rapi berkat fitur yang sangat membantu.", rating: 5 },
     { id: 6, name: "Dian Pelangi", comment: "Saya merasa lebih teratur dan tenang setelah rutin menggunakan fitur trackingnya.", rating: 5 }
   ];
+
+  const [faqData, setFaqData] = useState(STATIC_FAQ);
   const [testimonialsData, setTestimonialsData] = useState(STATIC_TESTIMONIALS);
 
-  // Fungsi Toggle FAQ
+  useEffect(() => {
+    getPublicFAQ().then((res) => {
+      const data = res.data || [];
+      const filled = data.filter((f) => f.question?.trim());
+      if (filled.length > 0) setFaqData(filled);
+    }).catch(() => {});
+    getPublicTestimonials().then((res) => {
+      const data = res.data || [];
+      if (data.length > 0) setTestimonialsData(data);
+    }).catch(() => {});
+  }, []);
+
   const toggleFaq = (index) => {
     setOpenFaqIndex(openFaqIndex === index ? null : index);
   };
 
-  // ==========================================
-  // 2. TAMPILAN UI (RENDER)
-  // ==========================================
   return (
     <div className="home">
-
-      {/* NAVBAR */}
-      <div className="navbar">
+      <nav className={`navbar ${isPillSticky ? "navbar-sticky" : ""}`}>
         <div className="nav-left">
-          <img src={logo} alt="logo" />
+          <img src={logo} alt="Vimind Logo" />
         </div>
-
-        {/* HAMBURGER BUTTON */}
-        <button className="hamburger-btn" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+        <div className={`mobile-backdrop ${isMenuOpen ? "active" : ""}`} onClick={() => setIsMenuOpen(false)}></div>
+        <button className="hamburger-btn" onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label="Toggle Menu">
           {isMenuOpen ? "✕" : "☰"}
         </button>
-
         <div className={`nav-right ${isMenuOpen ? "open" : ""}`}>
-          
-          {/* PERHATIKAN BARIS INI: Penambahan isPillSticky di dalam className */}
-          <div className={`nav-links-pill ${isPillSticky ? "is-sticky" : ""}`}>
-            <span onClick={() => setIsMenuOpen(false)}>Contact Us</span>
-            <span onClick={() => setIsMenuOpen(false)}>Testimoni</span>
-            <span onClick={() => setIsMenuOpen(false)}>FAQ</span>
+          <div className="nav-links-pill">
+            <span onClick={() => scrollToSection("fitur")}>Fitur</span>
+            <span onClick={() => scrollToSection("testimoni")}>Testimoni</span>
+            <span onClick={() => scrollToSection("faq")}>FAQ</span>
+            <span onClick={() => scrollToSection("contact")}>Kontak</span>
           </div>
-          
-          <button className="btn-signin" onClick={() => { setIsMenuOpen(false); navigate("/login"); }}>Sign in</button>
+          <button className="btn-signin" onClick={() => { setIsMenuOpen(false); navigate("/login"); }}>Sign In</button>
         </div>
-      </div>
+      </nav>
 
-      {/* HERO */}
-      <div className="hero">
-        <img src={heroImg} alt="hero" className="hero-bg" />
+      <header className="hero">
+        <img src={heroImg} alt="" className="hero-bg" />
         <div className="hero-content">
           <h1>Kadang Kita Ngerasa Ga Baik-baik Aja, Tapi Sulit Jelasin Kenapa.</h1>
-          <p>Vimind bantu kamu memahami kondisi kesehatan mentalmu</p>
-          <button onClick={() => navigate("/deteksi/soal")}>Coba tes gratis →</button>
+          <p>Vimind bantu kamu memahami kondisi kesehatan mentalmu dengan pendekatan yang personal dan aman.</p>
+          <div className="hero-buttons">
+            <button className="hero-btn-primary" onClick={() => navigate("/deteksi/soal")}>Coba Tes Gratis →</button>
+            <button className="hero-btn-secondary" onClick={() => scrollToSection("fitur")}>Pelajari Fitur ↓</button>
+          </div>
         </div>
-      </div>
+      </header>
 
-      {/* FITUR */}
-      <div className="fitur">
+      <section id="fitur" className="fitur">
         <div className="fitur-header">
-          <span className="badge"><b>Vimind punya apa sih ?</b></span>
-          <h2>Fitur menarik yang bisa kamu coba</h2>
-          <p>Berikut adalah fitur menarik yang bisa bantu kamu memahami kesehatan mental setiap hari.</p>
+          <span className="badge">Eksplorasi Vimind</span>
+          <h2>Kenali dirimu lebih baik lagi</h2>
+          <p>Fitur yang dirancang khusus untuk mendukung perjalanan kesehatan mentalmu setiap hari.</p>
         </div>
-        <div className="fitur-image">
-          <img src={fiturImg} alt="fitur" />
+        <div className="fitur-grid">
+          <div className="fitur-card">
+            <div className="fitur-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+            </div>
+            <h3>Deteksi Dini Cerdas</h3>
+            <p>Refleksi diri instan melalui tes yang dirancang oleh pakar untuk memahami kondisi psikologismu saat ini.</p>
+          </div>
+          <div className="fitur-card">
+            <div className="fitur-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20v-6M6 20V10M18 20V4"></path></svg>
+            </div>
+            <h3>Daily Mood Tracker</h3>
+            <p>Pantau dinamika emosimu setiap hari. Lihat pola perasaanmu melalui visualisasi grafik yang intuitif.</p>
+          </div>
+          <div className="fitur-card">
+            <div className="fitur-icon">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            </div>
+            <h3>Ruang Aman & Pribadi</h3>
+            <p>Privasi adalah prioritas. Seluruh data dan hasil tesmu dienkripsi secara aman, memberikanmu ketenangan pikiran.</p>
+          </div>
         </div>
-      </div>
+      </section>
 
-      {/* TESTIMONI MARQUEE SECTION */}
-      <div className="testimoni">
+      <section id="testimoni" className="testimoni">
         <div className="testimoni-header">
           <span className="badge">Testimoni</span>
-          <h2>Kisah para teman teman yang udah pernah pake vimind</h2>
-          <p>Temukan cerita dari para pengguna yang telah merasakan manfaat memahami kesehatan mental bersama ViMind.</p>
+          <h2>Kisah Perjalanan Bersama ViMind</h2>
+          <p>Apa kata mereka yang telah menemukan ketenangan dan kejernihan pikiran melalui refleksi harian.</p>
         </div>
-
         <div className="marquee-container">
-          {/* Row 1: Slide Left */}
           <div className="marquee-row marquee-left">
             <div className="marquee-content">
               {[...testimonialsData, ...testimonialsData].map((t, idx) => (
@@ -176,67 +167,44 @@ export default function Home() {
               ))}
             </div>
           </div>
-
-          {/* Row 2: Slide Right */}
           <div className="marquee-row marquee-right">
             <div className="marquee-content">
-              {[...testimonialsData, ...testimonialsData].reverse().map((item, idx) => (
+              {[...testimonialsData, ...testimonialsData].reverse().map((t, idx) => (
                 <div key={idx} className="testimonial-card">
-                  <h4 className="testimoni-title">Vimind sangat membantu sekali.</h4>
-                  <p className="testimoni-text">"{item.text}"</p>
-                  <div className="testimoni-footer">
-                    <span className="testimoni-name">{item.name}</span>
-                    <div className="stars">{"⭐".repeat(item.rating)}</div>
+                  <div className="testimoni-stars">
+                    {"★".repeat(t.rating)}
+                    <span style={{ color: "#d1d5db" }}>{"★".repeat(5 - t.rating)}</span>
                   </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Row 3: Slide Left (Offset) */}
-          <div className="marquee-row marquee-left" style={{ animationDuration: '45s' }}>
-            <div className="marquee-content">
-              {[...testimonialsData, ...testimonialsData].map((item, idx) => (
-                <div key={idx} className="testimonial-card">
-                  <h4 className="testimoni-title">Sangat direkomendasikan untu teman-teman.</h4>
-                  <p className="testimoni-text">"{item.text}"</p>
-                  <div className="testimoni-footer">
-                    <span className="testimoni-name">{item.name}</span>
-                    <div className="stars">{"⭐".repeat(item.rating)}</div>
+                  <p>"{t.comment || t.text}"</p>
+                  <div className="testimoni-user">
+                    <div className="testimoni-avatar">{t.name ? t.name[0] : "?"}</div>
+                    <span className="testimoni-name">{t.name}</span>
                   </div>
                 </div>
               ))}
             </div>
           </div>
         </div>
-      </div>
+      </section>
 
-      {/* FAQ SECTION */}
-      <section className="faq-section">
+      <section id="faq" className="faq-section">
         <div className="faq-container">
-          <div className="faq-badge">
-            FAQ
+          <div className="faq-header" style={{ textAlign: "center", marginBottom: "40px" }}>
+            <span className="badge">FAQ</span>
+            <h2 className="faq-title">Punya Pertanyaan?</h2>
+            <p className="faq-subtitle">Temukan jawaban cepat seputar fitur, keamanan data, dan cara kerja Vimind.</p>
           </div>
-          <h2 className="faq-title">
-            <span className="question-mark">?</span>
-            Frequently Asked Questions
-          </h2>
-          <p className="faq-subtitle">
-            Temukan jawaban dari berbagai pertanyaan seputar Vimind. Di sini kamu bisa memahami cara kerja fitur, tes kesehatan mental, serta bagaimana Vimind membantu kamu lebih mengenali dan menjaga kondisi emosimu.
-          </p>
-
           <div className="faq-list">
             {faqData.map((item, index) => (
-              <div key={item.id} className={`faq-item ${openFaqIndex === index ? 'active' : ''}`}>
+              <div key={item.id} className={`faq-item ${openFaqIndex === index ? "active" : ""}`}>
                 <div className="faq-question" onClick={() => toggleFaq(index)}>
                   <span>{item.question}</span>
                   <span className="faq-icon">
                     <svg width="14" height="10" viewBox="0 0 14 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M1 1L7 8L13 1" stroke="#2e1c6b" strokeWidth="2" strokeLinecap="round" />
+                      <path d="M1 1L7 8L13 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                     </svg>
                   </span>
                 </div>
-
                 <div className="faq-answer">
                   <div className="faq-answer-inner">
                     {item.answer}
@@ -248,57 +216,57 @@ export default function Home() {
         </div>
       </section>
 
-      {/* FOOTER */}
-      {/* <footer className="footer">
+      <section className="bottom-cta-section">
+        <div className="bottom-cta-content">
+          <h2>Mulai Langkah Pertamamu Hari Ini</h2>
+          <p>Kesehatan mentalmu layak diprioritaskan. Mari mulai perjalanan mengenal diri lebih dalam secara gratis.</p>
+          <button className="bottom-cta-btn" onClick={() => navigate("/deteksi/soal")}>Mulai Tes Gratis</button>
+        </div>
+      </section>
+
+      <footer id="contact" className="footer">
         <div className="footer-container">
           <div className="footer-brand">
             <h2 className="footer-logo">Vimind</h2>
-            <div className="social-icons">
-              <span className="social-icon">f</span>
-              <span className="social-icon">📷</span>
-              <span className="social-icon">🐦</span>
-              <span className="social-icon">🎵</span>
-            </div>
+            <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "14px", lineHeight: "1.6" }}>
+              Memberikan kejelasan dan dukungan untuk kesehatan mental Anda melalui teknologi cerdas dan empati.
+            </p>
           </div>
-
           <div className="footer-col">
             <h3>PERUSAHAAN</h3>
             <ul>
-              <li>Home</li>
-              <li>Fitur</li>
-              <li>Kontak Kami</li>
+              <li onClick={() => scrollToTop()}>Home</li>
+              <li onClick={() => scrollToSection("fitur")}>Fitur</li>
+              <li onClick={() => scrollToSection("contact")}>Kontak Kami</li>
             </ul>
           </div>
-
           <div className="footer-col">
-            <h3>INFORMATION</h3>
+            <h3>INFORMASI</h3>
             <ul>
-              <li>Apa itu Kesehatan Mental</li>
-              <li>Cara Menggunakan Vimind</li>
-              <li>Payment Information</li>
-              <li>Privasi & Keamanan Data</li>
+              <li>Kesehatan Mental</li>
+              <li>Panduan Pengguna</li>
+              <li>Privasi & Keamanan</li>
               <li>Syarat & Ketentuan</li>
               <li>FAQ</li>
             </ul>
           </div>
-
           <div className="footer-col footer-contact">
-            <h3>CONTACT</h3>
+            <h3>KONTAK</h3>
             <div className="contact-item">
-              <span className="contact-icon">🏠</span>
-              <p>Jl. Niaga No.3, Ciptomulyo, Kec. Sukun,<br />Kota Malang, Jawa Timur 65148</p>
+              <span>🏠</span>
+              <p>Jl. Niaga No.3, Kec. Sukun,<br />Kota Malang, Jawa Timur</p>
             </div>
             <div className="contact-item">
-              <span className="contact-icon">💬</span>
+              <span>💬</span>
               <p>+62 811-9757-222</p>
             </div>
           </div>
         </div>
-      </footer> */}
+      </footer>
 
       <div className={`scroll-nav-container-3d ${showScroll ? "show" : ""}`}>
-        <button className="scroll-btn-3d-circle" onClick={scrollToTop} title="Kembali ke atas">
-          <img src={arrowUp} alt="Panah Ke Atas" style={{ width: '55px', height: '55px' }} />
+        <button className="scroll-btn-3d-circle" onClick={scrollToTop} aria-label="Scroll to top">
+          <img src={arrowUp} alt="" style={{ width: "32px", height: "32px" }} />
         </button>
       </div>
     </div>
