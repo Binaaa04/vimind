@@ -32,7 +32,7 @@ const AdminFAQ = ({ adminEmail }) => {
   };
 
   const handleAddNew = () => {
-    setFaq([...faq, { id: "", question: "", answer: "" }]);
+    setFaq([{ id: "", question: "", answer: "" }, ...faq]);
   };
 
   const handleDelete = async (index) => {

@@ -129,11 +129,11 @@ const BannerCard = ({ bannerData, index, adminEmail }) => {
         )}
         
         <div className="action-btns">
-          <button className="deactive" onClick={() => handleToggle(false)}>
-            Deactivate
-          </button>
-          <button className="active-btn" onClick={() => handleToggle(true)}>
-            Activate
+          <button 
+            className={`status-btn ${isActive ? 'active' : 'inactive'}`} 
+            onClick={() => handleToggle(!isActive)}
+          >
+            {isActive ? '🔴 Nonaktifkan Banner' : '🟢 Aktifkan Banner'}
           </button>
         </div>
       </div>
@@ -190,7 +190,7 @@ const AdminDashboard = () => {
                 <div className="admin-header">
                   <h1>Promosi Dashboard</h1>
                   <button 
-                    onClick={() => setBanners([...banners, {}])}
+                    onClick={() => setBanners([{}, ...banners])}
                     className="add-banner-btn"
                   >
                     + Tambah Banner Baru

@@ -87,19 +87,31 @@ const AdminFeedback = ({ adminEmail }) => {
                   </td>
                   <td style={{ maxWidth: "300px", wordWrap: "break-word" }}>{t.comment}</td>
                   <td>
-                    <button 
+                    <div 
                       onClick={() => toggleDisplay(t.id, t.is_displayed)}
                       style={{
-                        padding: "4px 12px",
-                        borderRadius: "4px",
-                        border: "none",
-                        background: t.is_displayed ? "#10b981" : "#ef4444",
-                        color: "white",
-                        cursor: "pointer"
+                        width: '46px',
+                        height: '24px',
+                        borderRadius: '12px',
+                        background: t.is_displayed ? '#10b981' : '#cbd5e1',
+                        cursor: 'pointer',
+                        position: 'relative',
+                        transition: 'background 0.3s'
                       }}
+                      title={t.is_displayed ? "Ditampilkan" : "Disembunyikan"}
                     >
-                      {t.is_displayed ? "Ditampilkan" : "Disembunyikan"}
-                    </button>
+                      <div style={{
+                        width: '20px',
+                        height: '20px',
+                        borderRadius: '50%',
+                        background: 'white',
+                        position: 'absolute',
+                        top: '2px',
+                        left: t.is_displayed ? '24px' : '2px',
+                        transition: 'left 0.3s',
+                        boxShadow: '0 1px 3px rgba(0,0,0,0.2)'
+                      }} />
+                    </div>
                   </td>
                 </tr>
               ))}

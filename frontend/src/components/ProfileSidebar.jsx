@@ -168,10 +168,32 @@ const ProfileSidebar = ({
               Ubah Password
             </button>
 
+            {/* === DIVIDER PEMISAH: Normal vs Destruktif === */}
+            <div style={{
+              borderTop: '1px solid #fee2e2',
+              margin: '16px 0 12px 0',
+              position: 'relative',
+            }}>
+              <span style={{
+                position: 'absolute',
+                top: '-10px',
+                left: '50%',
+                transform: 'translateX(-50%)',
+                background: 'white',
+                padding: '0 8px',
+                fontSize: '0.7rem',
+                color: '#ef4444',
+                fontWeight: '600',
+                letterSpacing: '0.5px',
+                textTransform: 'uppercase',
+                whiteSpace: 'nowrap',
+              }}>Zona Berbahaya</span>
+            </div>
+
             {/* === TOMBOL HAPUS AKUN (MEMBUKA MODAL) === */}
             <button
               className="profile-menu-btn"
-              style={{ color: '#ef4444', border: '1px solid #fee2e2', backgroundColor: '#fef2f2', marginTop: '10px' }}
+              style={{ color: '#ef4444', border: '1px solid #fee2e2', backgroundColor: '#fef2f2' }}
               onClick={() => {
                 setShowDeleteModal(true);
               }}

@@ -20,36 +20,65 @@ const Dashboard = () => {
   useEffect(() => {
     document.title = "Dashboard Utama | Vimind";
   }, []);
-  const [showMood, setShowMood] = useState(true);
+
+  // === STATE MODALS ===
   const [showSummary, setShowSummary] = useState(false);
   const [showResult, setShowResult] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-
   const [showNicknameModal, setShowNicknameModal] = useState(false);
   const [showNicknameSuccessModal, setShowNicknameSuccessModal] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showChatbot, setShowChatbot] = useState(false);
   const [showTestOptions, setShowTestOptions] = useState(false);
 
-  const [chatMessages, setChatMessages] = useState([]);
+  // FIX #4 (clean): showMood — hanya satu deklarasi
+  const [showMood, setShowMood] = useState(false);
+
+  // === STATE CHAT — persist di sessionStorage ===
+  const [chatMessages, setChatMessagesRaw] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem("vivi_chat");
+      return saved ? JSON.parse(saved) : [];
+    } catch { return []; }
+  });
+  const setChatMessages = (updater) => {
+    setChatMessagesRaw(prev => {
+      const next = typeof updater === 'function' ? updater(prev) : updater;
+      sessionStorage.setItem("vivi_chat", JSON.stringify(next));
+      return next;
+    });
+  };
+
   const [chatInput, setChatInput] = useState("");
   const [isChatLoading, setIsChatLoading] = useState(false);
+  // FIX #3: track apakah user sedang scroll ke atas
   const chatEndRef = useRef(null);
+  const chatBodyRef = useRef(null);
+  const isUserScrollingUp = useRef(false);
 
+  // === STATE USER ===
   const [isAdmin, setIsAdmin] = useState(false);
   const [userEmail, setUserEmail] = useState("");
+  const [isProfileLoading, setIsProfileLoading] = useState(true); // FIX #1
   const [nickname, setNickname] = useState(
-    localStorage.getItem("nickname") || "User"
+    localStorage.getItem("nickname") || "..."
   );
   const [avatarUrl, setAvatarUrl] = useState(
     localStorage.getItem("avatar_url") || ""
   );
-
+  // FIX #2: toast feedback setelah pilih mood
+  const [moodToast, setMoodToast] = useState("");
 
   const [banners, setBanners] = useState([]);
   const navigate = useNavigate();
   const mood = localStorage.getItem("mood");
+
+  const checkShouldShowMood = () => {
+    const lastMoodDate = localStorage.getItem("mood_date");
+    const today = new Date().toDateString();
+    return lastMoodDate !== today;
+  };
 
   useEffect(() => {
     const fetchUserAndProfile = async () => {
@@ -74,9 +103,10 @@ const Dashboard = () => {
           }
         } catch (err) {
           console.error("Profile not found, using default.");
-          // If profile not in DB yet, use Supabase metadata if exists
           const name = session.user.user_metadata?.full_name || session.user.email.split("@")[0];
           setNickname(name);
+        } finally {
+          setIsProfileLoading(false); // FIX UX #3: loading selesai
         }
 
       }
@@ -94,6 +124,11 @@ const Dashboard = () => {
 
     fetchUserAndProfile();
     fetchBanners();
+
+    // FIX UX: Cek apakah perlu tampilkan MoodModal hari ini
+    if (checkShouldShowMood()) {
+      setShowMood(true);
+    }
   }, []);
 
   const handleSaveNickname = async (newNickname) => {
@@ -110,11 +145,21 @@ const Dashboard = () => {
     }
   };
 
+  // FIX #3: Smart auto-scroll — hanya scroll ke bawah jika user tidak sedang scroll ke atas
   useEffect(() => {
-    if (chatEndRef.current) {
-      chatEndRef.current.scrollIntoView({ behavior: "smooth" });
+    const body = chatBodyRef.current;
+    if (!body) return;
+    const isNearBottom = body.scrollHeight - body.scrollTop - body.clientHeight < 80;
+    if (isNearBottom) {
+      chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
   }, [chatMessages, isChatLoading]);
+
+  // FIX #2: Handler untuk mood toast
+  const handleMoodSelected = (selectedMood) => {
+    setMoodToast(`Mood "${selectedMood}" tersimpan! ✓`);
+    setTimeout(() => setMoodToast(""), 3000);
+  };
 
 
 
@@ -156,9 +201,11 @@ const Dashboard = () => {
     try {
       await supabase.auth.signOut();
       localStorage.removeItem("nickname");
-      localStorage.removeItem("avatar_url"); // Fix: clear avatar
+      localStorage.removeItem("avatar_url");
       localStorage.removeItem("mood");
+      localStorage.removeItem("mood_date"); // FIX: clear mood date juga saat logout
       localStorage.removeItem("quizFrom");
+      sessionStorage.removeItem("vivi_chat"); // FIX UX #2: bersihkan chat saat logout
       setShowLogoutModal(false);
       navigate("/login");
     } catch (error) {
@@ -279,7 +326,7 @@ const Dashboard = () => {
         </div>
 
         {/* HERO CAROUSEL — hanya muncul kalau ada slide */}
-        {carouselSlides.length > 0 && (
+        {carouselSlides.length > 0 ? (
           <>
             <div className="carousel-container">
               <div 
@@ -341,12 +388,40 @@ const Dashboard = () => {
               ))}
             </div>
           </>
+        ) : (
+          /* EMPTY STATE: Tampil kalau tidak ada banner dari admin */
+          <div style={{
+            margin: '0 0 20px 0',
+            padding: '24px 30px',
+            background: 'linear-gradient(135deg, #f5f3ff, #ede9fe)',
+            borderRadius: '16px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '16px',
+          }}>
+            <span style={{ fontSize: '2rem' }}>💜</span>
+            <div>
+              <p style={{ fontWeight: 700, color: '#5B4A78', fontSize: '0.95rem', margin: 0 }}>
+                Selamat datang di Vimind!
+              </p>
+              <p style={{ color: '#8c7aad', fontSize: '0.82rem', margin: '4px 0 0 0' }}>
+                Gunakan fitur di bawah untuk mulai memantau kesehatan mentalmu.
+              </p>
+            </div>
+          </div>
         )}
 
         {/* FEATURE */}
         <div className="bottom-section">
 
           <div className="bottom-left">
+            {/* FIX #1: Skeleton loading pada greeting agar tidak glitch */}
+            <p style={{ fontSize: '0.85rem', color: '#a78bfa', fontWeight: 600, marginBottom: '6px' }}>
+              {isProfileLoading
+                ? <span style={{ display: 'inline-block', width: '120px', height: '14px', background: '#e9d5ff', borderRadius: '6px', animation: 'pulse 1.5s infinite' }} />
+                : `Hai, ${nickname} 👋`
+              }
+            </p>
             <h2>Mari cek dan coba <br />beberapa manfaat Vimind</h2>
           </div>
 
@@ -366,7 +441,8 @@ const Dashboard = () => {
               <div className="icon">🙂</div>
               <div>
                 <h4>Rangkuman Kondisi Mood</h4>
-                <p>Berikut hasil rangkuman mood bulanan kamu.</p>
+                {/* FIX UX #4: Microcopy kontekstual */}
+                <p>{mood ? `Mood hari ini: ${mood} — Tap untuk lihat rangkuman` : "Belum isi mood hari ini. Tap untuk mulai."}</p>
               </div>
             </div>
 
@@ -380,7 +456,7 @@ const Dashboard = () => {
               <div className="icon">🧠</div>
               <div>
                 <h4>Cek Kondisi Mentalmu</h4>
-                <p>Pengujian untuk mencari tau bagaimana kondisi mentalmu.</p>
+                <p>Mulai tes psikologi untuk memahami kondisi mentalmu saat ini.</p>
               </div>
             </div>
 
@@ -392,7 +468,7 @@ const Dashboard = () => {
               <div className="icon">📊</div>
               <div>
                 <h4>Lihat Rangkuman</h4>
-                <p>Rangkuman dan perkembangan pengujian mentalmu selama ini.</p>
+                <p>Pantau perkembangan kondisi mentalmu dari waktu ke waktu.</p>
               </div>
             </div>
           </div>
@@ -429,7 +505,31 @@ const Dashboard = () => {
 
       {/* MOOD MODAL */}
       {showMood && (
-        <MoodModal onClose={() => setShowMood(false)} />
+        <MoodModal 
+          onClose={() => setShowMood(false)} 
+          onSelect={handleMoodSelected} 
+        />
+      )}
+
+      {/* TOAST FEEDBACK */}
+      {moodToast && (
+        <div style={{
+          position: 'fixed',
+          top: '20px',
+          left: '50%',
+          transform: 'translateX(-50%)',
+          background: '#10B981',
+          color: 'white',
+          padding: '12px 24px',
+          borderRadius: '30px',
+          boxShadow: '0 4px 12px rgba(16, 185, 129, 0.3)',
+          zIndex: 9999,
+          fontWeight: 600,
+          fontSize: '0.9rem',
+          animation: 'slideDown 0.3s ease-out'
+        }}>
+          {moodToast}
+        </div>
       )}
 
       {/* RESULT MODAL */}
@@ -460,15 +560,31 @@ const Dashboard = () => {
             <div className="chatbot-header-title">
               <span>Vivi <small>AI Bot</small></span>
             </div>
-            <button
-              className="chatbot-close-btn"
-              onClick={() => setShowChatbot(false)}
-            >
-              ✕
-            </button>
+            <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+              {/* FIX UX #2: Tombol Reset Chat */}
+              {chatMessages.length > 0 && (
+                <button
+                  className="chatbot-close-btn"
+                  title="Mulai percakapan baru"
+                  onClick={() => {
+                    setChatMessages([]);
+                    sessionStorage.removeItem("vivi_chat");
+                  }}
+                  style={{ fontSize: '13px', opacity: 0.7 }}
+                >
+                  🔄
+                </button>
+              )}
+              <button
+                className="chatbot-close-btn"
+                onClick={() => setShowChatbot(false)}
+              >
+                ✕
+              </button>
+            </div>
           </div>
 
-          <div className="chatbot-body">
+          <div className="chatbot-body" ref={chatBodyRef}>
             {chatMessages.length === 0 && (
               <div className="chatbot-msg chatbot-msg-welcome">
                 Halo{nickname !== 'User' ? ` ${nickname}` : ''}! Aku Vivi 😊 <br />Ada yang ingin kamu ceritakan hari ini?

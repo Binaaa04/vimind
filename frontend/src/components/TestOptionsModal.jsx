@@ -59,9 +59,9 @@ const primaryBtnStyle = {
 };
 
 const secondaryBtnStyle = {
-  backgroundColor: "#7a5cff",
-  color: "#ffffff",
-  border: "none",
+  backgroundColor: "transparent",
+  color: "#7a5cff",
+  border: "2px solid #7a5cff",
   padding: "12px 20px",
   borderRadius: "8px",
   fontWeight: "600",

@@ -648,10 +648,10 @@ body {
 /* FLOAT BUTTON */
 .chatbot-float-btn {
   position: fixed;
-  bottom: 20px;
-  right: 20px;
-  width: 60px;
-  height: 60px;
+  bottom: 32px; /* Lebih tinggi dari sebelumnya */
+  right: 32px;
+  width: 68px;
+  height: 68px;
   border-radius: 50%;
   border: none;
   background: transparent;
@@ -659,10 +659,11 @@ body {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: none;
-  z-index: 9999;
+  box-shadow: 0 8px 24px rgba(139, 92, 246, 0.25);
+  z-index: 9000; /* Lebih rendah dari z-index 9999 untuk hindari tumpang tindih */
   padding: 0;
   overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 /* ICON DI DALAM BUTTON */
@@ -1345,4 +1346,28 @@ body {
 
 .admin-btn:hover {
   background: #7C3AED;
+}
+
+/* UX ANIMATIONS */
+@keyframes slideDown {
+  from {
+    transform: translate(-50%, -100%);
+    opacity: 0;
+  }
+  to {
+    transform: translate(-50%, 0);
+    opacity: 1;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
+  }
 }

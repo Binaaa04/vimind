@@ -224,6 +224,7 @@ export default function SummaryModal({ onClose }) {
             <div
               className="gauge-graphic"
               style={{
+                position: 'relative',
                 background: `conic-gradient(from 270deg at 50% 100%, 
                   #9061f9 0deg, 
                   #9061f9 ${(latest?.percentage || 0) * 1.8}deg, 
@@ -231,7 +232,26 @@ export default function SummaryModal({ onClose }) {
                   #cbd5e0 180deg
                 )`
               }}
-            ></div>
+            >
+              <div style={{
+                position: 'absolute',
+                bottom: 0,
+                left: '50%',
+                transform: 'translateX(-50%)',
+                background: 'white',
+                width: '74%',
+                height: '74%',
+                borderRadius: '150px 150px 0 0',
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'flex-end',
+                alignItems: 'center',
+                paddingBottom: '8px'
+              }}>
+                <span style={{ fontSize: '26px', fontWeight: 900, color: '#7c3aed', lineHeight: 1 }}>{latest ? Math.round(latest.percentage) : 0}%</span>
+                <span style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 700, marginTop: '2px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Risiko</span>
+              </div>
+            </div>
 
             {/* 2. CHART GRAFIK */}
             <div className="gauge-text">
@@ -306,19 +326,23 @@ export default function SummaryModal({ onClose }) {
             ) : (
               history.map((item, idx) => (
                 <div key={idx} className="sm-history-item">
+                  <div className="item-left">
+                    <div className="item-percentage-large">{Math.round(item.percentage)}%</div>
+                  </div>
                   <div className="item-info">
                     <div className="item-disease">{item.disease}</div>
-                    <div className="item-date">{formatDate(item.date)}</div>
-                  </div>
-                  <div className="item-results">
-                    <div className="item-level" style={{ 
-                      backgroundColor: `${levelColor(item.level)}15`, 
-                      color: levelColor(item.level),
-                      border: `1px solid ${levelColor(item.level)}40`
-                    }}>
-                      {item.level}
+                    <div className="item-meta">
+                      <span className="item-level" style={{ 
+                        backgroundColor: `${levelColor(item.level)}15`, 
+                        color: levelColor(item.level),
+                        border: `1px solid ${levelColor(item.level)}40`
+                      }}>
+                        {item.level}
+                      </span>
+                      <span className="item-date">{formatDate(item.date)}</span>
                     </div>
-                    <div className="item-percentage">{Math.round(item.percentage)}%</div>
+                  </div>
+                  <div className="item-actions">
                     <button 
                       className="item-detail-btn" 
                       onClick={() => navigate("/hasil", { 
@@ -335,7 +359,8 @@ export default function SummaryModal({ onClose }) {
                       })}
                       title="Lihat Detail & Rekomendasi"
                     >
-                      👁️ Lihat Detail
+                      <span>Lihat Detail</span>
+                      <span>→</span>
                     </button>
                   </div>
                 </div>

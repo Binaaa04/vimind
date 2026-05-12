@@ -14,14 +14,14 @@
 /* 1. Container Card Utama */
 /* ganti semua .card jadi .login-card */
 .login-card {
-  background:#E9D5FF;
-  border-radius:20px;
-  box-shadow:0 7px 20px rgba(0,0,0,0.1);
-  display:flex;
-  max-width:900px;
-  width:100%;
-  padding:40px;
-  gap:30px;
+  background: #E9D5FF;
+  border-radius: 24px;
+  box-shadow: 0 12px 40px rgba(122, 92, 255, 0.15);
+  display: flex;
+  max-width: 780px; /* Lebih ramping dari 900px */
+  width: 100%;
+  padding: 40px;
+  gap: 30px;
 }
 
 /* 2. Bagian Kiri (Ilustrasi) */
@@ -138,10 +138,26 @@
   text-decoration: underline;
 }
 
-/* 6. Tombol Login Utama */
+/* 6. Tombol Login Utama — dibuat lebih menonjol */
 .primary-btn.full {
   width: 100%;
-  margin-top: -4px;
+  margin-top: 4px;
+  padding: 14px;
+  background: linear-gradient(135deg, #7a5cff, #6d28d9);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 20px rgba(109, 40, 217, 0.35);
+  letter-spacing: 0.3px;
+}
+
+.primary-btn.full:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(109, 40, 217, 0.45);
 }
 
 /* 7. Elemen Tambahan (Garis Atau & Google Login) */
@@ -173,7 +189,7 @@
   margin-left: 15px;
 }
 
-/* Override tombol Google */
+/* Override tombol Google — secondary / less dominant */
 .google-btn.full {
   width: fit-content !important;
   margin-top: 2px;
@@ -184,13 +200,14 @@
   align-items: center;
   justify-content: center;
   gap: 10px;
-  padding: 20px 30px !important; 
+  padding: 11px 24px !important; /* Lebih kecil dari tombol Login */
   border-radius: 12px !important;
   background-color: white !important;
   color: #8C8C8C !important; 
   border: 1px solid #E6D5FF !important;
   font-weight: 500;
-  font-size: 0.9rem;
+  font-size: 0.85rem; /* Font lebih kecil dari tombol Login */
+  opacity: 0.85; /* Sedikit lebih redup supaya tidak menyaingi tombol utama */
 }
 
 .google-btn.full:hover {

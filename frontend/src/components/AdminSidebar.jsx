@@ -176,12 +176,23 @@ const AdminSidebar = ({ avatarUrl, nickname = "Admin" }) => {
               className="popup-avatar"
             />
 
-            <button className="btn-primary">Ubah Foto</button>
-            <button className="popup-btn">Change Nickname</button>
-            <button className="popup-btn">Forgot Password</button>
+            <div style={{ padding: "8px 0" }}>
+              <span style={{
+                background: "#f3f0ff",
+                color: "#7c3aed",
+                padding: "4px 10px",
+                borderRadius: "20px",
+                fontSize: "11px",
+                fontWeight: 800,
+                letterSpacing: "0.05em",
+                textTransform: "uppercase"
+              }}>
+                Administrator
+              </span>
+            </div>
 
             <div className="popup-footer">
-              <img src={logo} alt="logo" style={{ width: 60 }} />
+              <img src={logo} alt="logo" style={{ width: 60, marginTop: '8px' }} />
             </div>
           </div>
         )}

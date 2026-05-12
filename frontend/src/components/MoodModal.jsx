@@ -5,6 +5,8 @@ const MoodModal = ({ onSelect, onClose }) => {
 
   const handleSelect = (mood) => {
     localStorage.setItem("mood", mood);
+    // Simpan tanggal hari ini agar modal tidak muncul lagi hari ini
+    localStorage.setItem("mood_date", new Date().toDateString());
     onSelect?.(mood);
     onClose();
   };
@@ -26,7 +28,11 @@ const MoodModal = ({ onSelect, onClose }) => {
           ))}
         </div>
 
-        <p className="skip" onClick={onClose}>Lewati</p>
+        {/* FIX UX #1: Lewati juga simpan tanggal agar modal tidak muncul lagi hari ini */}
+        <p className="skip" onClick={() => {
+          localStorage.setItem("mood_date", new Date().toDateString());
+          onClose();
+        }}>Lewati</p>
       </div>
     </div>
   );

@@ -57,22 +57,31 @@
 
 /* EXPORT BUTTON (HEADER) */
 .sm-export-btn {
-  background: #8b5cf6;
-  color: white;
-  border: none;
-  padding: clamp(8px, 2vw, 10px) clamp(12px, 3vw, 20px);
+  background: white;
+  color: #7c3aed;
+  border: 2px solid #e9d5ff;
+  padding: clamp(8px, 2vw, 10px) clamp(16px, 3vw, 24px);
   border-radius: 12px;
-  font-weight: 600;
+  font-weight: 700;
   font-size: clamp(12px, 3vw, 14px);
   cursor: pointer;
-  transition: 0.3s;
-  white-space: nowrap; /* Mencegah tombol patah ke bawah */
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.sm-export-btn::before {
+  content: '📥';
+  font-size: 1.1em;
 }
 
 .sm-export-btn:hover {
-  background: #7c3aed;
+  background: #f5f3ff;
+  border-color: #c4b5fd;
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.15);
 }
 
 /* ==========================================
@@ -168,62 +177,85 @@
   gap: 10px;
 }
 
+.item-left {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-right: 12px;
+  border-right: 1px solid #f1f5f9;
+}
+
+.item-percentage-large {
+  font-weight: 900;
+  color: #7c3aed;
+  font-size: 24px;
+  min-width: 45px;
+  text-align: center;
+}
+
 .item-info {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   flex: 1;
+  padding-left: 6px;
 }
 
 .item-disease {
-  font-weight: 700;
-  color: #2d3748;
-  font-size: clamp(13px, 3vw, 14px);
-  line-height: 1.3;
+  font-weight: 800;
+  color: #1e1b4b;
+  font-size: clamp(14px, 3vw, 16px);
+  line-height: 1.2;
+}
+
+.item-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
 }
 
 .item-date {
   font-size: 11px;
-  color: #a0aec0;
+  color: #64748b;
+  font-weight: 500;
 }
 
-.item-results {
+.item-actions {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 6px;
 }
 
 .item-level {
   font-size: 10px;
   font-weight: 700;
-  padding: 2px 8px;
-  border-radius: 20px;
+  padding: 3px 8px;
+  border-radius: 6px;
   text-transform: uppercase;
   text-align: center;
-}
-
-.item-percentage {
-  font-weight: 800;
-  color: #8b5cf6;
-  font-size: 16px;
+  letter-spacing: 0.05em;
 }
 
 .item-detail-btn {
-  background: #f1f5f9;
-  border: none;
-  padding: 6px 10px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  padding: 8px 12px;
   border-radius: 8px;
-  font-size: 10px;
-  font-weight: 600;
-  color: white;
+  font-size: 11px;
+  font-weight: 700;
+  color: #475569;
   cursor: pointer;
-  transition: 0.2s;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 4px;
 }
 
 .item-detail-btn:hover {
-  background: #e2e8f0;
-  color: #1a202c;
+  background: #f1f5f9;
+  border-color: #cbd5e1;
+  color: #1e293b;
 }
 
 /* ==========================================
@@ -314,13 +346,12 @@
     align-items: flex-start;
   }
   
-  .item-results {
+  .item-actions {
     width: 100%;
-    flex-direction: row; /* Level, persentase, dan tombol berjejer menyamping di layar kecil */
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 10px;
-    padding-top: 10px;
+    flex-direction: row;
+    justify-content: flex-end;
+    margin-top: 8px;
+    padding-top: 8px;
     border-top: 1px dashed #e2e8f0;
   }
   
