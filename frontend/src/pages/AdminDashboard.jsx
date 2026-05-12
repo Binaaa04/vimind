@@ -8,7 +8,7 @@ import AdminFeedback from "./AdminFeedback";
 import { adminGetBanners, adminUpsertBanner, adminDeleteBanner, getProfile } from "../services/api";
 import "../css/AdminDashboard.css";
 
-const BannerCard = ({ bannerData, index, adminEmail }) => {
+const BannerCard = ({ bannerData, index, adminEmail, onImageClick }) => {
   const [linkUrl, setLinkUrl] = useState(bannerData?.link_url || "");
   const [imageUrl, setImageUrl] = useState(bannerData?.image_url || "");
   const [title, setTitle] = useState(bannerData?.title || "");
@@ -115,6 +115,9 @@ const BannerCard = ({ bannerData, index, adminEmail }) => {
               src={imageUrl} 
               alt="Preview Banner" 
               className="preview-image"
+              onClick={() => onImageClick(imageUrl)}
+              title="Klik untuk melihat ukuran penuh"
+              style={{ cursor: "zoom-in" }}
             />
             <div className="preview-overlay">
               <h2 className="preview-title">
@@ -133,7 +136,7 @@ const BannerCard = ({ bannerData, index, adminEmail }) => {
             className={`status-btn ${isActive ? 'active' : 'inactive'}`} 
             onClick={() => handleToggle(!isActive)}
           >
-            {isActive ? '🔴 Nonaktifkan Banner' : '🟢 Aktifkan Banner'}
+            {isActive ? '🔴 Nonaktifkan' : '🟢 Aktifkan'}
           </button>
         </div>
       </div>
@@ -147,6 +150,7 @@ const AdminDashboard = () => {
   const [adminEmail, setAdminEmail] = useState("");
   const [adminName, setAdminName] = useState("Admin");
   const [adminAvatar, setAdminAvatar] = useState("");
+  const [previewImage, setPreviewImage] = useState(null);
 
   useEffect(() => {
     const fetchSession = async () => {
@@ -199,9 +203,17 @@ const AdminDashboard = () => {
                 {loadingBanners ? (
                   <p style={{ color: "#aaa" }}>Memuat data banner...</p>
                 ) : (
-                  banners.map((b, i) => (
-                    <BannerCard key={b.id || i} bannerData={b} index={i} adminEmail={adminEmail} />
-                  ))
+                  <div className="banners-grid">
+                    {banners.map((b, i) => (
+                      <BannerCard 
+                        key={b.id || i} 
+                        bannerData={b} 
+                        index={i} 
+                        adminEmail={adminEmail} 
+                        onImageClick={setPreviewImage}
+                      />
+                    ))}
+                  </div>
                 )}
                 {banners.length === 0 && !loadingBanners && (
                   <p style={{ textAlign: "center", padding: 40, color: "#888" }}>Belum ada banner. Klik tombol di atas buat nambah!</p>
@@ -216,6 +228,16 @@ const AdminDashboard = () => {
           <Route path="feedback" element={<AdminFeedback adminEmail={adminEmail} />} />
         </Routes>
       </div>
+
+      {/* MODAL GAMBAR FULL */}
+      {previewImage && (
+        <div className="image-modal" onClick={() => setPreviewImage(null)}>
+          <div className="image-modal-content" onClick={(e) => e.stopPropagation()}>
+            <button className="close-modal-btn" onClick={() => setPreviewImage(null)}>✕</button>
+            <img src={previewImage} alt="Full Preview" />
+          </div>
+        </div>
+      )}
     </div>
   );
 };
