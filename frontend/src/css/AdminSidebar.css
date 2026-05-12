@@ -1,13 +1,14 @@
   /* ================= SIDEBAR ================= */
   .admin-sidebar {
     width: 270px;
-    height: auto;
+    height: 100vh;
+    position: sticky;
+    top: 0;
     background: #f8f7fc;
     display: flex;
     flex-direction: column;
     padding: 20px;
     border-right: 2px solid #e5e0ff;
-    position: relative;
     transition: width 0.3s ease;
     overflow: visible;
     z-index: 100;
@@ -30,13 +31,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 8px;
+    border-radius: 50%; /* Dibuat bulat agar lebih natural di tengah garis */
     border: none;
     background: #8b5cf6;
     color: white;
     font-size: 14px;
     cursor: pointer;
     z-index: 999;
+    box-shadow: 0 2px 6px rgba(139, 92, 246, 0.4); /* Tambahan shadow agar tidak tenggelam dengan garis tepi */
   }
 
   /* ================= LOGO ================= */
@@ -60,26 +62,29 @@
 
   /* ================= MENU ================= */
   .menu-section {
-    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 24px;
   }
 
   .menu-title {
     font-size: 14px;
     color: #999;
-    margin-bottom: 8px;
+    margin-bottom: 4px;
     font-weight: 800;
+    padding-left: 4px;
   }
 
   .menu-item {
     display: flex;       
     align-items: center; 
-    padding: 10px 12px;
+    padding: 12px 14px;
     border-radius: 12px;
     text-decoration: none;
     color: #333;
-    margin-bottom: 10px;
     transition: 0.2s;
-    gap: 8px;            
+    gap: 12px;            
   }
 
   .menu-item:hover {
@@ -96,14 +101,16 @@
     white-space: nowrap;       /* Paksa teks menu jadi 1 baris */
     overflow: hidden;          /* Sembunyikan sisa teks */
     text-overflow: ellipsis;   /* Tambahkan titik-titik (...) */
+    font-weight: 500;
   }
 
   /* ---------------- ICON SVG DENGAN FILTER (WARNA: #2E1065) ---------------- */
   .menu-icon-img {
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
     object-fit: contain;
     transition: all 0.2s ease;
+    flex-shrink: 0;
     filter: brightness(0) saturate(100%) invert(13%) sepia(87%) saturate(2853%) hue-rotate(256deg) brightness(81%) contrast(103%);
   }
 
@@ -206,9 +213,17 @@
   }
 
   /* ================= COLLAPSED STATE ================= */
+  .admin-sidebar.collapsed .menu-section {
+    margin-bottom: 10px; /* Jarak antar grup disamakan dengan jarak dalam grup */
+    gap: 10px; /* Jarak dalam grup (antar ikon) */
+  }
+
   .admin-sidebar.collapsed .menu-item {
     justify-content: center;
-    padding: 10px 0;
+    padding: 0;
+    width: 44px;
+    height: 44px;
+    margin: 0 auto; /* Hapus margin bawah individual agar tidak double dengan gap */
   }
 
   .admin-sidebar.collapsed .menu-item span {
@@ -232,7 +247,7 @@
 
   .admin-sidebar.collapsed .logo-img {
     display: block !important; /* Paksa muncul */
-    width: 40px;     
+    width: 36px;     
     height: auto;
     margin: 0 auto;
     max-width: 100%;
@@ -241,6 +256,7 @@
   .admin-sidebar.collapsed .sidebar-avatar {
     width: 40px;
     height: 40px;
+    margin: 0 auto;
   }
 
   /* ================= LOGOUT BUTTON ================= */
@@ -284,7 +300,10 @@
   /* ================= COLLAPSED STATE ================= */
   .admin-sidebar.collapsed .logout-btn {
     justify-content: center;
-    padding: 10px 0;
+    padding: 0;
+    width: 44px;
+    height: 44px;
+    margin: 0 auto;
   }
 
   /* ================= MOBILE RESPONSIVE ================= */
