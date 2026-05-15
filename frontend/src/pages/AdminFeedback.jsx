@@ -29,38 +29,22 @@ const AdminFeedback = ({ adminEmail }) => {
     }
   };
 
-  if (loading) return <p style={{ color: "#aaa", padding: 20 }}>Memuat data feedback...</p>;
+  if (loading) return <p className="feedback-loading">Memuat data feedback...</p>;
 
   return (
     <>
       <h1>User Feedbacks</h1>
       
-      <div style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>
+      <div className="feedback-tabs">
         <button 
           onClick={() => setActiveTab("testimonials")}
-          style={{ 
-            padding: "8px 16px", 
-            borderRadius: "8px", 
-            border: "1px solid #8a5cff",
-            background: activeTab === "testimonials" ? "#8a5cff" : "transparent",
-            color: activeTab === "testimonials" ? "white" : "#8a5cff",
-            cursor: "pointer",
-            fontWeight: 600
-          }}
+          className={`feedback-tab-btn tab-primary ${activeTab === "testimonials" ? "active" : ""}`}
         >
           Testimoni (Kuis)
         </button>
         <button 
           onClick={() => setActiveTab("account")}
-          style={{ 
-            padding: "8px 16px", 
-            borderRadius: "8px", 
-            border: "1px solid #ef4444",
-            background: activeTab === "account" ? "#ef4444" : "transparent",
-            color: activeTab === "account" ? "white" : "#ef4444",
-            cursor: "pointer",
-            fontWeight: 600
-          }}
+          className={`feedback-tab-btn tab-danger ${activeTab === "account" ? "active" : ""}`}
         >
           Alasan Hapus Akun
         </button>
@@ -80,43 +64,25 @@ const AdminFeedback = ({ adminEmail }) => {
             <tbody>
               {testimonials.map((t) => (
                 <tr key={t.id}>
-                  <td style={{ color: "#fbbf24", fontSize: "18px" }}>{"★".repeat(t.rating)}</td>
+                  <td className="star-container">{"★".repeat(t.rating)}</td>
                   <td>
                     <strong>{t.name}</strong><br/>
-                    <span style={{ fontSize: "12px", color: "#888" }}>{t.email}</span>
+                    <span className="feedback-text-muted">{t.email}</span>
                   </td>
-                  <td style={{ maxWidth: "300px", wordWrap: "break-word" }}>{t.comment}</td>
+                  <td className="td-review">{t.comment}</td>
                   <td>
                     <div 
+                      className={`toggle-switch ${t.is_displayed ? "active" : ""}`}
                       onClick={() => toggleDisplay(t.id, t.is_displayed)}
-                      style={{
-                        width: '46px',
-                        height: '24px',
-                        borderRadius: '12px',
-                        background: t.is_displayed ? '#10b981' : '#cbd5e1',
-                        cursor: 'pointer',
-                        position: 'relative',
-                        transition: 'background 0.3s'
-                      }}
                       title={t.is_displayed ? "Ditampilkan" : "Disembunyikan"}
                     >
-                      <div style={{
-                        width: '20px',
-                        height: '20px',
-                        borderRadius: '50%',
-                        background: 'white',
-                        position: 'absolute',
-                        top: '2px',
-                        left: t.is_displayed ? '24px' : '2px',
-                        transition: 'left 0.3s',
-                        boxShadow: '0 1px 3px rgba(0,0,0,0.2)'
-                      }} />
+                      <div className="toggle-circle" />
                     </div>
                   </td>
                 </tr>
               ))}
               {testimonials.length === 0 && (
-                <tr><td colSpan="4" style={{ textAlign: "center" }}>Belum ada testimoni.</td></tr>
+                <tr><td colSpan="4" className="td-center">Belum ada testimoni.</td></tr>
               )}
             </tbody>
           </table>
@@ -136,13 +102,13 @@ const AdminFeedback = ({ adminEmail }) => {
             <tbody>
               {accountFeedbacks.map((f) => (
                 <tr key={f.id}>
-                  <td style={{ whiteSpace: "nowrap" }}>{f.created_at}</td>
+                  <td className="td-nowrap">{f.created_at}</td>
                   <td>{f.email}</td>
-                  <td style={{ maxWidth: "400px", wordWrap: "break-word", color: "#ef4444" }}>"{f.reason}"</td>
+                  <td className="td-reason">"{f.reason}"</td>
                 </tr>
               ))}
               {accountFeedbacks.length === 0 && (
-                <tr><td colSpan="3" style={{ textAlign: "center" }}>Belum ada data history hapus akun.</td></tr>
+                <tr><td colSpan="3" className="td-center">Belum ada data history hapus akun.</td></tr>
               )}
             </tbody>
           </table>

@@ -94,7 +94,6 @@ export default function Home() {
             <span onClick={() => scrollToSection("fitur")}>Fitur</span>
             <span onClick={() => scrollToSection("testimoni")}>Testimoni</span>
             <span onClick={() => scrollToSection("faq")}>FAQ</span>
-            <span onClick={() => scrollToSection("contact")}>Kontak</span>
           </div>
           <button className="btn-signin" onClick={() => { setIsMenuOpen(false); navigate("/login"); }}>Sign In</button>
         </div>
@@ -107,7 +106,6 @@ export default function Home() {
           <p>Vimind bantu kamu memahami kondisi kesehatan mentalmu dengan pendekatan yang personal dan aman.</p>
           <div className="hero-buttons">
             <button className="hero-btn-primary" onClick={() => navigate("/deteksi/soal")}>Coba Tes Gratis →</button>
-            <button className="hero-btn-secondary" onClick={() => scrollToSection("fitur")}>Pelajari Fitur ↓</button>
           </div>
         </div>
       </header>
@@ -116,7 +114,7 @@ export default function Home() {
         <div className="fitur-header">
           <span className="badge">Eksplorasi Vimind</span>
           <h2>Kenali dirimu lebih baik lagi</h2>
-          <p>Fitur yang dirancang khusus untuk mendukung perjalanan kesehatan mentalmu setiap hari.</p>
+          <p>Berikut adalah fitur menarik yang bisa bantu kamu buat lebih memahami dan menjaga kesehatan mental setiap hari.</p>
         </div>
         <div className="fitur-grid">
           <div className="fitur-card">
@@ -189,84 +187,47 @@ export default function Home() {
 
       <section id="faq" className="faq-section">
         <div className="faq-container">
-          <div className="faq-header" style={{ textAlign: "center", marginBottom: "40px" }}>
-            <span className="badge">FAQ</span>
-            <h2 className="faq-title">Punya Pertanyaan?</h2>
-            <p className="faq-subtitle">Temukan jawaban cepat seputar fitur, keamanan data, dan cara kerja Vimind.</p>
-          </div>
-          <div className="faq-list">
-            {faqData.map((item, index) => (
-              <div key={item.id} className={`faq-item ${openFaqIndex === index ? "active" : ""}`}>
-                <div className="faq-question" onClick={() => toggleFaq(index)}>
-                  <span>{item.question}</span>
-                  <span className="faq-icon">
-                    <svg width="14" height="10" viewBox="0 0 14 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M1 1L7 8L13 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-                    </svg>
-                  </span>
-                </div>
-                <div className="faq-answer">
-                  <div className="faq-answer-inner">
-                    {item.answer}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="bottom-cta-section">
-        <div className="bottom-cta-content">
-          <h2>Mulai Langkah Pertamamu Hari Ini</h2>
-          <p>Kesehatan mentalmu layak diprioritaskan. Mari mulai perjalanan mengenal diri lebih dalam secara gratis.</p>
-          <button className="bottom-cta-btn" onClick={() => navigate("/deteksi/soal")}>Mulai Tes Gratis</button>
-        </div>
-      </section>
-
-      <footer id="contact" className="footer">
-        <div className="footer-container">
-          <div className="footer-brand">
-            <h2 className="footer-logo">Vimind</h2>
-            <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "14px", lineHeight: "1.6" }}>
-              Memberikan kejelasan dan dukungan untuk kesehatan mental Anda melalui teknologi cerdas dan empati.
+          
+          {/* KOLOM ATAS (Header) */}
+          <div className="faq-header">
+            <span className="faq-badge">FAQ</span>
+            <h2 className="faq-title">
+              <span className="red-question"></span> Frequently Asked<br />Questions
+            </h2>
+            <p className="faq-subtitle">
+              Temukan jawaban dari berbagai pertanyaan seputar Vimind. Di sini kamu bisa memahami cara kerja fitur, tes kesehatan mental, serta bagaimana Vimind membantu kamu lebih mengenali dan menjaga kondisi emosimu.
             </p>
           </div>
-          <div className="footer-col">
-            <h3>PERUSAHAAN</h3>
-            <ul>
-              <li onClick={() => scrollToTop()}>Home</li>
-              <li onClick={() => scrollToSection("fitur")}>Fitur</li>
-              <li onClick={() => scrollToSection("contact")}>Kontak Kami</li>
-            </ul>
-          </div>
-          <div className="footer-col">
-            <h3>INFORMASI</h3>
-            <ul>
-              <li>Kesehatan Mental</li>
-              <li>Panduan Pengguna</li>
-              <li>Privasi & Keamanan</li>
-              <li>Syarat & Ketentuan</li>
-              <li>FAQ</li>
-            </ul>
-          </div>
-          <div className="footer-col footer-contact">
-            <h3>KONTAK</h3>
-            <div className="contact-item">
-              <span>🏠</span>
-              <p>Jl. Niaga No.3, Kec. Sukun,<br />Kota Malang, Jawa Timur</p>
-            </div>
-            <div className="contact-item">
-              <span>💬</span>
-              <p>+62 811-9757-222</p>
+
+          {/* KOLOM BAWAH (Daftar FAQ) */}
+          <div className="faq-right">
+            <div className="faq-list">
+              {faqData && faqData.map((item, index) => (
+                <div key={item.id} className={`faq-item ${openFaqIndex === index ? "active" : ""}`}>
+                  <div className="faq-question" onClick={() => toggleFaq(index)}>
+                    <span>{item.question}</span>
+                    <span className="faq-icon">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </span>
+                  </div>
+                  <div className="faq-answer">
+                    <div className="faq-answer-inner">
+                      {item.answer}
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           </div>
+
         </div>
-      </footer>
+      </section>
 
       <div className={`scroll-nav-container-3d ${showScroll ? "show" : ""}`}>
         <button className="scroll-btn-3d-circle" onClick={scrollToTop} aria-label="Scroll to top">
-          <img src={arrowUp} alt="" style={{ width: "32px", height: "32px" }} />
+          <img src={arrowUp} alt="" style={{ width: "52px", height: "52px" }} />
         </button>
       </div>
     </div>

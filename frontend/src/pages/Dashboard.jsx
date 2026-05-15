@@ -417,10 +417,6 @@ const Dashboard = () => {
           <div className="bottom-left">
             {/* FIX #1: Skeleton loading pada greeting agar tidak glitch */}
             <p style={{ fontSize: '0.85rem', color: '#a78bfa', fontWeight: 600, marginBottom: '6px' }}>
-              {isProfileLoading
-                ? <span style={{ display: 'inline-block', width: '120px', height: '14px', background: '#e9d5ff', borderRadius: '6px', animation: 'pulse 1.5s infinite' }} />
-                : `Hai, ${nickname} 👋`
-              }
             </p>
             <h2>Mari cek dan coba <br />beberapa manfaat Vimind</h2>
           </div>

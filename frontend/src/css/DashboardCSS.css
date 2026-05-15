@@ -410,7 +410,7 @@ body {
   align-items: center;
   justify-content: flex-start;
   gap: 10px;
-  margin-top: 0px;
+  margin-top: 80px;
   margin-left: -40px;
 }
 
@@ -927,11 +927,13 @@ body {
   .bottom-left h2 {
     font-size: 1.2rem;
     min-width: 300px !important;
+    padding-top: 10px;
   }
 
   .feature-card {
     min-width: 200px;
     padding: 12px;
+    padding-top: 10px;
   }
 
   .feature-card h4 {

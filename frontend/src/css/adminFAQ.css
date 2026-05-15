@@ -1,49 +1,133 @@
-/* ================= FAQ PAGE STYLES ================= */
+/* --- CONTAINER UTAMA --- */
 .faq-container {
   width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  /* padding: 20px 40px; */
+  font-family: 'Inter', 'Quicksand', sans-serif;
 }
 
 .faq-loading {
-  color: #aaa;
-  padding: 20px;
+  text-align: center;
+  color: #64748b;
+  padding: 40px;
+  font-size: 16px;
 }
 
+/* --- JUDUL HALAMAN --- */
 .faq-header {
+  width: 100%;
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 20px;
+  justify-content: flex-start; 
+  align-items: flex-start;
 }
 
-.faq-add-btn {
-  background: #4caf50;
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background 0.2s;
+.faq-header-text {
+  margin-bottom: 30px;
+  text-align: left !important;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; 
 }
 
-.faq-add-btn:hover {
-  background: #45a049;
+.faq-header-text h2 {
+  font-size: 28px;
+  font-weight: 800;
+  color: #8B5CF6; 
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+.faq-header-text p {
+  font-size: 16px;
+  font-weight: 400;
+  max-width: 1000px; 
+  color: #64748b;
+  margin-top: 8px; 
+  letter-spacing: 0.5px;
+  text-align: left; 
+}
+
+/* --- LAYOUT UTAMA (Pembungkus Grid & Tombol Sticky) --- */
+.faq-main-layout {
+  display: flex;
+  gap: 25px;
+  align-items: flex-start; 
+  position: relative;
+}
+
+/* --- GRID 3 CARD (SISI KIRI) --- */
+.faq-list {
+  flex: 1;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 150px;
 }
 
 .faq-empty {
+  grid-column: 1 / -1;
   text-align: center;
-  color: #666;
+  color: #64748b;
   padding: 40px;
+  background: #fff;
+  border-radius: 16px;
+  border: 1px dashed #cbd5e1;
 }
 
+/* --- CARD STYLING --- */
 .faq-card {
-  position: relative;
-  background: #fff;
-  padding: 24px;
-  border-radius: 16px;
-  border: 1px solid #edf2f7;
-  box-shadow: 0 4px 14px rgba(0,0,0,0.03);
-  margin-bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
+  overflow: hidden;
+  height: 100%;
+  width: 160%;
+  border: 1px solid #f1f5f9;
+}
+
+.faq-card:hover {
+  box-shadow: 0 6px 20px rgba(168, 85, 247, 0.1);
+  border-color: #e2e8f0;
+}
+
+.faq-card.is-dragging {
+  opacity: 0.5;
+  border: 2px dashed #a855f7;
+  transform: scale(0.98);
+}
+
+/* --- HANDLE DRAG (ATAS KARTU) --- */
+.faq-card-side-handle {
+  width: 100%;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #cbd5e1;
+  cursor: grab;
+  background: #f8fafc;
+}
+
+.faq-card-side-handle:active {
+  cursor: grabbing;
+}
+
+.drag-icon {
+  font-size: 20px;
+  user-select: none;
+  letter-spacing: 2px;
+  transform: rotate(90deg);
+}
+
+/* --- ISI KARTU --- */
+.faq-card-content {
+  flex: 1;
+  padding: 15px 20px 20px 20px;
+  display: flex;
+  flex-direction: column;
 }
 
 .faq-card-header {
@@ -53,88 +137,150 @@
   margin-bottom: 15px;
 }
 
-.faq-card-header h3 {
-  margin: 0;
-  color: #333;
+.faq-number {
+  font-weight: 800;
+  color: #a855f7;
+  font-size: 13px;
+  text-transform: uppercase;
 }
 
 .faq-delete-btn {
-  background: transparent !important;
-  border: 1px solid #ff4d4d !important;
-  color: #ff4d4d !important;
-  padding: 8px 16px;
-  border-radius: 8px;
-  cursor: pointer;
+  background: #fee2e2 !important;
+  border: none !important;
+  color: #ef4444 !important;
+  padding: 6px 12px;
+  border-radius: 6px;
   font-size: 12px;
-  font-weight: bold;
-  transition: all 0.2s;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
 }
 
 .faq-delete-btn:hover {
-  background: #ff4d4d !important;
-  color: white !important;
-  border-color: transparent !important;
+  background: #fecaca !important;
 }
 
+/* --- INPUT & TEXTAREA --- */
 .faq-input-group {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 12px;
+  flex: 1;
 }
 
-.faq-input {
+.faq-input, .faq-textarea {
   width: 100%;
-  padding: 14px;
-  border-radius: 10px;
-  border: 1px solid #cbd5e1;
+  padding: 12px 14px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  font-size: 13px;
   font-family: inherit;
-  font-size: 14px;
-  outline: none;
-  background-color: #f8fafc;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
 }
 
-.faq-input:focus {
-  border-color: #8b5cf6;
-  background-color: #ffffff;
+.faq-input::placeholder, .faq-textarea::placeholder {
+  color: #94a3b8;
+}
+
+.faq-input:focus, .faq-textarea:focus {
+  outline: none;
+  border-color: #a855f7;
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
 }
 
 .faq-textarea {
-  width: 100%;
-  padding: 14px;
-  border-radius: 10px;
-  background: #f8fafc;
-  color: #333;
-  border: 1px solid #cbd5e1;
-  min-height: 100px;
-  font-family: inherit;
-  font-size: 14px;
+  min-height: 120px;
   resize: vertical;
-  outline: none;
+  flex: 1;
 }
 
-.faq-textarea:focus {
-  border-color: #8b5cf6;
-  background-color: #ffffff;
-}
-
+/* --- TOMBOL SIMPAN DI DALAM KARTU --- */
 .faq-submit-btn {
-  align-self: flex-start;
-  background: linear-gradient(90deg, #8b5cf6, #7c3aed);
+  background: #a855f7; 
   color: white;
   border: none;
-  padding: 12px 24px;
-  border-radius: 10px;
-  cursor: pointer;
+  padding: 12px 20px;
+  border-radius: 8px;
   font-weight: 700;
-  transition: opacity 0.2s;
-  margin-top: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+  width: 100%;
+  margin-top: 10px;
 }
 
-.faq-submit-btn:hover {
-  opacity: 0.9;
+.faq-submit-btn:hover:not(:disabled) {
+  background: #9333ea;
 }
 
 .faq-submit-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+/* ========================================================= */
+/* --- STICKY WRAPPER & TOMBOL TAMBAH FAQ --- */
+/* ========================================================= */
+
+.faq-sticky-wrapper {
+  position: sticky !important; 
+  top: 30px; 
+  margin-left: 125px;
+  align-self: flex-start;
+  flex-shrink: 0;
+  height: max-content;
+}
+
+.faq-sticky-btn {
+  width: 150px; 
+  height: 250px; 
+  background: #a855f7; 
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 10px 25px rgba(168, 85, 247, 0.3);
+  transition: all 0.2s ease;
+  margin-top: 100px;
+}
+
+.faq-sticky-btn:hover {
+  background: #9333ea;
+  transform: translateY(-4px);
+  box-shadow: 0 14px 28px rgba(168, 85, 247, 0.4);
+}
+
+/* ================= RESPONSIVE ================= */
+@media screen and (max-width: 1200px) {
+  .faq-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media screen and (max-width: 850px) {
+  .faq-main-layout {
+    flex-direction: column; 
+  }
+  
+  .faq-sticky-wrapper {
+    position: relative !important; 
+    top: 0;
+    width: 100%;
+  }
+
+  .faq-sticky-btn {
+    width: 100%; 
+    height: 60px; /* Lebar normal saat di HP */
+  }
+
+  .faq-list {
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
 }
