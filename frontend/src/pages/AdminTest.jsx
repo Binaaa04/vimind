@@ -75,7 +75,6 @@ const AdminTest = ({ adminEmail }) => {
         await adminUpsertDisease(adminEmail, item);
         setEditingDiseaseId(null);
       }
-      // alert("✔ Berhasil disimpan!"); // Hilangkan alert agar flow lebih cepat
       fetchData();
     } catch (err) {
       alert("Gagal menyimpan data.");
@@ -114,11 +113,11 @@ const AdminTest = ({ adminEmail }) => {
         <table className="test-table">
           <thead>
             <tr>
-              <th style={{ width: "10%" }}>Rule ID</th>
-              <th style={{ width: "25%" }}>Penyakit (ID)</th>
-              <th style={{ width: "25%" }}>Gejala (ID)</th>
-              <th style={{ width: "25%" }}>Expert CF</th>
-              <th style={{ width: "15%" }}>Actions</th>
+              <th className="col-10">Rule ID</th>
+              <th className="col-25">Penyakit (ID)</th>
+              <th className="col-25">Gejala (ID)</th>
+              <th className="col-25">Expert CF</th>
+              <th className="col-15">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -142,7 +141,7 @@ const AdminTest = ({ adminEmail }) => {
                       {diseases.map(d => <option key={d.id} value={d.id}>{d.name}</option>)}
                     </select>
                   ) : (
-                    <span style={{ fontWeight: 600 }}>{getDiseaseName(item.disease_id)}</span>
+                    <span className="text-disease-name">{getDiseaseName(item.disease_id)}</span>
                   )}
                 </td>
                 <td>
@@ -177,7 +176,7 @@ const AdminTest = ({ adminEmail }) => {
                       }} 
                     />
                   ) : (
-                    <span style={{ color: '#8b5cf6', fontWeight: 700 }}>{item.cf_value}</span>
+                    <span className="text-cf-value">{item.cf_value}</span>
                   )}
                 </td>
                 <td>
@@ -185,16 +184,15 @@ const AdminTest = ({ adminEmail }) => {
                     {isEditing ? (
                       <>
                         <button onClick={() => handleSaveItem("rule", item)} className="btn-save">Save</button>
-                        <button onClick={() => handleCancelEdit("rule")} className="btn-cancel" style={{ background: '#e2e8f0', color: '#475569', border: 'none', padding: '6px 10px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}>Batal</button>
+                        <button onClick={() => handleCancelEdit("rule")} className="btn-cancel">Batal</button>
                       </>
                     ) : (
                       <>
-                        <button onClick={() => setEditingRuleId(item.rule_id)} className="btn-edit" style={{ background: '#f1f5f9', color: '#8b5cf6', border: '1px solid #ddd6fe', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}>Edit</button>
+                        <button onClick={() => setEditingRuleId(item.rule_id)} className="btn-edit">Edit</button>
                         <button 
                           onClick={() => handleDelete("rule", item.rule_id)} 
                           className="btn-delete-icon" 
                           title="Hapus"
-                          style={{ color: '#ef4444', background: '#fef2f2', border: '1px solid #fecaca', padding: '6px', borderRadius: '6px', cursor: 'pointer' }}
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256">
                             <path d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96ZM192,208H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z"></path>
@@ -224,10 +222,10 @@ const AdminTest = ({ adminEmail }) => {
         <table className="test-table">
           <thead>
             <tr>
-              <th style={{ width: "10%" }}>ID</th>
-              <th style={{ width: "20%" }}>Kode</th>
-              <th style={{ width: "55%" }}>Nama Gejala / Pertanyaan</th>
-              <th style={{ width: "15%" }}>Actions</th>
+              <th className="col-10">ID</th>
+              <th className="col-20">Kode</th>
+              <th className="col-55">Nama Gejala / Pertanyaan</th>
+              <th className="col-15">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -249,7 +247,7 @@ const AdminTest = ({ adminEmail }) => {
                       }} 
                     />
                   ) : (
-                    <span style={{ fontWeight: 600, color: '#64748b' }}>{item.code}</span>
+                    <span className="text-symptom-code">{item.code}</span>
                   )}
                 </td>
                 <td>
@@ -272,16 +270,15 @@ const AdminTest = ({ adminEmail }) => {
                     {isEditing ? (
                       <>
                         <button onClick={() => handleSaveItem("symptom", item)} className="btn-save">Save</button>
-                        <button onClick={() => handleCancelEdit("symptom")} className="btn-cancel" style={{ background: '#e2e8f0', color: '#475569', border: 'none', padding: '6px 10px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}>Batal</button>
+                        <button onClick={() => handleCancelEdit("symptom")} className="btn-cancel">Batal</button>
                       </>
                     ) : (
                       <>
-                        <button onClick={() => setEditingSymptomId(item.id)} className="btn-edit" style={{ background: '#f1f5f9', color: '#8b5cf6', border: '1px solid #ddd6fe', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}>Edit</button>
+                        <button onClick={() => setEditingSymptomId(item.id)} className="btn-edit">Edit</button>
                         <button 
                           onClick={() => handleDelete("symptom", item.id)} 
                           className="btn-delete-icon"
                           title="Hapus"
-                          style={{ color: '#ef4444', background: '#fef2f2', border: '1px solid #fecaca', padding: '6px', borderRadius: '6px', cursor: 'pointer' }}
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256">
                             <path d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96ZM192,208H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z"></path>
@@ -311,11 +308,11 @@ const AdminTest = ({ adminEmail }) => {
         <table className="test-table">
           <thead>
             <tr>
-              <th style={{ width: "5%" }}>ID</th>
-              <th style={{ width: "20%" }}>Nama Penyakit</th>
-              <th style={{ width: "30%" }}>Deskripsi</th>
-              <th style={{ width: "30%" }}>Solusi</th>
-              <th style={{ width: "15%" }}>Actions</th>
+              <th className="col-5">ID</th>
+              <th className="col-20">Nama Penyakit</th>
+              <th className="col-30">Deskripsi</th>
+              <th className="col-30">Solusi</th>
+              <th className="col-15">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -337,7 +334,7 @@ const AdminTest = ({ adminEmail }) => {
                       }} 
                     />
                   ) : (
-                    <span style={{ fontWeight: 700, color: '#1e1b4b' }}>{item.name}</span>
+                    <span className="text-disease-title">{item.name}</span>
                   )}
                 </td>
                 <td>
@@ -352,7 +349,7 @@ const AdminTest = ({ adminEmail }) => {
                       }} 
                     />
                   ) : (
-                    <span style={{ fontSize: '13px', color: '#475569' }}>{item.description}</span>
+                    <span className="text-disease-desc">{item.description}</span>
                   )}
                 </td>
                 <td>
@@ -367,7 +364,7 @@ const AdminTest = ({ adminEmail }) => {
                       }} 
                     />
                   ) : (
-                    <span style={{ fontSize: '13px', color: '#475569' }}>{item.solutions}</span>
+                    <span className="text-disease-desc">{item.solutions}</span>
                   )}
                 </td>
                 <td>
@@ -375,16 +372,15 @@ const AdminTest = ({ adminEmail }) => {
                     {isEditing ? (
                       <>
                         <button onClick={() => handleSaveItem("disease", item)} className="btn-save">Save</button>
-                        <button onClick={() => handleCancelEdit("disease")} className="btn-cancel" style={{ background: '#e2e8f0', color: '#475569', border: 'none', padding: '6px 10px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}>Batal</button>
+                        <button onClick={() => handleCancelEdit("disease")} className="btn-cancel">Batal</button>
                       </>
                     ) : (
                       <>
-                        <button onClick={() => setEditingDiseaseId(item.id)} className="btn-edit" style={{ background: '#f1f5f9', color: '#8b5cf6', border: '1px solid #ddd6fe', padding: '6px 12px', borderRadius: '6px', cursor: 'pointer', fontWeight: 600 }}>Edit</button>
+                        <button onClick={() => setEditingDiseaseId(item.id)} className="btn-edit">Edit</button>
                         <button 
                           onClick={() => handleDelete("disease", item.id)} 
                           className="btn-delete-icon"
                           title="Hapus"
-                          style={{ color: '#ef4444', background: '#fef2f2', border: '1px solid #fecaca', padding: '6px', borderRadius: '6px', cursor: 'pointer' }}
                         >
                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256">
                             <path d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96ZM192,208H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z"></path>

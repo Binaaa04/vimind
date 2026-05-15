@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
 import { supabase } from "../services/supabaseClient";
 import AdminSidebar from "../components/AdminSidebar";
+import DashboardAnalytics from "./analyticsDashboard";
 import AdminFAQ from "./AdminFAQ";
 import AdminTest from "./AdminTest";
 import AdminFeedback from "./AdminFeedback";
@@ -41,7 +42,7 @@ const BannerCard = ({ bannerData, index, adminEmail, onImageClick }) => {
     if (!window.confirm("Beneran mau hapus banner ini?")) return;
     try {
       await adminDeleteBanner(adminEmail, bannerData.id);
-      window.location.reload(); 
+      window.location.reload();
     } catch (err) {
       alert("Gagal menghapus banner.");
     }
@@ -68,7 +69,7 @@ const BannerCard = ({ bannerData, index, adminEmail, onImageClick }) => {
     setIsActive(newState);
     try {
       await adminUpsertBanner(adminEmail, { ...bannerPayload(), is_active: newState });
-    } catch (_) {}
+    } catch (_) { }
   };
 
   return (
@@ -111,9 +112,9 @@ const BannerCard = ({ bannerData, index, adminEmail, onImageClick }) => {
       <div className="preview-box">
         {imageUrl ? (
           <>
-            <img 
-              src={imageUrl} 
-              alt="Preview Banner" 
+            <img
+              src={imageUrl}
+              alt="Preview Banner"
               className="preview-image"
               onClick={() => onImageClick(imageUrl)}
               title="Klik untuk melihat ukuran penuh"
@@ -130,10 +131,10 @@ const BannerCard = ({ bannerData, index, adminEmail, onImageClick }) => {
             <span>🖼️ Preview Banner (Masukkan Link Gambar)</span>
           </div>
         )}
-        
+
         <div className="action-btns">
-          <button 
-            className={`status-btn ${isActive ? 'active' : 'inactive'}`} 
+          <button
+            className={`status-btn ${isActive ? 'active' : 'inactive'}`}
             onClick={() => handleToggle(!isActive)}
           >
             {isActive ? '🔴 Nonaktifkan' : '🟢 Aktifkan'}
@@ -157,7 +158,7 @@ const AdminDashboard = () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user?.email) {
         setAdminEmail(session.user.email);
-        
+
         try {
           const profileRes = await getProfile(session.user.email);
           const name = profileRes.data?.name || session.user.user_metadata?.full_name || session.user.email.split("@")[0];
@@ -170,13 +171,13 @@ const AdminDashboard = () => {
 
         adminGetBanners(session.user.email)
           .then((res) => setBanners(res.data || []))
-          .catch(() => {})
+          .catch(() => { })
           .finally(() => setLoadingBanners(false));
       } else {
         setLoadingBanners(false);
       }
     };
-    
+
     fetchSession();
   }, []);
 
@@ -185,15 +186,18 @@ const AdminDashboard = () => {
       <AdminSidebar nickname={adminName} avatarUrl={adminAvatar} />
 
       <div className="admin-content">
+
         <Routes>
+          {/* ANALYTICS DASHBOARD */}
+          <Route path="analytics" element={<DashboardAnalytics />} />
           {/* PROMOSI */}
           <Route
-            path="/"
+            path="dashboard"
             element={
               <>
                 <div className="admin-header">
                   <h1>Promosi Dashboard</h1>
-                  <button 
+                  <button
                     onClick={() => setBanners([{}, ...banners])}
                     className="add-banner-btn"
                   >
@@ -205,11 +209,11 @@ const AdminDashboard = () => {
                 ) : (
                   <div className="banners-grid">
                     {banners.map((b, i) => (
-                      <BannerCard 
-                        key={b.id || i} 
-                        bannerData={b} 
-                        index={i} 
-                        adminEmail={adminEmail} 
+                      <BannerCard
+                        key={b.id || i}
+                        bannerData={b}
+                        index={i}
+                        adminEmail={adminEmail}
                         onImageClick={setPreviewImage}
                       />
                     ))}

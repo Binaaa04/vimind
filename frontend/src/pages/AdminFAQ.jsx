@@ -6,8 +6,8 @@ const AdminFAQ = ({ adminEmail }) => {
   const [faq, setFaq] = useState([]);
   const [loading, setLoading] = useState(true);
   const [savingIndex, setSavingIndex] = useState(null);
+  const [draggedItemIndex, setDraggedItemIndex] = useState(null);
 
-  // Load existing FAQ dari API
   const fetchFAQ = async () => {
     if (adminEmail) {
       try {
@@ -32,103 +32,150 @@ const AdminFAQ = ({ adminEmail }) => {
   };
 
   const handleAddNew = () => {
-    setFaq([{ id: "", question: "", answer: "" }, ...faq]);
+    setFaq([...faq, { id: "", question: "", answer: "" }]);
   };
 
   const handleDelete = async (index) => {
     const item = faq[index];
     if (!item.id) {
-      // Belum simpan ke DB, cuma hapus dari state
       setFaq(faq.filter((_, i) => i !== index));
       return;
     }
-
     if (!window.confirm("Yakin ingin menghapus pertanyaan ini?")) return;
-
     try {
-      await adminDeleteFAQ(adminEmail, item.id);
+      await adminDeleteFAQ(item.id, adminEmail);
       setFaq(faq.filter((_, i) => i !== index));
-      alert("Pertanyaan berhasil dihapus!");
     } catch (err) {
-      alert("Gagal menghapus FAQ.");
+      alert("Gagal menghapus");
     }
   };
 
   const handleSubmit = async (index) => {
-    if (!adminEmail) return;
     const item = faq[index];
-    if (!item.question.trim() || !item.answer.trim()) {
-      alert("Pertanyaan dan jawaban wajib diisi!");
+    if (!item.question || !item.answer) {
+      alert("Isi pertanyaan dan jawaban!");
       return;
     }
     setSavingIndex(index);
     try {
-      await adminUpsertFAQ(adminEmail, {
-        id: item.id,
-        question: item.question,
-        answer: item.answer,
-      });
-      // Refresh to get actual UUID if it was new
-      await fetchFAQ();
-      alert(`✔ Berhasil disimpan!`);
+      await adminUpsertFAQ({ ...item, admin_email: adminEmail });
+      alert("Berhasil disimpan!");
+      fetchFAQ();
     } catch (err) {
-      const serverErr = err.response?.data?.error || err.message;
-      alert(`Gagal menyimpan FAQ. Coba lagi.\nAlasan: ${serverErr}`);
+      alert("Gagal menyimpan");
     } finally {
       setSavingIndex(null);
     }
   };
 
-  if (loading) return <p className="faq-loading">Memuat data FAQ...</p>;
+  // === DRAG AND DROP LOGIC ===
+  const onDragStart = (e, index) => {
+    setDraggedItemIndex(index);
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const onDragOver = (e, index) => {
+    e.preventDefault();
+    if (draggedItemIndex === index) return;
+
+    const items = [...faq];
+    const draggedItem = items[draggedItemIndex];
+    
+    // Tukar posisi array secara real-time
+    items.splice(draggedItemIndex, 1);
+    items.splice(index, 0, draggedItem);
+
+    setDraggedItemIndex(index);
+    setFaq(items);
+  };
+
+  const onDragEnd = () => {
+    setDraggedItemIndex(null);
+  };
+
+  if (loading) return <div className="faq-loading">Memuat data...</div>;
 
   return (
-    <div className="faq-container">
+    <div className="faq-container"style={{ height: "600px", overflowY: "auto", border: "transparent" }}>
+      
+      {/* HEADER (Hanya Judul) */}
       <div className="faq-header">
-        <h1>Custom FAQ</h1>
-        <button className="faq-add-btn" onClick={handleAddNew}>
-          + Tambah Pertanyaan
-        </button>
+        <div className="faq-header-text">
+          <h2>Custom FAQ</h2>
+          <p>Kelola pertanyaan dan urutkan posisinya dengan menarik kartu di bawah.</p>
+        </div>
       </div>
 
-      {faq.length === 0 ? (
-        <p className="faq-empty">Belum ada data FAQ. Klik tambah untuk membuat.</p>
-      ) : (
-        faq.map((item, index) => (
-          <div key={index} className="faq-card">
-            <div className="faq-card-header">
-              <h3>Pertanyaan {index + 1}</h3>
-              <button className="faq-delete-btn" onClick={() => handleDelete(index)}>
-                Hapus
-              </button>
-            </div>
-
-            <div className="faq-input-group">
-              <input
-                type="text"
-                className="faq-input"
-                placeholder="Masukkan Pertanyaan"
-                value={item.question}
-                onChange={(e) => handleChange(index, "question", e.target.value)}
-              />
-
-              <textarea
-                className="faq-textarea"
-                placeholder="Masukkan Jawaban"
-                value={item.answer}
-                onChange={(e) => handleChange(index, "answer", e.target.value)}
-              />
-
-              <button
-                className="faq-submit-btn"
-                onClick={() => handleSubmit(index)}
-                disabled={savingIndex === index}
+      {/* LAYOUT UTAMA: Kiri (Grid 3 Kartu) & Kanan (Tombol Sticky) */}
+      <div className="faq-main-layout">
+        
+        {/* LIST KARTU FAQ (GRID 3 KOLOM) */}
+        <div className="faq-list">
+          {faq.length === 0 ? (
+            <p className="faq-empty">Belum ada data FAQ. Klik tambah untuk membuat.</p>
+          ) : (
+            faq.map((item, index) => (
+              <div 
+                key={item.id || index} 
+                className={`faq-card ${draggedItemIndex === index ? "is-dragging" : ""}`}
+                draggable
+                onDragStart={(e) => onDragStart(e, index)}
+                onDragOver={(e) => onDragOver(e, index)}
+                onDragEnd={onDragEnd}
               >
-                {savingIndex === index ? "Menyimpan..." : "Submit"}
-              </button>
-            </div>
-          </div>
-        ))
-      )}
+                {/* AREA UNTUK DRAG (Atas Kartu) */}
+                <div className="faq-card-side-handle">
+                  <div className="drag-icon">⋮⋮</div>
+                </div>
+                
+                <div className="faq-card-content">
+                  <div className="faq-card-header">
+                    <span className="faq-number">Pertanyaan {index + 1}</span>
+                    <button className="faq-delete-btn" onClick={() => handleDelete(index)}>
+                      Hapus
+                    </button>
+                  </div>
+
+                  <div className="faq-input-group">
+                    <input
+                      type="text"
+                      className="faq-input"
+                      placeholder="Apa pertanyaannya?"
+                      value={item.question}
+                      onChange={(e) => handleChange(index, "question", e.target.value)}
+                    />
+
+                    <textarea
+                      className="faq-textarea"
+                      placeholder="Tuliskan jawabannya di sini..."
+                      value={item.answer}
+                      onChange={(e) => handleChange(index, "answer", e.target.value)}
+                    />
+
+                    <div className="faq-card-footer">
+                      <button
+                        className="faq-submit-btn"
+                        onClick={() => handleSubmit(index)}
+                        disabled={savingIndex === index}
+                      >
+                        {savingIndex === index ? "Menyimpan..." : "Simpan Perubahan"}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        {/* TOMBOL TAMBAH (DIBUNGKUS WRAPPER STICKY AGAR BULLETPROOF) */}
+        <div className="faq-sticky-wrapper">
+          <button className="faq-sticky-btn" onClick={handleAddNew}>
+            + Tambah FAQ
+          </button>
+        </div>
+
+      </div>
     </div>
   );
 };

@@ -9,7 +9,8 @@ import linkIcon from "../assets/link.svg";
 import faqIcon from "../assets/faq.svg";
 import testIcon from "../assets/Test.svg";
 import feedbackIcon from "../assets/feedback.svg";
-import logoutIcon from "../assets/LogOut.svg"; 
+import logoutIcon from "../assets/LogOut.svg";
+import dashboardIcon from "../assets/Dashboard.svg";
 
 // Hook React digabung jadi satu di sini biar gak error "already been declared"
 import { useState, useEffect, useRef } from "react";
@@ -77,9 +78,25 @@ const AdminSidebar = ({ avatarUrl, nickname = "Admin" }) => {
 
       {/* MENU */}
       <div className="menu-section">
+        <NavLink
+          to="/admin/analytics" // Sesuaikan dengan path routing kamu
+          className={({ isActive }) =>
+            isActive ? "menu-item active" : "menu-item"
+          }
+        >
+          <img
+            src={dashboardIcon?.src || dashboardIcon}
+            alt="Dashboard Icon"
+            className="menu-icon-img"
+          />
+          {!isCollapsed && <span>Dashboard Analytics</span>}
+        </NavLink>
+      </div>
+
+      <div className="menu-section">
         {!isCollapsed && <p className="menu-title">PROMOTION</p>}
         <NavLink
-          to="/admin"
+          to="/admin/dashboard"
           end
           className={({ isActive }) =>
             isActive ? "menu-item active" : "menu-item"
@@ -126,7 +143,7 @@ const AdminSidebar = ({ avatarUrl, nickname = "Admin" }) => {
           />
           {!isCollapsed && <span>Ubah Pertanyaan Test</span>}
         </NavLink>
-        
+
         <NavLink
           to="/admin/feedback"
           className={({ isActive }) =>

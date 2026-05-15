@@ -38,40 +38,119 @@
   font-size: 15px;
   color: #334155;
   border-bottom: 1px solid #f1f5f9;
-  vertical-align: middle;
+  vertical-align: top; /* Agar konten sejajar di atas */
 }
 
-/* Menghilangkan border bawah pada baris terakhir */
-.table-box tbody tr:last-child td {
-  border-bottom: none;
-}
-
-/* Efek Hover pada Baris Tabel */
+/* Baris Tabel Hover Effect */
 .table-box tbody tr {
-  transition: background-color 0.2s ease;
+  transition: background-color 0.2s ease-in-out;
 }
 
 .table-box tbody tr:hover {
   background-color: #f8fafc;
 }
 
-/* Efek Hover dan Transisi untuk semua tombol (melengkapi inline style) */
-button {
-  transition: all 0.2s ease-in-out;
+/* ==================================================== */
+/* TAMBAHAN CLASS DARI INLINE CSS (AdminFeedback.jsx)   */
+/* ==================================================== */
+
+.feedback-loading {
+  color: #aaa;
+  padding: 20px;
 }
 
-button:hover {
-  opacity: 0.85;
-  transform: translateY(-1px);
+/* Pengaturan Tabs (Tombol Navigasi) */
+.feedback-tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
-button:active {
-  transform: translateY(0);
+/* Tombol Tidak Aktif (Unselected) */
+.feedback-tab-btn {
+  padding: 10px 20px;
+  border: 1.5px solid #8B5CF6 !important; /* Border ungu */
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  background: transparent !important; /* Background transparan */
+  color: #8B5CF6; /* Teks ungu */
+  transition: all 0.2s ease;
 }
 
-/* Styling Judul (Opsional, agar senada) */
-h1 {
-  color: #1e293b;
-  font-size: 28px;
-  margin-bottom: 24px;
+/* Tombol Aktif (Selected) */
+.feedback-tab-btn.active {
+  background: #8B5CF6 !important; /* BG Ungu */
+  color: #FDF4FF !important; /* Teks pastel (ungu sangat muda) */
+}
+
+/* Efek Hover untuk tombol yang tidak aktif */
+.feedback-tab-btn:hover:not(.active) {
+  background: rgba(139, 92, 246, 0.1) !important; /* Memberi sedikit sorotan ungu saat di-hover */
+  color: #8B5CF6 !important; /* Pastikan teks tetap ungu saat di-hover */
+  border-color: #8B5CF6 !important; /* Pastikan border tetap ungu saat di-hover */
+}
+
+/* Kolom Teks Khusus */
+.td-nowrap {
+  white-space: nowrap;
+}
+
+.td-review {
+  max-width: 300px;
+  word-wrap: break-word;
+}
+
+.td-reason {
+  max-width: 400px;
+  word-wrap: break-word;
+  color: #ef4444; /* Warna merah untuk alasan hapus akun */
+}
+
+.td-center {
+  text-align: center;
+}
+
+.feedback-text-muted {
+  font-size: 13px;
+  color: #64748b;
+}
+
+/* Bintang Rating */
+.star-container {
+  display: flex;
+  color: #FFD700 !important ; /* Warna kuning emas terang */
+  font-size: 18px;
+  margin-bottom: 4px;
+}
+
+/* Komponen Toggle Switch */
+.toggle-switch {
+  width: 44px;
+  height: 24px;
+  background: #cbd5e1;
+  border-radius: 12px;
+  position: relative;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.toggle-switch.active {
+  background: #10b981; /* Warna hijau saat toggle aktif (is_displayed = true) */
+}
+
+.toggle-circle {
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  transition: left 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+
+.toggle-switch.active .toggle-circle {
+  left: 24px; /* Lingkaran bergeser ke kanan saat aktif */
 }

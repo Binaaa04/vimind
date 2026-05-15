@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"; 
 import Home from "./pages/Home";
 //import Welcome from "./pages/Welcome";
 import DetectionIntro from "./pages/DetectionIntro";
@@ -62,6 +62,7 @@ function App() {
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/reset-success" element={<ResetSuccess />} />
         <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/admin" element={<Navigate to="/admin/dashboard" />} />
         <Route path="/admin/*" element={<AdminDashboard />} />
         <Route path="/auth/callback" element={<AuthCallback />} />
       </Routes>
