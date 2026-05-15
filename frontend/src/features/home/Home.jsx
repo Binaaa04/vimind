@@ -185,41 +185,40 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="faq" className="faq-section">
-        <div className="faq-container">
+      {/* SECTION FAQ */}
+      <section id="faq" className="faq-section-wrapper">
+        <div className="faq-main-container">
           
-          {/* KOLOM ATAS (Header) */}
-          <div className="faq-header">
-            <span className="faq-badge">FAQ</span>
-            <h2 className="faq-title">
-              <span className="red-question"></span> Frequently Asked<br />Questions
+          {/* HEADER (BAGIAN ATAS) */}
+          <div className="faq-header-content">
+            <span className="faq-pill-badge">FAQ</span>
+            <h2 className="faq-main-title">
+              <span className="faq-red-mark">?</span> Frequently Asked Questions
             </h2>
-            <p className="faq-subtitle">
+            <p className="faq-main-subtitle">
               Temukan jawaban dari berbagai pertanyaan seputar Vimind. Di sini kamu bisa memahami cara kerja fitur, tes kesehatan mental, serta bagaimana Vimind membantu kamu lebih mengenali dan menjaga kondisi emosimu.
             </p>
           </div>
 
-          {/* KOLOM BAWAH (Daftar FAQ) */}
-          <div className="faq-right">
-            <div className="faq-list">
-              {faqData && faqData.map((item, index) => (
-                <div key={item.id} className={`faq-item ${openFaqIndex === index ? "active" : ""}`}>
-                  <div className="faq-question" onClick={() => toggleFaq(index)}>
-                    <span>{item.question}</span>
-                    <span className="faq-icon">
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                    </span>
-                  </div>
-                  <div className="faq-answer">
-                    <div className="faq-answer-inner">
-                      {item.answer}
-                    </div>
+          {/* LIST (BAGIAN BAWAH) */}
+          <div className="faq-list-container">
+            {faqData && faqData.map((item, index) => (
+              <div key={item.id} className={`faq-card-item ${openFaqIndex === index ? "is-active" : ""}`}>
+                <div className="faq-question-row" onClick={() => toggleFaq(index)}>
+                  <span className="faq-question-text">{item.question}</span>
+                  <div className="faq-chevron-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
                   </div>
                 </div>
-              ))}
-            </div>
+                <div className="faq-answer-collapse">
+                  <div className="faq-answer-content">
+                    {item.answer}
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
 
         </div>

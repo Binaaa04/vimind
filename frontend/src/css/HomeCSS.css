@@ -557,156 +557,152 @@ button:active {
 /* =========================================
    FAQ SECTION (Sesuai Desain Baru)
    ========================================= */
-.faq-section {
-  padding: 80px 0;
+.faq-section-wrapper {
+  padding: 100px 20px;
   background-color: #ffffff;
   display: flex;
   justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
 }
 
-.faq-container {
+.faq-main-container {
   max-width: 900px;
   width: 100%;
-  margin: 0 auto;
-  padding: 40px;
   display: flex;
-  flex-direction: column; 
+  flex-direction: column; /* Memastikan arah ke bawah */
   align-items: center;
-  gap: 30px;
-  border-radius: 8px;
+  gap: 50px; /* Jarak antara header dan list */
 }
 
-/* --- KOLOM ATAS (Header) --- */
-.faq-header {
-  width: 100%;
+/* --- HEADER --- */
+.faq-header-content {
   text-align: center;
-  padding-bottom: 30px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  width: 100%;
 }
 
-.faq-badge {
+.faq-pill-badge {
   display: inline-block;
-  background-color: #f8f5ff; 
-  color: #a78bfa; 
-  padding: 6px 40px;
+  background-color: #f0ebff;
+  color: #8b5cf6;
+  padding: 6px 30px;
   border-radius: 50px;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 13px;
+  font-weight: 700;
   margin-bottom: 20px;
-  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
-.faq-title {
-  font-size: 42px;
+.faq-main-title {
+  font-size: clamp(32px, 5vw, 48px);
   font-weight: 800;
-  color: #2e1c6b; /* Warna ungu gelap */
-  margin-bottom: 16px;
-  line-height: 1.1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  gap: 10px;
+  color: #1e1b4b;
+  margin-bottom: 20px;
+  line-height: 1.2;
 }
 
-.red-question {
-  color: #ef4444; /* Warna merah untuk tanda tanya */
-  font-size: 48px;
+.faq-red-mark {
+  color: #ef4444; /* Merah sesuai gambar */
+  margin-right: 5px;
 }
 
-.faq-subtitle {
+.faq-main-subtitle {
   font-size: 15px;
   color: #6b7280;
   line-height: 1.6;
-  max-width: 800px;
+  max-width: 750px;
   margin: 0 auto;
 }
 
-/* --- KOLOM BAWAH (List FAQ) --- */
-.faq-right {
+/* --- LIST ACCORDION --- */
+.faq-list-container {
   width: 100%;
-}
-
-.faq-list {
   display: flex;
   flex-direction: column;
-  gap: 12px; 
+  gap: 16px;
 }
 
-.faq-item {
-  border: 1px solid #e5e7eb; 
-  border-radius: 12px;
+.faq-card-item {
   background: #ffffff;
-  transition: all 0.3s ease;
-  overflow: hidden; 
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
 }
 
-/* Hapus border berubah ungu agar persis gambar (desain hanya border abu-abu) */
-.faq-item.active {
-  border-color: #e5e7eb; 
-  box-shadow: none; 
+/* Pertahankan border abu-abu sesuai gambar walau aktif */
+.faq-card-item.is-active {
+  border-color: #e5e7eb;
+  background: #ffffff;
 }
 
-.faq-question {
-  padding: 20px 24px;
+.faq-question-row {
+  padding: 24px 30px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   cursor: pointer;
-  font-weight: 500;
-  font-size: 16px;
-  color: #111827; 
+  user-select: none;
 }
 
-.faq-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #000000; 
-  transition: transform 0.3s ease;
+.faq-question-text {
+  font-size: 17px;
+  font-weight: 700;
+  color: #111827;
+  padding-right: 20px;
 }
 
-.faq-item.active .faq-icon {
-  transform: rotate(180deg); 
-  color: #000000; 
+.faq-chevron-icon {
+  color: #111827;
+  transition: transform 0.4s ease;
+  flex-shrink: 0;
 }
 
-.faq-answer {
+.faq-card-item.is-active .faq-chevron-icon {
+  transform: rotate(180deg);
+}
+
+/* --- ANIMASI JAWABAN --- */
+.faq-answer-collapse {
   max-height: 0;
   overflow: hidden;
-  transition: max-height 0.4s ease; 
+  transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.faq-item.active .faq-answer {
-  max-height: 400px; 
+.faq-card-item.is-active .faq-answer-collapse {
+  max-height: 500px; /* Nilai aman untuk konten panjang */
 }
 
-.faq-answer-inner {
-  padding: 0 24px 20px 24px; 
-  color: #6b7280; 
+.faq-answer-content {
+  padding: 0 30px 24px 30px;
+  color: #4b5563;
   font-size: 15px;
-  line-height: 1.6;
+  line-height: 1.7;
+  border-top: none; /* Bersih tanpa garis pemisah di dalam */
 }
 
-/* --- RESPONSIVE UNTUK HP --- */
-@media (max-width: 768px) {
-  .faq-container {
+/* --- RESPONSIVE MOBILE --- */
+@media (max-width: 640px) {
+  .faq-section-wrapper {
+    padding: 60px 15px;
+  }
+  
+  .faq-main-container {
+    gap: 30px;
+  }
+
+  .faq-question-row {
     padding: 20px;
-    border: none; /* Hilangkan garis biru luar di HP agar tidak terlalu sempit */
   }
-  .faq-title {
-    font-size: 32px;
+  
+  .faq-question-text {
+    font-size: 15px;
   }
-  .red-question {
-    font-size: 36px;
-  }
-}
 
-.bottom-cta-btn:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 16px 35px rgba(109, 40, 217, 0.5);
+  .faq-answer-content {
+    padding: 0 20px 20px 20px;
+    font-size: 14px;
+  }
 }
 
 /* SCROLL TO TOP */
