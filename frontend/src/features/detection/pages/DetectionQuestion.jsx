@@ -25,17 +25,18 @@ export default function Detection() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [questions, setQuestions]               = useState([]);
-  const [selectedAnswers, setSelectedAnswers]   = useState({});
-  const [currentPage, setCurrentPage]           = useState(0);
-  const [loading, setLoading]                   = useState(true);
-  const [submitting, setSubmitting]             = useState(false);
-  const [userEmail, setUserEmail]               = useState(null);
-  const [sessionId, setSessionId]               = useState(null);
-  const [isRefinedMode, setIsRefinedMode]       = useState(false);
+  const [questions, setQuestions] = useState([]);
+  const [selectedAnswers, setSelectedAnswers] = useState({});
+  const [currentPage, setCurrentPage] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [userEmail, setUserEmail] = useState(null);
+  const [sessionId, setSessionId] = useState(null);
+  const [isRefinedMode, setIsRefinedMode] = useState(false);
   const [historyDiseaseID, setHistoryDiseaseID] = useState(0);
-  const [isOffline, setIsOffline]               = useState(!navigator.onLine);
-  const [retryAnswers, setRetryAnswers]         = useState(null);
+  const [isOffline, setIsOffline] = useState(!navigator.onLine);
+  const [retryAnswers, setRetryAnswers] = useState(null);
+  const pageRef = useRef(null);
 
   // ============================================================
   // Group questions by disease_id & batasi maksimal 5 soal per halaman
@@ -72,20 +73,26 @@ export default function Detection() {
     return chunkedPages;
   }, [questions]);
 
-  const currentGroup     = pages[currentPage] || { questions: [], disease_name: "", disease_id: null, part: 1, totalParts: 1 };
+  const currentGroup = pages[currentPage] || { questions: [], disease_name: "", disease_id: null, part: 1, totalParts: 1 };
   const currentQuestions = currentGroup.questions;
-  const totalPages       = pages.length;
+  const totalPages = pages.length;
+
+  useEffect(() => {
+    if (pageRef.current) {
+      pageRef.current.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [currentPage]);
 
   // ============================================================
   // Online / Offline detection
   // ============================================================
   useEffect(() => {
-    const goOnline  = () => setIsOffline(false);
+    const goOnline = () => setIsOffline(false);
     const goOffline = () => setIsOffline(true);
-    window.addEventListener("online",  goOnline);
+    window.addEventListener("online", goOnline);
     window.addEventListener("offline", goOffline);
     return () => {
-      window.removeEventListener("online",  goOnline);
+      window.removeEventListener("online", goOnline);
       window.removeEventListener("offline", goOffline);
     };
   }, []);
@@ -138,24 +145,24 @@ export default function Detection() {
               }
               return true; // Berhasil di-restore
             }
-          } catch {}
+          } catch { }
           return false;
         };
 
         // ── "Deteksi Penyakit Baru" → hapus cache, mulai fresh ──
         if (forceNewTest === true) {
-          try { await deleteTestSession(email, sid); } catch {}
+          try { await deleteTestSession(email, sid); } catch { }
           if (!email) {
             // Refresh guest session ID untuk tes yang baru
             sid = crypto.randomUUID();
             sessionStorage.setItem("guest_session_id", sid);
             setSessionId(sid);
           }
-        } 
+        }
         // ── Refresh / URL langsung → cek backend cache ──
         else if (forceNewTest === undefined) {
           if (await tryRestoreCache()) return;
-        } 
+        }
         // ── "Lanjutkan Kondisi" (logged-in, forceNewTest = false) ──
         else if (email && forceNewTest === false) {
           if (await tryRestoreCache()) return;
@@ -173,7 +180,7 @@ export default function Detection() {
               }
               return;
             }
-          } catch {} // Jika error, lanjut ke fallback "all" di bawah
+          } catch { } // Jika error, lanjut ke fallback "all" di bawah
         }
 
         // ── Default (Guest fresh / Deteksi Baru / Fallback) ──
@@ -198,7 +205,7 @@ export default function Detection() {
     if (!userEmail && !sessionId) return;
     if (saveTimer.current) clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(() => {
-      saveTestSession(userEmail, sessionId, selectedAnswers, currentPage).catch(() => {});
+      saveTestSession(userEmail, sessionId, selectedAnswers, currentPage).catch(() => { });
     }, 800);
   }, [userEmail, sessionId, selectedAnswers, currentPage]);
 
@@ -244,7 +251,6 @@ export default function Detection() {
       await finalizeDiagnosis(finalAnswers);
     } else {
       setCurrentPage((prev) => prev + 1);
-      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
@@ -275,7 +281,7 @@ export default function Detection() {
       }
 
       // Hapus session cache di backend
-      try { await deleteTestSession(userEmail, sessionId); } catch {}
+      try { await deleteTestSession(userEmail, sessionId); } catch { }
       // Hapus guest session ID
       sessionStorage.removeItem("guest_session_id");
       setRetryAnswers(null);
@@ -294,7 +300,6 @@ export default function Detection() {
   const handlePrevPage = () => {
     if (currentPage > 0) {
       setCurrentPage((prev) => prev - 1);
-      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
@@ -307,29 +312,25 @@ export default function Detection() {
   // Label tombol Next
   // ============================================================
   const getNextButtonLabel = () => {
-    if (submitting) return "Mengolah...";
-    if (currentPage < totalPages - 1) {
-      const nextGroup = pages[currentPage + 1];
-      if (nextGroup.disease_id === currentGroup.disease_id) {
-        return "Halaman Selanjutnya";
-      }
-      return `Selanjutnya: ${nextGroup.disease_name}`;
-    }
-    return "Selesai & Lihat Hasil";
-  };
+  if (submitting) return "Mengolah...";
+  if (currentPage < totalPages - 1) {
+    return "Halaman Selanjutnya"; // Selalu gunakan label netral
+  }
+  return "Selesai & Lihat Hasil";
+};
 
   // ============================================================
   // Render — Loading
   // ============================================================
   if (loading) return (
-    <div className="question-page" style={{ justifyContent: "center" }}>
+    <div className="status-page">
       <h1>Memuat Pertanyaan...</h1>
-      <p style={{ marginTop: "10px", color: "#666" }}>Mohon tunggu sebentar.</p>
+      <p>Mohon tunggu sebentar.</p>
     </div>
   );
 
   if (!questions || questions.length === 0) return (
-    <div className="question-page" style={{ justifyContent: "center" }}>
+    <div className="status-page">
       <h1>Terjadi Kesalahan</h1>
       <p>Gagal memuat daftar pertanyaan. Silahkan coba lagi nanti.</p>
       <button onClick={() => window.location.reload()} className="next-btn" style={{ marginTop: "20px" }}>
@@ -344,7 +345,7 @@ export default function Detection() {
   // Render — Main
   // ============================================================
   return (
-    <div className="question-page">
+    <div className="question-page" ref={pageRef}>
       {/* BANNER OFFLINE */}
       {isOffline && (
         <div className="offline-banner">
@@ -368,8 +369,8 @@ export default function Detection() {
       <div className="question-container">
         {/* NAMA PENYAKIT & INDIKATOR BAGIAN */}
         <div className="phase-indicator">
-          {currentGroup.disease_name.toUpperCase()}
-          {currentGroup.totalParts > 1 ? ` (BAGIAN ${currentGroup.part})` : ""}
+          EVALUASI GEJALA
+          {currentGroup.totalParts > 1 ? ` - BAGIAN ${currentGroup.part}` : ""}
         </div>
 
         {/* SUB-INFO: bagian ke-berapa + jumlah soal di halaman ini */}
@@ -381,7 +382,7 @@ export default function Detection() {
         {currentQuestions.map((q, idx) => {
           const questionNumber = ((currentGroup.part - 1) * 5) + idx + 1;
           const compositeKey = `d${q.disease_id}_s${q.id}`;
-          
+
           return (
             <div key={compositeKey} className="question-item">
               <h2>

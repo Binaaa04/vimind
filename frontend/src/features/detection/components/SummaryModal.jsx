@@ -93,7 +93,7 @@ export default function SummaryModal({ onClose }) {
     navigate("/hasil");
   };
 
-  // ============ EXPORT TO PRINT (rapi) ============
+  // ============ EXPORT TO PRINT ============
   const handleExport = () => {
     const printWindow = window.open("", "_blank", "width=800,height=700");
     if (!printWindow) {
@@ -218,13 +218,13 @@ export default function SummaryModal({ onClose }) {
 
         {/* BODY */}
         <div className="sm-body">
-          <div className="summary-gauge-container" style={{ touchAction: "pan-y" }}>
+          <div className="summary-gauge-container">
             <div className="sm-chart-label">Kondisi Terakhir Anda</div>
+            
             {/* 1. GAUGE GRAFIK */}
             <div
               className="gauge-graphic"
               style={{
-                position: 'relative',
                 background: `conic-gradient(from 270deg at 50% 100%, 
                   #9061f9 0deg, 
                   #9061f9 ${(latest?.percentage || 0) * 1.8}deg, 
@@ -233,36 +233,22 @@ export default function SummaryModal({ onClose }) {
                 )`
               }}
             >
-              <div style={{
-                position: 'absolute',
-                bottom: 0,
-                left: '50%',
-                transform: 'translateX(-50%)',
-                background: 'white',
-                width: '74%',
-                height: '74%',
-                borderRadius: '150px 150px 0 0',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'flex-end',
-                alignItems: 'center',
-                paddingBottom: '8px'
-              }}>
-                <span style={{ fontSize: '26px', fontWeight: 900, color: '#7c3aed', lineHeight: 1 }}>{latest ? Math.round(latest.percentage) : 0}%</span>
-                <span style={{ fontSize: '10px', color: '#94a3b8', fontWeight: 700, marginTop: '2px', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Risiko</span>
+              <div className="gauge-inner-circle">
+                <span className="gauge-value">{latest ? Math.round(latest.percentage) : 0}%</span>
+                <span className="gauge-label">Risiko</span>
               </div>
             </div>
 
             {/* 2. CHART GRAFIK */}
             <div className="gauge-text">
-              <div className="sm-chart-label" style={{ marginTop: '10px', borderTop: '1px solid #edf2f7', paddingTop: '15px', width: '100%' }}>
+              <div className="sm-chart-label sm-chart-label-trend">
                 Tren Perkembangan
               </div>
               {loading ? (
                 <p className="sm-empty-msg">Memuat data...</p>
               ) : chartData.length < 2 ? (
                 <p className="sm-empty-msg">
-                  <span style={{ fontSize: '24px', display: 'block', marginBottom: '8px' }}>📈</span>
+                  <span className="sm-empty-icon">📈</span>
                   Butuh minimal 2 data tes untuk melihat grafik perkembangan.
                 </p>
               ) : (

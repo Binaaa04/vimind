@@ -17,6 +17,9 @@ const AdminTest = ({ adminEmail }) => {
   const [editingSymptomId, setEditingSymptomId] = useState(null);
   const [editingDiseaseId, setEditingDiseaseId] = useState(null);
 
+  // State untuk mengontrol pop-up modal hapus (menyimpan type dan id data)
+  const [deleteTarget, setDeleteTarget] = useState(null);
+
   // Helper untuk mendapatkan nama berdasarkan ID
   const getDiseaseName = (id) => diseases.find(d => d.id === id)?.name || `Unknown (ID: ${id})`;
   const getSymptomName = (id) => {
@@ -47,9 +50,25 @@ const AdminTest = ({ adminEmail }) => {
     fetchData();
   }, [adminEmail]);
 
-  // ---- GENERIC DELETE ----
-  const handleDelete = async (type, id) => {
-    if (!window.confirm(`Yakin mau menghapus data ini?`)) return;
+  // ---- FUNGSI TRIGGER MODAL HAPUS ----
+  const handleDeleteClick = (type, id) => {
+    setDeleteTarget({ type, id });
+  };
+
+  // ---- FUNGSI EKSEKUSI HAPUS ----
+  const confirmDelete = async () => {
+    if (!deleteTarget) return;
+    const { type, id } = deleteTarget;
+    setDeleteTarget(null); // Tutup modal
+
+    // Jika ID 0 (data baru yang belum disimpan), cukup hapus dari state lokal
+    if (id === 0) {
+      if (type === "rule") setRules(rules.filter(r => r.rule_id !== 0));
+      if (type === "symptom") setSymptoms(symptoms.filter(s => s.id !== 0));
+      if (type === "disease") setDiseases(diseases.filter(d => d.id !== 0));
+      return;
+    }
+
     try {
       if (type === "rule") await adminDeleteRule(adminEmail, id);
       if (type === "symptom") await adminDeleteSymptom(adminEmail, id);
@@ -190,7 +209,7 @@ const AdminTest = ({ adminEmail }) => {
                       <>
                         <button onClick={() => setEditingRuleId(item.rule_id)} className="btn-edit">Edit</button>
                         <button 
-                          onClick={() => handleDelete("rule", item.rule_id)} 
+                          onClick={() => handleDeleteClick("rule", item.rule_id)} 
                           className="btn-delete-icon" 
                           title="Hapus"
                         >
@@ -276,7 +295,7 @@ const AdminTest = ({ adminEmail }) => {
                       <>
                         <button onClick={() => setEditingSymptomId(item.id)} className="btn-edit">Edit</button>
                         <button 
-                          onClick={() => handleDelete("symptom", item.id)} 
+                          onClick={() => handleDeleteClick("symptom", item.id)} 
                           className="btn-delete-icon"
                           title="Hapus"
                         >
@@ -378,7 +397,7 @@ const AdminTest = ({ adminEmail }) => {
                       <>
                         <button onClick={() => setEditingDiseaseId(item.id)} className="btn-edit">Edit</button>
                         <button 
-                          onClick={() => handleDelete("disease", item.id)} 
+                          onClick={() => handleDeleteClick("disease", item.id)} 
                           className="btn-delete-icon"
                           title="Hapus"
                         >
@@ -395,6 +414,35 @@ const AdminTest = ({ adminEmail }) => {
           </tbody>
         </table>
       </div>
+
+      {/* ================= MODAL KONFIRMASI HAPUS CUSTOM ================= */}
+      {deleteTarget && (
+        <div className="custom-modal-overlay" onClick={() => setDeleteTarget(null)}>
+          <div className="custom-modal-card" onClick={(e) => e.stopPropagation()}>
+            <div className="custom-modal-icon">
+              {/* Ikon Trash SVG */}
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                <line x1="10" y1="11" x2="10" y2="17"></line>
+                <line x1="14" y1="11" x2="14" y2="17"></line>
+              </svg>
+            </div>
+            <h2 className="custom-modal-title">Hapus Data?</h2>
+            <p className="custom-modal-text">
+              Yakin mau menghapus data ini? Data yang sudah dihapus tidak bisa dikembalikan lagi.
+            </p>
+            
+            <button className="custom-modal-btn-primary" onClick={confirmDelete}>
+              Ya, Hapus
+            </button>
+            <button className="custom-modal-btn-secondary" onClick={() => setDeleteTarget(null)}>
+              Batal
+            </button>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };

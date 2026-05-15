@@ -4,6 +4,7 @@ import { useEffect } from "react";
 export default function Finish() {
       useEffect(() => {
         document.title = "Selesai | Vimind";
+        window.scrollTo(0, 0);
       }, []);
   const navigate = useNavigate();
   const location = useLocation();

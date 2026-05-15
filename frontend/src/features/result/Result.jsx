@@ -3,11 +3,14 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/services/supabaseClient";
 import { getProfile } from "@/features/auth/api";
 import { submitTestimonial } from "@/features/home/api";
+import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
+import "../../css/Result.css";
 
 export default function Result() {
     useEffect(() => {
         document.title = "Hasil Tes | Vimind";
     }, []);
+
     const navigate = useNavigate();
     const location = useLocation();
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -19,6 +22,7 @@ export default function Result() {
     // Feedback States
     const [showFeedbackModal, setShowFeedbackModal] = useState(false);
     const [rating, setRating] = useState(0);
+    const [hoverRating, setHoverRating] = useState(0);
     const [comment, setComment] = useState("");
     const [submittingFeedback, setSubmittingFeedback] = useState(false);
     const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
@@ -51,15 +55,30 @@ export default function Result() {
 
     const result = diagnosis?.top_result || (diagnosis?.all_results ? diagnosis.all_results[0] : null);
 
+    const chartData = (diagnosis?.all_results || [])
+      .map(r => ({ name: r.disease_name, score: +r.percentage.toFixed(1) }))
+      .sort((a, b) => b.score - a.score);
+
+    // --- FITUR BARU: AUTO POP-UP FEEDBACK ---
+    useEffect(() => {
+        // Tampilkan pop-up setelah 1 detik halaman dimuat, 
+        // asalkan ada hasil tes dan user tidak terhalang modal login (guest)
+        if (result && !showModal) {
+            const timer = setTimeout(() => {
+                setShowFeedbackModal(true);
+            }, 1000); // 1000ms = 1 detik jeda
+            return () => clearTimeout(timer); // Bersihkan timer jika komponen di-unmount
+        }
+    }, [result, showModal]);
+
     if (!result) {
         return (
-            <div className="result-page" style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '100vh', flexDirection: 'column', gap: '16px' }}>
-                <h2 style={{ color: '#6B21A8' }}>Data Hasil Tes Tidak Ditemukan</h2>
-                <p style={{ color: '#64748B', textAlign: 'center', maxWidth: '300px' }}>Sepertinya kamu belum melakukan tes atau data sudah kedaluwarsa.</p>
+            <div className="not-found-container">
+                <h2 className="not-found-title">Data Hasil Tes Tidak Ditemukan</h2>
+                <p className="not-found-desc">Sepertinya kamu belum melakukan tes atau data sudah kedaluwarsa.</p>
                 <button
-                    className="next-btn"
+                    className="next-btn not-found-btn"
                     onClick={() => navigate(isLoggedIn ? "/dashboard" : "/")}
-                    style={{ marginTop: '10px' }}
                 >
                     {isLoggedIn ? "Kembali ke Dashboard" : "Kembali ke Beranda"}
                 </button>
@@ -120,7 +139,7 @@ export default function Result() {
                 <div className="header-actions">
                     <div className="avatar">
                         {avatarUrl ? (
-                            <img src={avatarUrl} alt="Avatar" style={{ width: '100%', height: '100%', borderRadius: '50%', objectFit: 'cover' }} />
+                            <img src={avatarUrl} alt="Avatar" />
                         ) : (
                             nickname ? nickname[0].toUpperCase() : "?"
                         )}
@@ -136,6 +155,18 @@ export default function Result() {
                     <div className="card-section">
                         <h3>Deskripsi Kondisi</h3>
                         <p>{result?.description || "Berdasarkan jawaban kuesioner, sistem sedang menganalisis kondisi Anda."}</p>
+                    </div>
+
+                    <div className="card-section">
+                        <h3>Indikator yang Diukur</h3>
+                        <ResponsiveContainer width="100%" height={Math.max(chartData.length * 50 + 40, 120)}>
+                            <BarChart data={chartData} layout="vertical" margin={{ left: 10, right: 30, top: 10, bottom: 10 }}>
+                                <XAxis type="number" domain={[0, 100]} hide />
+                                <YAxis type="category" dataKey="name" width={180} tick={{ fontSize: 12, fill: "#555" }} />
+                                <Tooltip formatter={(val) => `${val.toFixed(1)}%`} />
+                                <Bar dataKey="score" fill="#8B5CF6" radius={[0, 6, 6, 0]} barSize={20} />
+                            </BarChart>
+                        </ResponsiveContainer>
                     </div>
 
                     <div className="card-section">
@@ -163,22 +194,21 @@ export default function Result() {
                     </div>
                 </div>
 
-                {isLoggedIn && (
+                {isLoggedIn ? (
                     <div className="result-footer">
-                        <button className="dashboard-btn" onClick={() => navigate("/dashboard")} style={{ marginRight: 10 }}>
+                        <button className="dashboard-btn" onClick={() => navigate("/dashboard")}>
                             Lihat Rangkuman di Dashboard
                         </button>
                         <button className="next-btn" onClick={() => setShowFeedbackModal(true)}>
                             Berikan Penilaian Tes
                         </button>
                     </div>
-                )}
-                {!isLoggedIn && (
-                   <div className="result-footer">
-                       <button className="next-btn" onClick={() => setShowFeedbackModal(true)}>
-                           Berikan Ulasan Tes
-                       </button>
-                   </div>
+                ) : (
+                    <div className="result-footer">
+                        <button className="next-btn" onClick={() => setShowFeedbackModal(true)}>
+                            Berikan Ulasan Tes
+                        </button>
+                    </div>
                 )}
             </div>
 
@@ -206,63 +236,53 @@ export default function Result() {
             {/* MODAL FEEDBACK / TESTIMONI */}
             {showFeedbackModal && (
                 <div className="overlay">
-                    <div className="login-modal" style={{ width: '90%', maxWidth: '400px', display: 'flex', flexDirection: 'column', gap: '15px' }}>
+                    <div className="login-modal feedback-modal">
                         {!feedbackSubmitted ? (
                             <>
                                 <h2>Berikan Penilaian</h2>
-                                <p style={{ fontSize: '13px', color: '#666' }}>Bantu kami menjadi lebih baik dengan membagikan pengalaman Anda.</p>
-                                
-                                <div style={{ display: 'flex', justifyContent: 'center', gap: '10px', margin: '10px 0' }}>
+                                <p className="feedback-subtitle">Bantu kami menjadi lebih baik dengan membagikan pengalaman Anda.</p>
+
+                                <div className="stars-container">
                                     {[1, 2, 3, 4, 5].map(star => (
-                                        <span 
-                                            key={star} 
+                                        <span
+                                            key={star}
                                             onClick={() => setRating(star)}
-                                            style={{ 
-                                                fontSize: '30px', 
-                                                cursor: 'pointer', 
-                                                color: rating >= star ? '#fbbf24' : '#e5e7eb',
-                                                transition: 'color 0.2s'
-                                            }}
+                                            onMouseEnter={() => setHoverRating(star)} // 👈 2. Tambahkan event hover masuk
+                                            onMouseLeave={() => setHoverRating(0)}    // 👈 3. Tambahkan event hover keluar
+                                            className={`star ${(hoverRating || rating) >= star ? 'active' : ''}`} // 👈 4. Ubah logika class
                                         >
                                             ★
                                         </span>
                                     ))}
                                 </div>
-                                
-                                <textarea 
+
+                                <textarea
+                                    className="feedback-textarea"
                                     placeholder="Apa pendapatmu mengenai hasil tes ini?"
                                     value={comment}
                                     onChange={(e) => setComment(e.target.value)}
                                     rows="4"
-                                    style={{
-                                        width: '100%',
-                                        padding: '10px',
-                                        borderRadius: '8px',
-                                        border: '1px solid #d1d5db',
-                                        fontFamily: 'inherit',
-                                        resize: 'none'
-                                    }}
                                 />
 
-                                <div style={{ display: 'flex', gap: '10px' }}>
-                                    <button 
-                                        onClick={() => setShowFeedbackModal(false)}
-                                        style={{ background: '#f3f4f6', color: '#374151', border: 'none', padding: '10px', borderRadius: '8px', flex: 1, cursor: 'pointer', fontWeight: 600 }}
-                                    >
-                                        Nanti Saja
-                                    </button>
-                                    <button 
+                                <div className="feedback-actions">
+                                    <button
+                                        className="btn-send"
                                         onClick={handleFeedbackSubmit}
                                         disabled={submittingFeedback}
-                                        style={{ background: '#8a5cff', color: 'white', border: 'none', padding: '10px', borderRadius: '8px', flex: 1, cursor: 'pointer', fontWeight: 600 }}
                                     >
                                         {submittingFeedback ? 'Mengirim...' : 'Kirim Ulasan'}
+                                    </button>
+                                    <button
+                                        className="btn-later"
+                                        onClick={() => setShowFeedbackModal(false)}
+                                    >
+                                        Nanti Saja
                                     </button>
                                 </div>
                             </>
                         ) : (
                             <>
-                                <h2 style={{ color: '#10b981' }}>Terima Kasih! 🎉</h2>
+                                <h2 className="success-title">Terima Kasih! 🎉</h2>
                                 <p>Ulasan Anda telah kami terima.</p>
                             </>
                         )}

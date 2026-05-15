@@ -13,7 +13,7 @@ import logoutIcon from "@/assets/LogOut.svg";
 import dashboardIcon from "@/assets/Dashboard.svg";
 
 // Hook React digabung jadi satu di sini biar gak error "already been declared"
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/services/supabaseClient";
 
 const AdminSidebar = ({ avatarUrl, nickname = "Admin" }) => {
@@ -21,6 +21,9 @@ const AdminSidebar = ({ avatarUrl, nickname = "Admin" }) => {
 
   const [showProfileMenu, setShowProfileMenu] = useState(false);
   const [isCollapsed, setIsCollapsed] = useState(true);
+  
+  // State baru untuk pop-up konfirmasi logout
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const handleLogout = async () => {
     try {
@@ -34,11 +37,20 @@ const AdminSidebar = ({ avatarUrl, nickname = "Admin" }) => {
 
   useEffect(() => {
     const handleClick = (e) => {
+      // Tutup profile menu jika klik di luar
       if (
         !e.target.closest(".sidebar-user") &&
         !e.target.closest(".profile-popup")
       ) {
         setShowProfileMenu(false);
+      }
+      
+      // Tutup logout confirm jika klik di luar
+      if (
+        !e.target.closest(".logout-btn") &&
+        !e.target.closest(".logout-popup")
+      ) {
+        setShowLogoutConfirm(false);
       }
     };
 
@@ -79,7 +91,7 @@ const AdminSidebar = ({ avatarUrl, nickname = "Admin" }) => {
       {/* MENU */}
       <div className="menu-section">
         <NavLink
-          to="/admin/analytics" // Sesuaikan dengan path routing kamu
+          to="/admin/analytics"
           className={({ isActive }) =>
             isActive ? "menu-item active" : "menu-item"
           }
@@ -215,7 +227,8 @@ const AdminSidebar = ({ avatarUrl, nickname = "Admin" }) => {
         )}
 
         {/* LOGOUT */}
-        <button className="logout-btn" onClick={handleLogout}>
+        {/* Ubah onClick agar membuka state showLogoutConfirm, bukan langsung handleLogout */}
+        <button className="logout-btn" onClick={() => setShowLogoutConfirm(!showLogoutConfirm)}>
           <img
             src={logoutIcon?.src || logoutIcon}
             alt="Logout"
@@ -223,6 +236,21 @@ const AdminSidebar = ({ avatarUrl, nickname = "Admin" }) => {
           />
           {!isCollapsed && <span>Log Out</span>}
         </button>
+
+        {/* POPUP KONFIRMASI LOGOUT */}
+        {showLogoutConfirm && (
+          <div className="logout-popup">
+            <h4>Yakin mau keluar?</h4>
+            <div className="logout-popup-actions">
+              <button className="btn-cancel" onClick={() => setShowLogoutConfirm(false)}>
+                Batal
+              </button>
+              <button className="btn-confirm" onClick={handleLogout}>
+                Keluar
+              </button>
+            </div>
+          </div>
+        )}
 
       </div>
     </div>

@@ -95,45 +95,54 @@ const ResetPassword = () => {
 
           <img src={logo} alt="logo" className="reset-logo" />
 
-          <h3 className="reset-title">Reset Password</h3>
-
           <form onSubmit={handleSubmit} className="reset-form">
+            
+            {/* WRAPPER TEXT FIELD */}
+            <div className="input-group">
+              <div className="password-wrapper">
+                <input
+                  type={showPass ? "text" : "password"}
+                  name="password"
+                  placeholder="Password baru"
+                  className="input-field"
+                  value={form.password}
+                  onChange={handleChange}
+                />
+                <span className="eye-icon" onClick={() => setShowPass(!showPass)}>
+                  {showPass ? "🙈" : "👁️"}
+                </span>
+              </div>
 
-            <div className="password-wrapper">
-              <input
-                type={showPass ? "text" : "password"}
-                name="password"
-                placeholder="Password baru"
-                className="input-field"
-                value={form.password}
-                onChange={handleChange}
-              />
-              <span className="eye-icon" onClick={() => setShowPass(!showPass)}>
-                {showPass ? "🙈" : "👁️"}
-              </span>
+              <div className="password-wrapper">
+                <input
+                  type={showConf ? "text" : "password"}
+                  name="confirm"
+                  placeholder="Konfirmasi password baru"
+                  className="input-field"
+                  value={form.confirm}
+                  onChange={handleChange}
+                />
+                <span className="eye-icon" onClick={() => setShowConf(!showConf)}>
+                  {showConf ? "🙈" : "👁️"}
+                </span>
+              </div>
             </div>
 
-            <div className="password-wrapper">
-              <input
-                type={showConf ? "text" : "password"}
-                name="confirm"
-                placeholder="Konfirmasi password baru"
-                className="input-field"
-                value={form.confirm}
-                onChange={handleChange}
-              />
-              <span className="eye-icon" onClick={() => setShowConf(!showConf)}>
-                {showConf ? "🙈" : "👁️"}
-              </span>
+            {/* WRAPPER BUTTON */}
+            <div className="button-group">
+              <button type="submit" className="primary-btn" disabled={loading}>
+                {loading ? "Menyimpan..." : "Simpan Password Baru"}
+              </button>
+
+              <button 
+                type="button" 
+                className="primary-btn" 
+                onClick={handleBack} 
+                style={{ backgroundColor: '#e2e8f0', color: '#475569' }}
+              >
+                Kembali
+              </button>
             </div>
-
-            <button type="submit" className="primary-btn" disabled={loading}>
-              {loading ? "Menyimpan..." : "Simpan Password Baru"}
-            </button>
-
-            <button type="button" className="primary-btn" onClick={handleBack} style={{ backgroundColor: '#e2e8f0', color: '#475569', marginTop: '8px' }}>
-              Kembali
-            </button>
 
           </form>
 
