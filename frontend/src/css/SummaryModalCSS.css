@@ -10,7 +10,7 @@
   justify-content: center;
   align-items: center;
   z-index: 9999;
-  padding: clamp(10px, 3vw, 20px); /* Menyesuaikan padding luar agar tidak mentok layar */
+  padding: clamp(10px, 3vw, 20px);
   box-sizing: border-box;
 }
 
@@ -24,7 +24,7 @@
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  max-height: 90vh; /* Sedikit dikurangi agar tidak tertutup UI browser HP */
+  max-height: 90vh;
 }
 
 /* ==========================================
@@ -58,8 +58,7 @@
 /* EXPORT BUTTON (HEADER) */
 .sm-export-btn {
   background: white;
-  color: #7c3aed;
-  border: 2px solid #e9d5ff;
+  color: #fff !important;
   padding: clamp(8px, 2vw, 10px) clamp(16px, 3vw, 24px);
   border-radius: 12px;
   font-weight: 700;
@@ -105,9 +104,11 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  touch-action: pan-y; /* Digabungkan ke container utama */
 }
 
 .gauge-graphic {
+  position: relative; /* Digabungkan ke grafis utama */
   width: clamp(200px, 40vw, 260px);
   height: clamp(100px, 20vw, 130px);
   border-radius: 150px 150px 0 0;
@@ -115,6 +116,40 @@
   mask: radial-gradient(farthest-side at bottom, transparent 65%, black 66%);
   margin-bottom: 15px;
   transition: all 0.5s ease-out;
+  /* Background conic-gradient diatur via inline style di JSX */
+}
+
+/* Elemen Baru untuk Mengganti Inline Styles */
+.gauge-inner-circle {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  width: 74%;
+  height: 74%;
+  border-radius: 150px 150px 0 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  padding-bottom: 8px;
+}
+
+.gauge-value {
+  font-size: 26px;
+  font-weight: 900;
+  color: #7c3aed;
+  line-height: 1;
+}
+
+.gauge-label {
+  font-size: 10px;
+  color: #94a3b8;
+  font-weight: 700;
+  margin-top: 2px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .gauge-text {
@@ -135,6 +170,19 @@
   width: 100%;
 }
 
+.sm-chart-label-trend {
+  margin-top: 10px;
+  border-top: 1px solid #edf2f7;
+  padding-top: 15px;
+  width: 100%;
+}
+
+.sm-empty-icon {
+  font-size: 24px;
+  display: block;
+  margin-bottom: 8px;
+}
+
 .sm-svg {
   width: 100%;
   height: 140px;
@@ -146,7 +194,7 @@
   flex-direction: column;
   gap: 12px;
   overflow-y: auto;
-  max-height: 500px; /* Akan ditimpa di mobile agar bisa scroll */
+  max-height: 500px;
   padding-right: 4px;
 }
 
@@ -238,13 +286,13 @@
 }
 
 .item-detail-btn {
-  background: #f8fafc;
-  border: 1px solid #e2e8f0;
+  background: transparent !important;
+  border: 1px solid #8B5CF6;
   padding: 8px 12px;
   border-radius: 8px;
   font-size: 11px;
   font-weight: 700;
-  color: #475569;
+  color: #8B5CF6;
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
@@ -253,9 +301,9 @@
 }
 
 .item-detail-btn:hover {
-  background: #f1f5f9;
-  border-color: #cbd5e1;
-  color: #1e293b;
+  background: #8B5CF6 !important;
+  border-color: #8B5CF6 !important;
+  color: #fff !important;
 }
 
 /* ==========================================
@@ -283,7 +331,8 @@
 }
 
 .sm-tutup-btn:hover {
-  background: #edf2f7;
+  /* BUG FIX: Diubah menjadi ungu gelap agar teks putih tetap terbaca saat dihover */
+  background: #6544e5; 
   color: white;
 }
 
@@ -321,21 +370,22 @@
 /* Tablet & Mobile Layout */
 @media (max-width: 768px) {
   .sm-body {
-    grid-template-columns: 1fr; /* Ubah grid menjadi atas-bawah */
+    grid-template-columns: 1fr;
   }
   
   .sm-header {
-    flex-direction: column; /* Tombol export turun ke bawah judul */
+    flex-direction: column;
     align-items: flex-start;
   }
   
   .sm-export-btn {
-    width: 100%; /* Tombol export penuh di layar HP */
+    width: 100%;
     text-align: center;
+    justify-content: center; /* Memastikan ikon & teks di tengah saat full-width */
   }
   
   .sm-history-list {
-    max-height: none; /* Biarkan modal bisa di-scroll sepuasnya tanpa double-scroll */
+    max-height: none;
   }
 }
 

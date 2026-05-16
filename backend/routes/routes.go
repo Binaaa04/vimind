@@ -1,93 +1,138 @@
 package routes
 
 import (
-	"pbl-vimind/backend/internal/controllers"
+	"fmt"
+
+	"pbl-vimind/backend/internal/admin"
+	"pbl-vimind/backend/internal/auth"
+	"pbl-vimind/backend/internal/chatbot"
+	"pbl-vimind/backend/internal/diagnosis"
+	"pbl-vimind/backend/internal/feedback"
+	"pbl-vimind/backend/internal/middleware"
+	"pbl-vimind/backend/internal/news"
+	"pbl-vimind/backend/internal/session"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func RegisterRoutes(app *fiber.App, handler *controllers.Handler) {
+type chatDiagnosisProvider struct {
+	authRepo *auth.Repository
+	diagRepo *diagnosis.Repository
+}
+
+func (p *chatDiagnosisProvider) GetLatestDiagnosisSummary(email string) (*chatbot.DiagnosisSummary, error) {
+	uid, err := p.authRepo.GetUserIDByEmail(email)
+	if err != nil {
+		return nil, err
+	}
+	history, err := p.diagRepo.GetHistory(uid)
+	if err != nil || len(history) == 0 {
+		return nil, fmt.Errorf("no history")
+	}
+	latest := history[0]
+	return &chatbot.DiagnosisSummary{
+		Disease:    latest.Disease,
+		Level:      latest.Level,
+		Percentage: latest.Percentage,
+	}, nil
+}
+
+func RegisterRoutes(app *fiber.App, db *pgxpool.Pool) {
 	api := app.Group("/api")
 
+	// ---- Repositories ----
+	authRepo := auth.NewRepository(db)
+	diagRepo := diagnosis.NewRepository(db)
+	adminRepo := admin.NewRepository(db)
+	feedbackRepo := feedback.NewRepository(db)
+
+	// ---- Services ----
+	diagSvc := diagnosis.NewService(diagRepo)
+	chatSvc := chatbot.NewService()
+	sessionCache := session.NewCache()
+
+	newsSvc := news.NewService(func(limit int) ([]news.NewsItem, error) {
+		articles, err := adminRepo.GetArticles(true)
+		if err != nil {
+			return nil, err
+		}
+		var items []news.NewsItem
+		for i, a := range articles {
+			if i >= limit {
+				break
+			}
+			items = append(items, news.NewsItem{
+				ID:        i + 1,
+				Title:     a.Title,
+				Link:      a.LinkURL,
+				Image:     a.ImageURL,
+				Source:    a.Source,
+				Highlight: "Admin Choice",
+			})
+		}
+		return items, nil
+	})
+
+	// ---- Handlers ----
+	authHandler := auth.NewHandler(authRepo)
+	diagHandler := diagnosis.NewHandler(diagRepo, diagSvc, authRepo)
+	chatHandler := chatbot.NewHandler(chatSvc, &chatDiagnosisProvider{authRepo: authRepo, diagRepo: diagRepo})
+	newsHandler := news.NewHandler(newsSvc)
+	feedbackHandler := feedback.NewHandler(feedbackRepo)
+	sessionHandler := session.NewHandler(sessionCache)
+	adminHandler := admin.NewHandler(adminRepo)
+
+	// ---- Middleware ----
+	adminAuth := middleware.AdminAuth(authRepo)
+
 	// ===================== PUBLIC =====================
-	api.Get("/questions", handler.GetQuestions)
-	api.Post("/questions/discovery", handler.GetDiscoveryQuestions) // NEW: Hidden logic
-	api.Post("/diagnose", handler.Diagnose)
-	api.Get("/profile", handler.GetProfile)
-	api.Post("/profile", handler.UpdateProfile)
-	api.Delete("/profile", handler.DeleteAccount)
-	api.Get("/history", handler.GetHistory)
-	api.Get("/news", handler.GetDynamicNews)
-	api.Post("/chat", handler.Chatbot)
+	api.Get("/questions", diagHandler.GetQuestions)
+	api.Post("/questions/discovery", diagHandler.GetDiscoveryQuestions)
+	api.Post("/diagnose", diagHandler.Diagnose)
+	api.Get("/profile", authHandler.GetProfile)
+	api.Post("/profile", authHandler.UpdateProfile)
+	api.Delete("/profile", authHandler.DeleteAccount)
+	api.Get("/history", diagHandler.GetHistory)
+	api.Get("/news", newsHandler.GetDynamicNews)
+	api.Post("/chat", chatHandler.Chatbot)
 
-	// Public FAQ (untuk Home page)
-	api.Get("/faq", handler.GetFAQ)
+	api.Get("/faq", adminHandler.GetFAQ)
+	api.Get("/banners", adminHandler.GetPublicBanners)
+	api.Get("/levels", diagHandler.GetLevelCategories)
 
-	// Public Banners (untuk Dashboard carousel)
-	api.Get("/banners", handler.GetPublicBanners)
+	api.Post("/test-session", sessionHandler.SaveTestSession)
+	api.Get("/test-session", sessionHandler.GetTestSession)
+	api.Delete("/test-session", sessionHandler.DeleteTestSession)
 
-	// Public Level Categories (CF User Weights)
-	api.Get("/levels", handler.GetLevelCategories)
-
-	// Test Session Cache (simpan progress tes saat refresh)
-	api.Post("/test-session", handler.SaveTestSession)
-	api.Get("/test-session", handler.GetTestSession)
-	api.Delete("/test-session", handler.DeleteTestSession)
-
-	// Feedback & Testimonials (Public)
-	api.Get("/testimonials", handler.GetPublicTestimonials)
-	api.Post("/testimonials", handler.SubmitTestimonial)
-	api.Post("/account_feedbacks", handler.SubmitAccountFeedback)
+	api.Get("/testimonials", feedbackHandler.GetPublicTestimonials)
+	api.Post("/testimonials", feedbackHandler.SubmitTestimonial)
+	api.Post("/account_feedbacks", feedbackHandler.SubmitAccountFeedback)
 
 	// ===================== ADMIN =====================
-	// Satpam (Middleware) Admin: Cek role di database sebelum memproses request
-	adminOnly := func(c *fiber.Ctx) error {
-		email := c.Get("X-Admin-Email") // Frontend harus kirim header ini untuk identifikasi
-		if email == "" {
-			email = c.Query("admin_email") // Fallback ke query param
-		}
+	admin := api.Group("/admin", adminAuth)
 
-		if email == "" {
-			return c.Status(403).JSON(fiber.Map{"error": "Unauthorized: Admin identification missing"})
-		}
+	admin.Get("/banners", adminHandler.GetBanners)
+	admin.Post("/banners", adminHandler.UpsertBanner)
+	admin.Delete("/banners/:id", adminHandler.DeleteBanner)
 
-		// Cek ke DB
-		_, _, _, _, role, err := handler.Repo.GetProfile(email)
-		if err != nil || role != "admin" {
-			return c.Status(403).JSON(fiber.Map{"error": "Unauthorized: Admin access required"})
-		}
+	admin.Get("/faq", adminHandler.GetFAQ)
+	admin.Post("/faq", adminHandler.UpsertFAQ)
+	admin.Delete("/faq/:id", adminHandler.DeleteFAQ)
 
-		return c.Next()
-	}
+	admin.Get("/symptoms", adminHandler.GetAdminSymptoms)
+	admin.Post("/symptoms", adminHandler.UpsertAdminSymptom)
+	admin.Delete("/symptoms/:id", adminHandler.DeleteAdminSymptom)
 
-	admin := api.Group("/admin", adminOnly)
+	admin.Get("/diseases", adminHandler.GetAdminDiseases)
+	admin.Post("/diseases", adminHandler.UpsertAdminDisease)
+	admin.Delete("/diseases/:id", adminHandler.DeleteAdminDisease)
 
-	// Banners
-	admin.Get("/banners", handler.GetBanners)
-	admin.Post("/banners", handler.UpsertBanner)
-	admin.Delete("/banners/:id", handler.DeleteBanner)
+	admin.Get("/rules", adminHandler.GetAdminRules)
+	admin.Post("/rules", adminHandler.UpsertAdminRule)
+	admin.Delete("/rules/:id", adminHandler.DeleteAdminRule)
 
-	// FAQ
-	admin.Get("/faq", handler.GetFAQ)
-	admin.Post("/faq", handler.UpsertFAQ)
-	admin.Delete("/faq/:id", handler.DeleteFAQ)
-
-	// Knowledge Base
-	admin.Get("/symptoms", handler.GetAdminSymptoms)
-	admin.Post("/symptoms", handler.UpsertAdminSymptom)
-	admin.Delete("/symptoms/:id", handler.DeleteAdminSymptom)
-
-	admin.Get("/diseases", handler.GetAdminDiseases)
-	admin.Post("/diseases", handler.UpsertAdminDisease)
-	admin.Delete("/diseases/:id", handler.DeleteAdminDisease)
-
-	admin.Get("/rules", handler.GetAdminRules)
-	admin.Post("/rules", handler.UpsertAdminRule)
-	admin.Delete("/rules/:id", handler.DeleteAdminRule)
-
-
-	// Feedbacks & Testimonials (Admin)
-	admin.Get("/testimonials", handler.GetAllTestimonials)
-	admin.Put("/testimonials/:id/display", handler.UpdateTestimonialDisplay)
-	admin.Get("/account_feedbacks", handler.GetAllAccountFeedbacks)
+	admin.Get("/testimonials", feedbackHandler.GetAllTestimonials)
+	admin.Put("/testimonials/:id/display", feedbackHandler.UpdateTestimonialDisplay)
+	admin.Get("/account_feedbacks", feedbackHandler.GetAllAccountFeedbacks)
 }
