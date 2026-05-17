@@ -30,7 +30,6 @@
   color: white;
   border: none;
   padding: 10px 20px;
-  border-radius: 8px;
   cursor: pointer;
   border-radius: 12px;
   font-weight: bold;
@@ -79,7 +78,7 @@
 .delete-btn:hover {
   background: #dc2626 !important;
   color: white !important;
- border-color: transparent !important;
+  border-color: transparent !important;
 }
 
 .status {
@@ -344,6 +343,112 @@ td input {
 .close-modal-btn:hover {
   background: #ef4444;
   color: white;
+}
+
+/* ================= CUSTOM CONFIRMATION MODAL ================= */
+.custom-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10005; /* Harus lebih tinggi dari elemen lain */
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.custom-modal-card {
+  background: #ffffff;
+  width: 90%;
+  max-width: 380px;
+  border-radius: 24px;
+  padding: 40px 30px 25px;
+  text-align: center;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: slideUp 0.3s ease-out;
+}
+
+.custom-modal-icon {
+  width: 80px;
+  height: 80px;
+  background: #B39DFF; /* Warna ungu terang sesuai desain */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.custom-modal-icon svg {
+  width: 36px;
+  height: 36px;
+  stroke: #ffffff; /* Ikon warna putih */
+}
+
+.custom-modal-title {
+  color: #2e1065; /* Warna ungu gelap untuk teks utama */
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 12px 0;
+}
+
+.custom-modal-text {
+  color: #312e81; /* Warna ungu medium untuk subtitle */
+  font-size: 15px;
+  margin: 0 0 32px 0;
+  line-height: 1.5;
+}
+
+.custom-modal-btn-primary {
+  background: #B39DFF; /* Sesuai warna ungu di tombol gambar */
+  color: white;
+  border: none;
+  width: 100%;
+  padding: 16px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.custom-modal-btn-primary:hover {
+  background: #9d80ff; /* Sedikit lebih gelap saat dihover */
+}
+
+.custom-modal-btn-secondary {
+  background: transparent !important;
+  color: #8b5cf6;
+  width: 100%;
+  padding: 14px;
+  margin-top: 8px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.custom-modal-btn-secondary:hover {
+  color: #6d28d9;
+  background: rgba(139, 92, 246, 0.1) !important;
+}
+
+/* Animasi untuk modal */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
 
 /* ================= MOBILE RESPONSIVE ================= */

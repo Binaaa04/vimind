@@ -78,17 +78,16 @@
 .test-table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 800px; /* Lebar minimum agar tidak terlalu sempit */
+  min-width: 800px;
 }
 
 .test-table th {
-  background: #E9D5FF; /* Ungu muda */
+  background: #E9D5FF;
   color: #4c1d95;
   padding: 12px 15px;
   text-align: left;
   font-weight: bold;
   border: 1px solid #E9D5FF;
-
 }
 
 .test-table td {
@@ -96,6 +95,15 @@
   border: 1px solid #E9D5FF;
   vertical-align: top;
 }
+
+/* ================= TABLE COLUMN WIDTHS ================= */
+.col-5 { width: 5%; }
+.col-10 { width: 10%; }
+.col-15 { width: 15%; }
+.col-20 { width: 20%; }
+.col-25 { width: 25%; }
+.col-30 { width: 30%; }
+.col-55 { width: 55%; }
 
 /* ================= INPUTS ================= */
 .test-input, .test-textarea {
@@ -121,7 +129,7 @@
   min-height: 60px;
 }
 
-/* ================= ACTIONS & TAGS ================= */
+/* ================= ACTIONS & BUTTONS ================= */
 .test-actions {
   display: flex;
   gap: 8px;
@@ -129,7 +137,7 @@
 }
 
 .btn-save {
-  background: #10b981; /* Hijau */
+  background: #10b981;
   color: white;
   border: none;
   padding: 8px 14px;
@@ -143,23 +151,80 @@
   background: #059669;
 }
 
-.btn-delete-icon {
-  background: #ef4444; /* Merah */
-  color: white;
+.btn-edit {
+  background: transparent !important;
+  color: #8b5cf6;
+  border: 1px solid #ddd6fe;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-edit:hover {
+  color: #e2e8f0 !important;
+}
+
+.btn-cancel {
+  background: transparent !important;
+  color: #475569;
   border: none;
-  padding: 8px;
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.btn-cancel:hover {
+  background: #cbd5e1;
+}
+
+.btn-delete-icon {
+  color: #fef2f2 !important;
+  background: red !important;
+  border: transparent !important;
+  padding: 6px;
   border-radius: 6px;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: background 0.2s;
+  transition: all 0.2s ease;
 }
 
 .btn-delete-icon:hover {
-  background: #dc2626;
+  background: red !important;
+  border: transparent !important;
 }
 
+/* ================= TEXT FORMATTING ================= */
+.text-disease-name {
+  font-weight: 600;
+}
+
+.text-cf-value {
+  color: #8b5cf6;
+  font-weight: 700;
+}
+
+.text-symptom-code {
+  font-weight: 600;
+  color: #64748b;
+}
+
+.text-disease-title {
+  font-weight: 700;
+  color: #1e1b4b;
+}
+
+.text-disease-desc {
+  font-size: 13px;
+  color: #475569;
+}
+
+/* ================= TAGS ================= */
 .tag-new {
   background: #fbbf24;
   color: #000;
@@ -168,4 +233,109 @@
   font-size: 11px;
   font-weight: bold;
   display: inline-block;
+}
+
+/* ================= CUSTOM CONFIRMATION MODAL ================= */
+
+.custom-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10005; 
+  animation: fadeIn 0.2s ease-in-out;
+}
+
+.custom-modal-card {
+  background: #ffffff;
+  width: 90%;
+  max-width: 380px;
+  border-radius: 24px;
+  padding: 40px 30px 25px;
+  text-align: center;
+  box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: slideUp 0.3s ease-out;
+}
+
+.custom-modal-icon {
+  width: 80px;
+  height: 80px;
+  background: #B39DFF; 
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 24px;
+}
+
+.custom-modal-icon svg {
+  width: 36px;
+  height: 36px;
+  stroke: #ffffff;
+}
+
+.custom-modal-title {
+  color: #2e1065; 
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 12px 0;
+}
+
+.custom-modal-text {
+  color: #312e81; 
+  font-size: 15px;
+  margin: 0 0 32px 0;
+  line-height: 1.5;
+}
+
+.custom-modal-btn-primary {
+  background: #B39DFF; 
+  color: white;
+  border: none;
+  width: 100%;
+  padding: 16px;
+  border-radius: 14px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.custom-modal-btn-primary:hover {
+  background: #9d80ff; 
+}
+
+.custom-modal-btn-secondary {
+  background: transparent;
+  color: #8b5cf6;
+  border: none;
+  width: 100%;
+  padding: 14px;
+  margin-top: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.custom-modal-btn-secondary:hover {
+  color: #6d28d9;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(20px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
 }
