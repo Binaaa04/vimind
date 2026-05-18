@@ -23,6 +23,9 @@ func (h *Handler) GetProfile(c *fiber.Ctx) error {
 		return c.Status(404).JSON(fiber.Map{"error": "User not found"})
 	}
 
+	// Jalankan di background (goroutine) supaya tidak menghambat response API
+	go h.repo.TrackUserActivity(email, c.IP())
+
 	return c.JSON(fiber.Map{
 		"id":         id,
 		"name":       name,

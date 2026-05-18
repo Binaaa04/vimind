@@ -2,6 +2,9 @@ package auth
 
 import (
 	"context"
+	"encoding/json"
+	"net/http"
+	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -73,4 +76,40 @@ func (r *Repository) CheckAdmin(email string) error {
 		return err
 	}
 	return nil
+}
+
+func (r *Repository) TrackUserActivity(email, ip string) {
+	if email == "" || ip == "" || ip == "127.0.0.1" || ip == "::1" {
+		return
+	}
+
+	var lastIP string
+	err := r.pool.QueryRow(context.Background(), "SELECT COALESCE(last_ip, '') FROM users WHERE email=$1", email).Scan(&lastIP)
+	if err != nil {
+		return
+	}
+
+	region := ""
+	if ip != lastIP {
+		client := &http.Client{Timeout: 5 * time.Second}
+		resp, err := client.Get("http://ip-api.com/json/" + ip)
+		if err == nil {
+			defer resp.Body.Close()
+			var result struct {
+				City   string `json:"city"`
+				Region string `json:"regionName"`
+			}
+			if json.NewDecoder(resp.Body).Decode(&result) == nil {
+				if result.City != "" {
+					region = result.City + ", " + result.Region
+				}
+			}
+		}
+	}
+
+	if region != "" {
+		_, _ = r.pool.Exec(context.Background(), "UPDATE users SET last_active_at = CURRENT_TIMESTAMP, last_ip = $1, last_region = $2 WHERE email = $3", ip, region, email)
+	} else {
+		_, _ = r.pool.Exec(context.Background(), "UPDATE users SET last_active_at = CURRENT_TIMESTAMP WHERE email = $1", email)
+	}
 }

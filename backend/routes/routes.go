@@ -113,6 +113,8 @@ func RegisterRoutes(app *fiber.App, db *pgxpool.Pool) {
 	// ===================== ADMIN =====================
 	admin := api.Group("/admin", adminAuth)
 
+	admin.Get("/analytics", adminHandler.GetAnalyticsDashboard)
+
 	admin.Get("/banners", adminHandler.GetBanners)
 	admin.Post("/banners", adminHandler.UpsertBanner)
 	admin.Delete("/banners/:id", adminHandler.DeleteBanner)

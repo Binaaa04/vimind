@@ -237,3 +237,11 @@ func (h *Handler) DeleteAdminArticle(c *fiber.Ctx) error {
 	}
 	return c.JSON(fiber.Map{"message": "Article deleted successfully"})
 }
+
+func (h *Handler) GetAnalyticsDashboard(c *fiber.Ctx) error {
+	summary, err := h.repo.GetDashboardAnalytics()
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to load analytics"})
+	}
+	return c.JSON(summary)
+}

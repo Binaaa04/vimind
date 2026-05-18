@@ -1,45 +1,40 @@
-import React from 'react';
-import { Users, Star, Activity, Trash2 } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Users, Star, Activity, Trash2, MapPin, Smile } from 'lucide-react';
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  PieChart, Pie, Cell
 } from 'recharts';
+import api from "@/shared/api/client";
 import '@/css/analyticsDashboard.css';
 
 const DashboardAnalytics = () => {
-  // Data untuk Grafik Bar dan Tabel
-  const diseaseData = [
-    { rank: 1, name: 'Depresi', cases: 245, percentage: '21.9%' },
-    { rank: 2, name: 'Anxiety', cases: 198, percentage: '17.7%' },
-    { rank: 3, name: 'Stress', cases: 176, percentage: '15.7%' },
-    { rank: 4, name: 'Insomnia', cases: 142, percentage: '12.7%' },
-    { rank: 5, name: 'PTSD', cases: 98, percentage: '8.8%' },
-    { rank: 6, name: 'Bipolar', cases: 87, percentage: '7.8%' },
-    { rank: 7, name: 'Social Isolation', cases: 75, percentage: '6.8%' },
-    { rank: 8, name: 'Substance Use', cases: 54, percentage: '4.8%' },
-    { rank: 9, name: 'Neurosis', cases: 43, percentage: '3.8%' },
-  ];
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Data bar chart di-reverse agar yang tertinggi ada di atas
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await api.get('/api/admin/analytics');
+        setData(res.data);
+      } catch (err) {
+        console.error("Failed to fetch analytics", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, []);
+
+  if (loading) return <div style={{ color: 'white', padding: '20px' }}>Loading analytics...</div>;
+  if (!data) return <div style={{ color: 'white', padding: '20px' }}>Gagal memuat data.</div>;
+
+  const diseaseData = data.disease_list || [];
   const barChartData = [...diseaseData].reverse();
+  const ageData = data.age_list || [];
 
-  // Data untuk Grafik Pie
-  const ageData = [
-    { name: '13-17', value: 45, color: '#8b5cf6' },
-    { name: '18-24', value: 312, color: '#c4b5fd' },
-    { name: '25-34', value: 266, color: '#3b0764' },
-    { name: '35-44', value: 145, color: '#f3e8ff' },
-    { name: '45-54', value: 89, color: '#a855f7' },
-    { name: '55+', value: 52, color: '#5b21b6' },
-  ];
+  const deletedPercentage = data.total_users > 0 
+    ? ((data.deleted_accounts / data.total_users) * 100).toFixed(1) 
+    : 0;
 
   return (
     <div className="dashboard-container">
@@ -49,32 +44,43 @@ const DashboardAnalytics = () => {
       <div className="kpi-grid">
         <div className="kpi-card">
           <div className="kpi-icon-wrapper"><Users size={20} className="kpi-icon" /></div>
-          <p className="kpi-label">Total Pengguna</p>
-          <h2 className="kpi-value">2,450</h2>
+          <p className="kpi-label">Total Pengguna (Aktif Mingguan)</p>
+          <h2 className="kpi-value">{data.total_users} <span style={{fontSize: '1rem', color: 'rgba(255,255,255,0.5)'}}>({data.weekly_active})</span></h2>
         </div>
 
         <div className="kpi-card">
           <div className="kpi-icon-wrapper"><Star size={20} className="kpi-icon" /></div>
           <p className="kpi-label">Rating Website</p>
           <div className="kpi-value-row">
-            <h2>4.6</h2>
+            <h2>{data.average_rating.toFixed(1)}</h2>
             <div className="stars">★★★★<span className="star-half">★</span></div>
           </div>
-          <p className="kpi-subtext">1,147 ulasan</p>
+          <p className="kpi-subtext">{data.total_feedbacks} ulasan</p>
         </div>
 
         <div className="kpi-card">
           <div className="kpi-icon-wrapper"><Activity size={20} className="kpi-icon" /></div>
           <p className="kpi-label">Umur Terbanyak</p>
-          <h2>18-24</h2>
-          <p className="kpi-subtext">312 pengguna (34%)</p>
+          <h2>{data.age_range || '-'}</h2>
+        </div>
+
+        <div className="kpi-card">
+          <div className="kpi-icon-wrapper"><Smile size={20} className="kpi-icon" /></div>
+          <p className="kpi-label">Mood Terbanyak</p>
+          <h2>{data.most_mood || '-'}</h2>
+        </div>
+
+        <div className="kpi-card">
+          <div className="kpi-icon-wrapper"><MapPin size={20} className="kpi-icon" /></div>
+          <p className="kpi-label">Wilayah Terbanyak</p>
+          <h2 style={{ fontSize: '1.2rem', marginTop: '10px' }}>{data.top_region || '-'}</h2>
         </div>
 
         <div className="kpi-card">
           <div className="kpi-icon-wrapper"><Trash2 size={20} className="kpi-icon" /></div>
           <p className="kpi-label">Akun Terhapus</p>
-          <h2>7.6%</h2>
-          <p className="kpi-subtext">167 dari 2,450 pengguna</p>
+          <h2>{deletedPercentage}%</h2>
+          <p className="kpi-subtext">{data.deleted_accounts} dari {data.total_users} pengguna</p>
         </div>
       </div>
 
