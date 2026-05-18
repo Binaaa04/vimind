@@ -11,7 +11,7 @@ import LogoutModal from "@/shared/components/LogoutModal";
 import TestOptionsModal from "@/features/detection/components/TestOptionsModal";
 import { getProfile, updateProfile } from "@/features/auth/api";
 import { diagnose } from "@/features/detection/api";
-import { sendChatMessage } from "@/features/dashboard/api";
+import { sendChatMessage, saveMoodToBackend } from "@/features/dashboard/api";
 import logo from "@/assets/logovimind2.png";
 
 import chatbotIcon from "@/assets/chatbot.png";
@@ -103,6 +103,12 @@ const Dashboard = () => {
           } else {
             localStorage.removeItem("avatar_url");
           }
+
+          // FIX: Redirect if birth_date is missing (Google Login / Guest flow)
+          if (userRole !== "admin" && (!res.data || !res.data.birth_date)) {
+            navigate("/lengkapi-biodata", { replace: true });
+          }
+
         } catch (err) {
           console.error("Profile not found, using default.");
           const name = session.user.user_metadata?.full_name || session.user.email.split("@")[0];
@@ -158,9 +164,18 @@ const Dashboard = () => {
   }, [chatMessages, isChatLoading]);
 
   // FIX #2: Handler untuk mood toast
-  const handleMoodSelected = (selectedMood) => {
+  const handleMoodSelected = async (selectedMood) => {
     setMoodToast(`Mood "${selectedMood}" tersimpan! ✓`);
     setTimeout(() => setMoodToast(""), 3000);
+    
+    // Simpan ke backend
+    if (userEmail) {
+      try {
+        await saveMoodToBackend(userEmail, selectedMood);
+      } catch(e) {
+        console.error("Gagal menyimpan mood ke server", e);
+      }
+    }
   };
 
 

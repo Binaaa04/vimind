@@ -100,3 +100,17 @@ func (r *Repository) GetAllAccountFeedbacks() ([]AccountFeedback, error) {
 	}
 	return list, nil
 }
+
+func (r *Repository) SaveMood(email, mood string) error {
+	var uid int
+	err := r.pool.QueryRow(context.Background(), "SELECT user_id FROM users WHERE email=$1", email).Scan(&uid)
+	if err != nil {
+		return err
+	}
+
+	_, err = r.pool.Exec(context.Background(), `
+		INSERT INTO user_moods (user_id, mood, created_at) VALUES ($1, $2, CURRENT_DATE)
+		ON CONFLICT (user_id, created_at) DO UPDATE SET mood=EXCLUDED.mood
+	`, uid, mood)
+	return err
+}

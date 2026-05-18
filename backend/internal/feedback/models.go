@@ -15,3 +15,8 @@ type AccountFeedback struct {
 	Reason    string `json:"reason"`
 	CreatedAt string `json:"created_at"`
 }
+
+type MoodReq struct {
+	Email string `json:"email"`
+	Mood  string `json:"mood"`
+}

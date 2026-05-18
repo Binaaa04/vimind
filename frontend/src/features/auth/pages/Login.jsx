@@ -73,10 +73,12 @@ const Login = () => {
       console.log("Login success:", data);
       localStorage.setItem("isLogin", "true");
 
-      // Fetch profile to check role
+      // Fetch profile to check role and birth_date
       let userRole = "user";
+      let profileData = null;
       try {
         const profileRes = await getProfile(form.email);
+        profileData = profileRes.data;
         userRole = profileRes.data?.role || "user";
         localStorage.setItem("userRole", userRole);
       } catch (err) {
@@ -89,9 +91,11 @@ const Login = () => {
         localStorage.removeItem("redirectAfterLogin");
         navigate(redirectAfterLogin);
       } else {
-        // Redirect based on role
+        // Redirect based on role and biodata completeness
         if (userRole === "admin") {
           navigate("/admin");
+        } else if (profileData && !profileData.birth_date) {
+          navigate("/lengkapi-biodata");
         } else {
           navigate("/dashboard");
         }

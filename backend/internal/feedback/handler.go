@@ -92,3 +92,21 @@ func (h *Handler) GetAllAccountFeedbacks(c *fiber.Ctx) error {
 	}
 	return c.JSON(list)
 }
+
+func (h *Handler) SaveMood(c *fiber.Ctx) error {
+	var req MoodReq
+	if err := c.BodyParser(&req); err != nil {
+		return c.Status(400).JSON(fiber.Map{"error": "Invalid request"})
+	}
+
+	if req.Email == "" || req.Mood == "" {
+		return c.Status(400).JSON(fiber.Map{"error": "Email and mood are required"})
+	}
+
+	err := h.repo.SaveMood(req.Email, req.Mood)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to save mood"})
+	}
+
+	return c.JSON(fiber.Map{"message": "Mood saved successfully"})
+}

@@ -11,6 +11,7 @@ import ResetSent from "@/features/auth/pages/ResetSent";
 import ResetPassword from "@/features/auth/pages/ResetPassword";
 import ResetSuccess from "@/features/auth/pages/ResetSuccess";
 import Login from "@/features/auth/pages/Login";
+import LengkapiBiodata from "@/features/auth/pages/LengkapiBiodata";
 import Dashboard from "@/features/dashboard/Dashboard";
 import AdminDashboard from "@/features/admin/pages/AdminDashboard";
 import AuthCallback from "@/features/auth/pages/AuthCallback";
@@ -28,6 +29,7 @@ function App() {
         <Route path="/selesai" element={<Finish />} />
         <Route path="/hasil" element={<Result />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/lengkapi-biodata" element={<LengkapiBiodata />} />
         <Route path="/register" element={<Register />} />
         <Route path="/success" element={<Success />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
