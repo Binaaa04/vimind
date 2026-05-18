@@ -22,14 +22,20 @@ ViMind addresses this gap by providing an accessible, private, and intelligent p
 - Provides real-time mental health assistance using the latest test results as context.
 - Integrated deeply with the user dashboard for immediate support.
 
-### 🌟 Feedback & Testimonial System
-- **User Comments**: Users can leave ratings and detailed comments (testimonials) after completing their assessment.
+### 🌟 Feedback & Rating System
+- **Mandatory Rating (Hard-Lock)**: Users must rate the platform before viewing their diagnosis results for the first time, ensuring continuous and authentic feedback collection.
+- **User Comments**: Users can leave detailed comments (testimonials) after completing their assessment.
 - **Admin Moderation**: Admins can review, approve, or hide testimonials to be displayed on the landing page.
+
+### 🌊 Seamless User Flow
+- **Guest-to-User Conversion**: Unregistered users who take the test are seamlessly redirected through account creation and profile completion, landing directly on their saved diagnosis results along with a daily mood tracker check-in.
 
 ### 🌎 Global Accessibility
 - **Auto-Translate**: Integrated Google Translate plugin (Bottom-Right) allowing users to access the platform in various languages instantly.
 
-### 👑 Admin System (Super Admin)
+### 👑 Admin System & Analytics (Super Admin)
+- **Advanced Dashboard Analytics**: Real-time tracking of Weekly Active Users, Top Diseases, Age Demographics, User Regions (via IP tracking), and Account Deletion Insights.
+- **User Management**: Comprehensive table tracking registered users, their roles, IP-based regions, and last active timestamps.
 - **Content Management**: Full CRUD for Promotions/Banners (including dashboard links), FAQ, and News.
 - **Knowledge Base Management**: Direct control over the Certainty Factor rules, symptom definitions, and disease descriptions.
 - **Mobile-Responsive Design**: Fully optimized UI for administrators on both desktop and mobile devices.
@@ -169,6 +175,9 @@ Moderation of user feedback for landing page visibility.
 #### `GET /api/admin/account_feedbacks`
 Tracking and analysis of user exit surveys (deletion reasons).
 
+#### `GET /api/admin/analytics` | `GET /api/admin/users`
+Aggregated statistics for the admin dashboard, including disease rates, demographic distributions, and comprehensive user lists.
+
 </details>
 
 ---
@@ -193,11 +202,9 @@ Tracking and analysis of user exit surveys (deletion reasons).
 *   **Pattern**: Follows the **Repository Pattern** in Go. All SQL queries are parameterized to prevent SQL Injection.
 *   **Dynamic Routing**: The backend uses Fiber groups to separate `/api/public` and `/api/admin` routes, allowing for different middleware/rate-limiting strategies in the future.
 *   **Frontend Rendering**: The Admin Panel uses `Promise.all` for batch fetching (Symptoms, Diseases, Rules) to minimize loading states and provide a snappy UX.
+*   **Analytics Optimization**: Dashboard data is aggregated using concurrent Go routines (`sync.WaitGroup`) to query multiple complex statistics simultaneously without blocking the main thread.
 
 ---
-
-## 🚀 Future Development
-...
 
 ## 🚀 Future Development
 
