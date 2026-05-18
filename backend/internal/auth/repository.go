@@ -26,21 +26,29 @@ func (r *Repository) CreateUser(email, name string) (int, error) {
 	return uid, err
 }
 
-func (r *Repository) GetProfile(email string) (int, string, string, string, string, error) {
+func (r *Repository) GetProfile(email string) (int, string, string, string, string, string, error) {
 	var id int
-	var name, userEmail, avatarURL, role string
+	var name, userEmail, avatarURL, role, birthDate string
 	err := r.pool.QueryRow(context.Background(),
-		"SELECT user_id, COALESCE(name,''), email, COALESCE(avatar_url, ''), COALESCE(role, 'user') FROM users WHERE email=$1",
+		"SELECT user_id, COALESCE(name,''), email, COALESCE(avatar_url, ''), COALESCE(role, 'user'), COALESCE(CAST(birth_date AS VARCHAR), '') FROM users WHERE email=$1",
 		email,
-	).Scan(&id, &name, &userEmail, &avatarURL, &role)
-	return id, name, userEmail, avatarURL, role, err
+	).Scan(&id, &name, &userEmail, &avatarURL, &role, &birthDate)
+	return id, name, userEmail, avatarURL, role, birthDate, err
 }
 
-func (r *Repository) UpsertProfile(email, name, avatarURL string) error {
-	_, err := r.pool.Exec(context.Background(), `
-		INSERT INTO users (email, name, avatar_url) VALUES ($1, $2, $3)
-		ON CONFLICT (email) DO UPDATE SET name=$2, avatar_url=COALESCE(NULLIF($3, ''), users.avatar_url)
-	`, email, name, avatarURL)
+func (r *Repository) UpsertProfile(email, name, avatarURL, birthDate string) error {
+	var err error
+	if birthDate != "" {
+		_, err = r.pool.Exec(context.Background(), `
+			INSERT INTO users (email, name, avatar_url, birth_date) VALUES ($1, $2, $3, $4)
+			ON CONFLICT (email) DO UPDATE SET name=$2, avatar_url=COALESCE(NULLIF($3, ''), users.avatar_url), birth_date=CAST(NULLIF($4, '') AS DATE)
+		`, email, name, avatarURL, birthDate)
+	} else {
+		_, err = r.pool.Exec(context.Background(), `
+			INSERT INTO users (email, name, avatar_url) VALUES ($1, $2, $3)
+			ON CONFLICT (email) DO UPDATE SET name=$2, avatar_url=COALESCE(NULLIF($3, ''), users.avatar_url)
+		`, email, name, avatarURL)
+	}
 	return err
 }
 
@@ -57,7 +65,7 @@ func (r *Repository) DeleteUser(email string) error {
 }
 
 func (r *Repository) CheckAdmin(email string) error {
-	_, _, _, _, role, err := r.GetProfile(email)
+	_, _, _, _, role, _, err := r.GetProfile(email)
 	if err != nil {
 		return err
 	}

@@ -11,13 +11,20 @@ import (
 )
 
 func LoadEnv() {
-	err := godotenv.Load(".env")
-	if err != nil {
-		err = godotenv.Load("backend/.env")
-		if err != nil {
-			log.Println("Warning: .env file not found, using system environment variables")
+	envPaths := []string{
+		".env",
+		"backend/.env",
+		"../.env",
+		"../../.env",
+	}
+
+	for _, path := range envPaths {
+		if err := godotenv.Load(path); err == nil {
+			return
 		}
 	}
+	
+	log.Println("Warning: .env file not found, using system environment variables")
 }
 
 func ConnectDB() *pgxpool.Pool {

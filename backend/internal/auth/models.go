@@ -4,6 +4,7 @@ type ProfileReq struct {
 	Email     string `json:"email"`
 	Name      string `json:"name"`
 	AvatarURL string `json:"avatar_url"`
+	BirthDate string `json:"birth_date"`
 }
 
 type ProfileResponse struct {
@@ -12,4 +13,5 @@ type ProfileResponse struct {
 	Email     string `json:"email"`
 	AvatarURL string `json:"avatar_url"`
 	Role      string `json:"role"`
+	BirthDate string `json:"birth_date"`
 }

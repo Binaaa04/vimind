@@ -18,7 +18,7 @@ func (h *Handler) GetProfile(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "Email is required"})
 	}
 
-	id, name, userEmail, avatarURL, role, err := h.repo.GetProfile(email)
+	id, name, userEmail, avatarURL, role, birthDate, err := h.repo.GetProfile(email)
 	if err != nil {
 		return c.Status(404).JSON(fiber.Map{"error": "User not found"})
 	}
@@ -29,6 +29,7 @@ func (h *Handler) GetProfile(c *fiber.Ctx) error {
 		"email":      userEmail,
 		"avatar_url": avatarURL,
 		"role":       role,
+		"birth_date": birthDate,
 	})
 }
 
@@ -38,7 +39,7 @@ func (h *Handler) UpdateProfile(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "Invalid request"})
 	}
 
-	err := h.repo.UpsertProfile(pr.Email, pr.Name, pr.AvatarURL)
+	err := h.repo.UpsertProfile(pr.Email, pr.Name, pr.AvatarURL, pr.BirthDate)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to update profile"})
 	}
