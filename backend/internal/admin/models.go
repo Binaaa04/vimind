@@ -86,6 +86,17 @@ type AgeStat struct {
 	Color string `json:"color"`
 }
 
+type AdminUser struct {
+	ID           int    `json:"user_id"`
+	Email        string `json:"email"`
+	Name         string `json:"name"`
+	Role         string `json:"role"`
+	BirthDate    string `json:"birth_date"`
+	LastActiveAt string `json:"last_active_at"`
+	LastRegion   string `json:"last_region"`
+	CreatedAt    string `json:"created_at"`
+}
+
 type AnalyticsSummary struct {
 	MostDisease     string        `json:"most_disease"`
 	DiseaseRate     int           `json:"disease_rate"`

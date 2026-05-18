@@ -261,6 +261,35 @@ func (r *Repository) DeleteRule(id int) error {
 	return err
 }
 
+func (r *Repository) GetAllUsers() ([]AdminUser, error) {
+	rows, err := r.pool.Query(context.Background(), `
+		SELECT 
+			user_id, 
+			email, 
+			COALESCE(name, ''), 
+			role, 
+			COALESCE(birth_date, ''), 
+			COALESCE(TO_CHAR(last_active_at, 'YYYY-MM-DD HH24:MI'), ''), 
+			COALESCE(last_region, ''),
+			COALESCE(TO_CHAR(created_at, 'YYYY-MM-DD'), '')
+		FROM users ORDER BY created_at DESC
+	`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var list []AdminUser
+	for rows.Next() {
+		var u AdminUser
+		if err := rows.Scan(&u.ID, &u.Email, &u.Name, &u.Role, &u.BirthDate, &u.LastActiveAt, &u.LastRegion, &u.CreatedAt); err != nil {
+			continue
+		}
+		list = append(list, u)
+	}
+	return list, nil
+}
+
 func (r *Repository) GetDashboardAnalytics() (AnalyticsSummary, error) {
 	var summary AnalyticsSummary
 	var wg sync.WaitGroup

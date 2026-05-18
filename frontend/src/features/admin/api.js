@@ -21,3 +21,5 @@ export const adminDeleteRule = (email, id) => api.delete(`/api/admin/rules/${id}
 export const adminGetTestimonials = (email) => api.get("/api/admin/testimonials", adminConfig(email));
 export const adminUpdateTestimonialDisplay = (email, id, isDisplayed) => api.put(`/api/admin/testimonials/${id}/display`, { is_displayed: isDisplayed }, adminConfig(email));
 export const adminGetAccountFeedbacks = (email) => api.get("/api/admin/account_feedbacks", adminConfig(email));
+
+export const adminGetUsers = (email) => api.get("/api/admin/users", adminConfig(email));

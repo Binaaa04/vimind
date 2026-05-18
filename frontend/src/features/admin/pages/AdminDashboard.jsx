@@ -6,6 +6,7 @@ import DashboardAnalytics from "@/features/admin/pages/analyticsDashboard";
 import AdminFAQ from "@/features/admin/pages/AdminFAQ";
 import AdminTest from "@/features/admin/pages/AdminTest";
 import AdminFeedback from "@/features/admin/pages/AdminFeedback";
+import AdminUsers from "@/features/admin/pages/AdminUsers";
 import { adminGetBanners, adminUpsertBanner, adminDeleteBanner } from "@/features/admin/api";
 import { getProfile } from "@/features/auth/api";
 import "@/css/AdminDashboard.css";
@@ -229,6 +230,7 @@ const AdminDashboard = () => {
         <Routes>
           {/* ANALYTICS DASHBOARD */}
           <Route path="analytics" element={<DashboardAnalytics />} />
+          <Route path="users" element={<AdminUsers />} />
           {/* PROMOSI */}
           <Route
             path="dashboard"
