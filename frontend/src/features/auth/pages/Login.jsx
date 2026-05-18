@@ -87,15 +87,17 @@ const Login = () => {
 
       // Check if there's a pending redirect (e.g., from guest result page)
       const redirectAfterLogin = localStorage.getItem("redirectAfterLogin");
-      if (redirectAfterLogin) {
-        localStorage.removeItem("redirectAfterLogin");
-        navigate(redirectAfterLogin);
+      const pendingAnswersRaw = localStorage.getItem("pending_answers");
+
+      if (userRole === "admin") {
+        if (redirectAfterLogin) localStorage.removeItem("redirectAfterLogin");
+        navigate("/admin");
+      } else if (profileData && !profileData.birth_date) {
+        navigate("/lengkapi-biodata");
       } else {
-        // Redirect based on role and biodata completeness
-        if (userRole === "admin") {
-          navigate("/admin");
-        } else if (profileData && !profileData.birth_date) {
-          navigate("/lengkapi-biodata");
+        if (redirectAfterLogin || pendingAnswersRaw) {
+          if (redirectAfterLogin) localStorage.removeItem("redirectAfterLogin");
+          navigate("/hasil");
         } else {
           navigate("/dashboard");
         }

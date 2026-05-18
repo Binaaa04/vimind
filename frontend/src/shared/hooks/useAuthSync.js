@@ -14,7 +14,6 @@ export function useAuthSync() {
             localStorage.setItem("latest_diagnosis", JSON.stringify(diagRes.data));
             localStorage.removeItem("pending_answers");
             console.log("App: Successfully synced pending diagnosis to DB.");
-            window.location.href = "/hasil";
           } catch (syncErr) {
             console.error("App: Failed to sync pending diagnosis:", syncErr);
           }

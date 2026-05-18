@@ -36,7 +36,14 @@ const LengkapiBiodata = () => {
         const res = await getProfile(session.user.email);
         // Jika birth_date sudah terisi, artinya gak usah kesini, lempar ke dashboard
         if (res.data?.birth_date) {
-            navigate("/dashboard");
+            const pendingAnswersRaw = localStorage.getItem("pending_answers");
+            const redirectAfterLogin = localStorage.getItem("redirectAfterLogin");
+            if (pendingAnswersRaw || redirectAfterLogin) {
+              if (redirectAfterLogin) localStorage.removeItem("redirectAfterLogin");
+              navigate("/hasil");
+            } else {
+              navigate("/dashboard");
+            }
             return;
         }
 
@@ -79,8 +86,16 @@ const LengkapiBiodata = () => {
       // Simpan nickname di localstorage
       localStorage.setItem("nickname", form.name);
       
-      // Lanjut ke dashboard
-      navigate("/dashboard");
+      // Lanjut ke hasil atau dashboard
+      const pendingAnswersRaw = localStorage.getItem("pending_answers");
+      const redirectAfterLogin = localStorage.getItem("redirectAfterLogin");
+      
+      if (pendingAnswersRaw || redirectAfterLogin) {
+        if (redirectAfterLogin) localStorage.removeItem("redirectAfterLogin");
+        navigate("/hasil");
+      } else {
+        navigate("/dashboard");
+      }
     } catch (err) {
       console.error(err);
       alert("Gagal menyimpan biodata: " + err.message);

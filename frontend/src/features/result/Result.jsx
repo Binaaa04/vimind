@@ -3,6 +3,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/services/supabaseClient";
 import { getProfile } from "@/features/auth/api";
 import { submitTestimonial } from "@/features/home/api";
+import { saveMoodToBackend } from "@/features/dashboard/api";
+import MoodModal from "@/features/detection/components/MoodModal";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import "../../css/Result.css";
 
@@ -18,6 +20,10 @@ export default function Result() {
     const [avatarUrl, setAvatarUrl] = useState("");
     const [showModal, setShowModal] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [userEmail, setUserEmail] = useState("");
+
+    // Mood States
+    const [showMoodModal, setShowMoodModal] = useState(false);
 
     // Feedback States
     const [showFeedbackModal, setShowFeedbackModal] = useState(false);
@@ -26,6 +32,7 @@ export default function Result() {
     const [comment, setComment] = useState("");
     const [submittingFeedback, setSubmittingFeedback] = useState(false);
     const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
+    const [hasRated, setHasRated] = useState(localStorage.getItem("has_rated_test") === "true");
 
     // Get data from location state (Passed from DetectionQuestion)
     const stateDiagnosis = location.state?.diagnosis;
@@ -33,11 +40,23 @@ export default function Result() {
     const diagnosis = stateDiagnosis || storedDiagnosis;
 
     useEffect(() => {
+        const checkShouldShowMood = () => {
+            const lastMoodDate = localStorage.getItem("mood_date");
+            const today = new Date().toDateString();
+            return lastMoodDate !== today;
+        };
+
         const checkAuthAndProfile = async () => {
             const { data: { session } } = await supabase.auth.getSession();
             if (session) {
                 setIsLoggedIn(true);
                 setShowModal(false);
+                setUserEmail(session.user.email);
+                
+                if (checkShouldShowMood()) {
+                    setShowMoodModal(true);
+                }
+
                 try {
                     const profileRes = await getProfile(session.user.email);
                     setNickname(profileRes.data.name || session.user.email.split("@")[0]);
@@ -62,14 +81,17 @@ export default function Result() {
     // --- FITUR BARU: AUTO POP-UP FEEDBACK ---
     useEffect(() => {
         // Tampilkan pop-up setelah 1 detik halaman dimuat, 
-        // asalkan ada hasil tes dan user tidak terhalang modal login (guest)
-        if (result && !showModal) {
-            const timer = setTimeout(() => {
-                setShowFeedbackModal(true);
-            }, 1000); // 1000ms = 1 detik jeda
-            return () => clearTimeout(timer); // Bersihkan timer jika komponen di-unmount
+        // asalkan ada hasil tes dan user tidak terhalang modal login (guest) dan tidak sedang milih mood
+        if (result && !showModal && !showMoodModal) {
+            // Wajibkan rating bagi user login yang belum pernah rating
+            if (isLoggedIn && !hasRated) {
+                const timer = setTimeout(() => {
+                    setShowFeedbackModal(true);
+                }, 1000); // 1000ms = 1 detik jeda
+                return () => clearTimeout(timer); 
+            }
         }
-    }, [result, showModal]);
+    }, [result, showModal, showMoodModal, isLoggedIn, hasRated]);
 
     if (!result) {
         return (
@@ -105,6 +127,8 @@ export default function Result() {
                 comment,
             });
             setFeedbackSubmitted(true);
+            localStorage.setItem("has_rated_test", "true");
+            setHasRated(true);
             setTimeout(() => {
                 setShowFeedbackModal(false);
             }, 2500);
@@ -150,7 +174,8 @@ export default function Result() {
                 </div>
             </div>
 
-            <div className={`result-card-container ${!isLoggedIn ? "content-blur" : ""}`}>
+            {/* Blur hasil jika belum login ATAU (sudah login tapi belum rating & popup muncul) */}
+            <div className={`result-card-container ${(!isLoggedIn || (isLoggedIn && !hasRated)) ? "content-blur" : ""}`}>
                 <div className="result-card">
                     <div className="card-section">
                         <h3>Deskripsi Kondisi</h3>
@@ -233,6 +258,23 @@ export default function Result() {
                 </div>
             )}
 
+            {/* MODAL MOOD */}
+            {showMoodModal && (
+                <MoodModal 
+                    onSelect={async (m) => {
+                        try {
+                            if (userEmail) {
+                                await saveMoodToBackend(userEmail, m);
+                            }
+                        } catch (e) {
+                            console.error("Gagal simpan mood", e);
+                        }
+                        setShowMoodModal(false);
+                    }}
+                    onClose={() => setShowMoodModal(false)}
+                />
+            )}
+
             {/* MODAL FEEDBACK / TESTIMONI */}
             {showFeedbackModal && (
                 <div className="overlay">
@@ -272,12 +314,16 @@ export default function Result() {
                                     >
                                         {submittingFeedback ? 'Mengirim...' : 'Kirim Ulasan'}
                                     </button>
-                                    <button
-                                        className="btn-later"
-                                        onClick={() => setShowFeedbackModal(false)}
-                                    >
-                                        Nanti Saja
-                                    </button>
+                                    
+                                    {/* Sembunyikan tombol "Nanti Saja" jika user login & belum rating (Wajib!) */}
+                                    {(!isLoggedIn || hasRated) && (
+                                        <button
+                                            className="btn-later"
+                                            onClick={() => setShowFeedbackModal(false)}
+                                        >
+                                            Nanti Saja
+                                        </button>
+                                    )}
                                 </div>
                             </>
                         ) : (
