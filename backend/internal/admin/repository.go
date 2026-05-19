@@ -344,8 +344,8 @@ func (r *Repository) GetDashboardAnalytics() (AnalyticsSummary, error) {
 		defer wg.Done()
 		rows, err := r.pool.Query(context.Background(), `
 			WITH age_data AS (
-				SELECT EXTRACT(YEAR FROM age(CURRENT_DATE, CAST(NULLIF(birth_date, '') AS DATE))) AS age
-				FROM users WHERE birth_date IS NOT NULL AND birth_date != ''
+				SELECT EXTRACT(YEAR FROM age(CURRENT_DATE, birth_date)) AS age
+				FROM users WHERE birth_date IS NOT NULL
 			),
 			ranges AS (
 				SELECT CASE 
