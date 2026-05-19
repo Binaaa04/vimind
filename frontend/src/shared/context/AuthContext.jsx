@@ -40,6 +40,10 @@ export const AuthProvider = ({ children }) => {
       } else {
         setRole('guest');
         localStorage.removeItem('userRole');
+        sessionStorage.removeItem('latest_diagnosis');
+        sessionStorage.removeItem('pending_answers');
+        sessionStorage.removeItem('quiz_active');
+        sessionStorage.removeItem('quiz_draft');
       }
       setLoading(false);
     });
