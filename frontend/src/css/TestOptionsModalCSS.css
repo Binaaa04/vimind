@@ -92,6 +92,61 @@
   margin-bottom: 25px;
 }
 
+/* Container pembungkus opsi jawaban */
+.options-wrapper {
+  display: flex;
+  flex-direction: column; /* Membuat susunan atas-bawah */
+  align-items: center;
+  width: 100%;
+}
+
+/* Container untuk lingkaran (sesuaikan max-width dengan desainmu) */
+.circles {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 300px; /* Mengatur jarak sebaran antar lingkaran */
+}
+
+/* Row khusus untuk text label */
+.labels-row {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 320px; /* Dibuat sedikit lebih lebar dari .circles agar text sejajar pas di bawahnya */
+  margin-top: 10px; /* Jarak default di Desktop/Laptop */
+}
+
+/* Styling teks label */
+.label-text {
+  font-size: 14px;
+  font-weight: 600;
+  color: #8b5cf6; /* Warna ungu menyesuaikan tema */
+  text-align: center;
+  /* Dibatasi widthnya agar 'Tidak Setuju' bisa membungkus/wrap ke bawah jika ruang sempit */
+  width: 60px; 
+}
+
+/* ================= MOBILE VIEW ================= */
+@media (max-width: 768px) {
+  .labels-row {
+    margin-top: -12px; /* Jarak pas 4px antara bulet dan text di mobile */
+    max-width: 100%; /* Penuhi layar jika di mobile */
+    padding: 0 10px; /* Memberi sedikit ruang dari tepi layar */
+  }
+
+  .label-text {
+    font-size: 13px; /* Ukuran text dibuat sama untuk 'Setuju' dan 'Tidak Setuju' */
+    width: 60px;
+  }
+  
+  .circles {
+    max-width: 100%;
+    padding: 0 20px;
+    margin-top: 12px;
+  }
+}
+
 /* Option Item */
 .test-option-item {
   background: #FFFFFF;

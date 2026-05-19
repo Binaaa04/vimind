@@ -57,7 +57,7 @@ body {
 .nav-left {
   display: flex;
   align-items: center;
-  gap: 20px;
+  gap: 2px;
 }
 
 .dashboard-navbar .nav-logo {
@@ -528,7 +528,7 @@ body {
 }
 
 /* RESPONSIVE MOBILE (LAYAR KECIL / HP) */
-@media screen and (max-width: 768px) {
+@media (max-width: 768px) {
   .dashboard-navbar {
     flex-direction: column;
     align-items: flex-start;
@@ -541,6 +541,7 @@ body {
     width: 100%;
     justify-content: space-between;
     position: relative;
+    gap: 2px;
   }
 
   .dashboard-navbar .nav-logo {
@@ -580,6 +581,7 @@ body {
 
   .promo-right {
     padding: 20px;
+    display: none !important; 
   }
 
   .academy-logo {
@@ -594,8 +596,8 @@ body {
   .bottom-section {
     flex-direction: column;
     align-items: flex-start;
-    margin-left: 0;
-    padding: 0 10px;
+    margin-left: auto !important;
+    padding: auto;
   }
 
   .bottom-left {
@@ -1003,7 +1005,7 @@ body {
 }
 
 /* Mobile screens (768px and below) - extending existing */
-@media screen and (max-width: 768px) {
+@media (max-width: 768px) {
   .dashboard-page::before {
     width: 60%;
     height: 80px;
@@ -1013,8 +1015,8 @@ body {
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
-    padding: 12px 15px;
+    justify-content: space-between !important;
+    padding: 15px 20px;
     margin-bottom: 20px;
     gap: 15px;
     position: relative;
@@ -1023,13 +1025,14 @@ body {
   .nav-left {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 2px;
     flex: 1 1 auto;
     min-width: 0;
   }
 
   .dashboard-navbar .nav-logo {
-    height: 45px !important;
+    height: 15px !important;
+    width: 100px !important;
     margin-left: 0;
     flex-shrink: 0;
   }
@@ -1044,11 +1047,13 @@ body {
 
   .mobile-menu-btn {
     display: inline-flex;
-    margin-left: auto;
+    margin-left: auto !important;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: 2px;
+    border: none !important;
+    background: transparent !important;
   }
 
   .nav-profile-area {
@@ -1057,6 +1062,7 @@ body {
 
   .profile-trigger {
     font-size: 0.8rem;
+    display: none !important;
   }
 
   .profile-trigger span {
@@ -1176,11 +1182,11 @@ body {
   .dashboard-navbar {
     padding: 10px 12px;
     margin-bottom: 15px;
-    justify-content: space-between;
+    justify-content: space-between !important;
   }
 
   .nav-left {
-    gap: 10px;
+    gap: 2px;
     min-width: 0;
   }
 
