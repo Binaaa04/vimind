@@ -3,6 +3,7 @@ package auth
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -73,7 +74,7 @@ func (r *Repository) CheckAdmin(email string) error {
 		return err
 	}
 	if role != "admin" {
-		return err
+		return fmt.Errorf("user is not admin")
 	}
 	return nil
 }

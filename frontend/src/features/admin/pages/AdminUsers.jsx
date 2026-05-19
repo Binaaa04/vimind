@@ -1,15 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Users, Search, Shield, User } from 'lucide-react';
 import { adminGetUsers } from '@/features/admin/api';
 import { supabase } from '@/services/supabaseClient';
+import '@/css/AdminUsers.css';
 
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [search, setSearch] = useState('');
 
   useEffect(() => {
     const fetchUsers = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
+      if (!session) { setLoading(false); return; }
       try {
         const res = await adminGetUsers(session.user.email);
         setUsers(res.data || []);
@@ -22,66 +25,116 @@ const AdminUsers = () => {
     fetchUsers();
   }, []);
 
+  const filtered = useMemo(() => {
+    if (!search.trim()) return users;
+    const q = search.toLowerCase();
+    return users.filter(u =>
+      u.email?.toLowerCase().includes(q) ||
+      u.name?.toLowerCase().includes(q) ||
+      u.role?.toLowerCase().includes(q)
+    );
+  }, [users, search]);
+
+  const formatDate = (dateStr) => {
+    if (!dateStr) return null;
+    try {
+      const d = new Date(dateStr);
+      return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' });
+    } catch {
+      return dateStr;
+    }
+  };
+
+  const formatDateTime = (dateStr) => {
+    if (!dateStr) return null;
+    try {
+      const d = new Date(dateStr.replace(' ', 'T'));
+      return d.toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' }) +
+        ', ' + d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+    } catch {
+      return dateStr;
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="users-loading">
+        <div className="spinner" />
+        <span>Memuat data user...</span>
+      </div>
+    );
+  }
+
   return (
-    <div style={{ padding: '20px', color: 'white', maxWidth: '1200px', margin: '0 auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px' }}>
-        <h1 style={{ fontSize: '24px', fontWeight: 'bold' }}>Manajemen Data User</h1>
-        <div style={{ background: 'rgba(124, 58, 237, 0.2)', color: '#a78bfa', padding: '8px 16px', borderRadius: '20px', fontSize: '14px', fontWeight: 'bold' }}>
-          Total User: {users.length}
+    <div className="admin-users-container">
+      {/* Header */}
+      <div className="admin-users-header">
+        <h1>Manajemen Data User</h1>
+        <div className="user-count-badge">
+          <Users size={16} />
+          Total User:
+          <span className="count-number">{users.length}</span>
         </div>
       </div>
-      
-      {loading ? (
-        <div style={{ textAlign: 'center', padding: '40px', color: '#a78bfa' }}>Memuat data user...</div>
-      ) : (
-        <div style={{ overflowX: 'auto', background: 'rgba(255, 255, 255, 0.03)', borderRadius: '16px', border: '1px solid rgba(255, 255, 255, 0.1)' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '14px' }}>
+
+      {/* Search */}
+      <div className="users-search-bar">
+        <Search size={18} color="#9ca3af" />
+        <input
+          type="text"
+          placeholder="Cari email, nama, atau role..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+      </div>
+
+      {/* Table */}
+      <div className="users-table-container">
+        <div className="users-table-scroll">
+          <table className="users-table">
             <thead>
-              <tr style={{ background: 'rgba(0, 0, 0, 0.2)', borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-                <th style={{ padding: '16px', color: '#a78bfa', fontWeight: '600' }}>Tgl Daftar</th>
-                <th style={{ padding: '16px', color: '#a78bfa', fontWeight: '600' }}>Email</th>
-                <th style={{ padding: '16px', color: '#a78bfa', fontWeight: '600' }}>Nama</th>
-                <th style={{ padding: '16px', color: '#a78bfa', fontWeight: '600' }}>Role</th>
-                <th style={{ padding: '16px', color: '#a78bfa', fontWeight: '600' }}>Tgl Lahir</th>
-                <th style={{ padding: '16px', color: '#a78bfa', fontWeight: '600' }}>Wilayah IP</th>
-                <th style={{ padding: '16px', color: '#a78bfa', fontWeight: '600' }}>Aktif Terakhir</th>
+              <tr>
+                <th>Tgl Daftar</th>
+                <th>Email</th>
+                <th>Nama</th>
+                <th>Role</th>
+                <th>Tgl Lahir</th>
+                <th>Wilayah</th>
+                <th>Aktif Terakhir</th>
               </tr>
             </thead>
             <tbody>
-              {users.map(u => (
-                <tr key={u.user_id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', transition: 'background 0.2s' }} onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.05)'} onMouseOut={(e) => e.currentTarget.style.background = 'transparent'}>
-                  <td style={{ padding: '16px', color: '#d1d5db' }}>{u.created_at || '-'}</td>
-                  <td style={{ padding: '16px' }}>{u.email}</td>
-                  <td style={{ padding: '16px', color: '#f3f4f6' }}>{u.name || '-'}</td>
-                  <td style={{ padding: '16px' }}>
-                    <span style={{ 
-                      padding: '4px 10px', 
-                      borderRadius: '12px', 
-                      fontSize: '11px',
-                      fontWeight: 'bold',
-                      textTransform: 'uppercase',
-                      background: u.role === 'admin' ? 'rgba(124, 58, 237, 0.2)' : 'rgba(255, 255, 255, 0.1)',
-                      color: u.role === 'admin' ? '#c4b5fd' : '#d1d5db'
-                    }}>
+              {filtered.map(u => (
+                <tr key={u.user_id}>
+                  <td className="user-date">{formatDate(u.created_at) || <span className="users-empty-cell">-</span>}</td>
+                  <td className="user-email">{u.email}</td>
+                  <td className="user-name">{u.name || <span className="users-empty-cell">Belum diisi</span>}</td>
+                  <td>
+                    <span className={`role-badge ${u.role}`}>
+                      {u.role === 'admin' ? <Shield size={12} /> : <User size={12} />}
                       {u.role}
                     </span>
                   </td>
-                  <td style={{ padding: '16px', color: '#9ca3af' }}>{u.birth_date || '-'}</td>
-                  <td style={{ padding: '16px', color: '#9ca3af' }}>{u.last_region || '-'}</td>
-                  <td style={{ padding: '16px', color: '#8b5cf6', fontWeight: '500' }}>{u.last_active_at || '-'}</td>
+                  <td className="user-date">{formatDate(u.birth_date) || <span className="users-empty-cell">-</span>}</td>
+                  <td className="user-region">{u.last_region || <span className="users-empty-cell">-</span>}</td>
+                  <td className="user-active">{formatDateTime(u.last_active_at) || <span className="users-empty-cell">-</span>}</td>
                 </tr>
               ))}
-              {users.length === 0 && (
+
+              {filtered.length === 0 && (
                 <tr>
-                  <td colSpan="7" style={{ padding: '40px', textAlign: 'center', color: '#6b7280' }}>
-                    Belum ada data user.
+                  <td colSpan="7">
+                    <div className="users-empty-state">
+                      <Users size={44} color="#d1d5db" />
+                      <p>{search ? 'Tidak ditemukan user yang cocok.' : 'Belum ada data user.'}</p>
+                    </div>
                   </td>
                 </tr>
               )}
             </tbody>
           </table>
         </div>
-      )}
+      </div>
     </div>
   );
 };

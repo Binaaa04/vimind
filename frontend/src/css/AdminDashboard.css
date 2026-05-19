@@ -263,23 +263,23 @@
   border: 1px solid #ddd;
 }
 
-table {
+.table-box table {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 10px;
 }
 
-thead {
+.table-box thead {
   background: #ede9fe;
 }
 
-th, td {
+.table-box th, .table-box td {
   padding: 10px;
   border: 1px solid #ddd;
   text-align: left;
 }
 
-td input {
+.table-box td input {
   width: 100%;
   padding: 6px;
   border-radius: 6px;

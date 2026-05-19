@@ -268,7 +268,7 @@ func (r *Repository) GetAllUsers() ([]AdminUser, error) {
 			email, 
 			COALESCE(name, ''), 
 			role, 
-			COALESCE(birth_date, ''), 
+			COALESCE(TO_CHAR(birth_date, 'YYYY-MM-DD'), ''), 
 			COALESCE(TO_CHAR(last_active_at, 'YYYY-MM-DD HH24:MI'), ''), 
 			COALESCE(last_region, ''),
 			COALESCE(TO_CHAR(created_at, 'YYYY-MM-DD'), '')

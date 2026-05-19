@@ -1,0 +1,253 @@
+/* ========== Admin Users Page ========== */
+
+.admin-users-container {
+  font-family: 'Inter', 'Poppins', sans-serif;
+  padding: 1.5rem 2rem 2.5rem;
+  color: #1f2937;
+  max-width: 1400px;
+}
+
+/* Header */
+.admin-users-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.admin-users-header h1 {
+  color: #7c3aed;
+  font-size: 1.65rem;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+  margin: 0;
+}
+
+.user-count-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: linear-gradient(135deg, #7c3aed, #6d28d9);
+  color: #ffffff;
+  padding: 8px 18px;
+  border-radius: 24px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.2px;
+  box-shadow: 0 2px 8px rgba(124, 58, 237, 0.25);
+}
+
+.user-count-badge .count-number {
+  background: rgba(255, 255, 255, 0.25);
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 14px;
+}
+
+/* Search bar */
+.users-search-bar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.users-search-bar input {
+  flex: 1;
+  max-width: 360px;
+  padding: 10px 16px;
+  border: 1.5px solid #e5e7eb;
+  border-radius: 12px;
+  font-size: 13.5px;
+  color: #374151;
+  background: #ffffff;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.users-search-bar input::placeholder {
+  color: #9ca3af;
+}
+
+.users-search-bar input:focus {
+  border-color: #a78bfa;
+  box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.15);
+}
+
+/* Table container */
+.users-table-container {
+  background: #ffffff;
+  border: 1px solid #ede9fe;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(124, 58, 237, 0.06);
+}
+
+.users-table-scroll {
+  overflow-x: auto;
+}
+
+/* Table */
+.users-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 13.5px;
+}
+
+.users-table thead tr {
+  background: #faf8ff;
+}
+
+.users-table th {
+  padding: 14px 18px;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #7c3aed;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  text-align: left;
+  border-bottom: 2px solid #ede9fe;
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  background: #faf8ff;
+}
+
+.users-table td {
+  padding: 14px 18px;
+  border-bottom: 1px solid #f3f4f6;
+  color: #374151;
+  transition: background 0.15s;
+  vertical-align: middle;
+}
+
+.users-table tbody tr:hover td {
+  background: #faf8ff;
+}
+
+.users-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* Cell styles */
+.user-email {
+  font-weight: 600;
+  color: #1e1b4b;
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.user-name {
+  color: #374151;
+  font-weight: 500;
+}
+
+.user-date {
+  color: #6b7280;
+  white-space: nowrap;
+  font-size: 12.5px;
+}
+
+.user-region {
+  color: #6b7280;
+  font-size: 12.5px;
+}
+
+.user-active {
+  color: #7c3aed;
+  font-weight: 600;
+  white-space: nowrap;
+  font-size: 12.5px;
+}
+
+/* Role badge */
+.role-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.role-badge.admin {
+  background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+  color: #6d28d9;
+}
+
+.role-badge.user {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+/* Empty and placeholder */
+.users-empty-cell {
+  color: #d1d5db;
+  font-style: italic;
+  font-size: 12px;
+}
+
+.users-empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: #9ca3af;
+}
+
+.users-empty-state svg {
+  margin-bottom: 12px;
+  opacity: 0.35;
+}
+
+.users-empty-state p {
+  font-size: 14px;
+  margin: 0;
+}
+
+/* Loading */
+.users-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  gap: 16px;
+  color: #7c3aed;
+}
+
+.users-loading .spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid #ede9fe;
+  border-top-color: #7c3aed;
+  border-radius: 50%;
+  animation: userspin 0.8s linear infinite;
+}
+
+@keyframes userspin {
+  to { transform: rotate(360deg); }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .admin-users-container {
+    padding: 1rem;
+  }
+
+  .admin-users-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .users-search-bar input {
+    max-width: 100%;
+  }
+}
