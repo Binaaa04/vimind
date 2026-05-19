@@ -26,7 +26,21 @@ func NewHandler(repo *Repository, service *Service, users UserService) *Handler 
 func (h *Handler) GetQuestions(c *fiber.Ctx) error {
 	mode := c.Query("mode", "default")
 	idsStr := c.Query("disease_ids")
+	
+	// Privacy Fix: Only allow 'refined' mode if the email matches the authenticated user
 	email := c.Query("email")
+	authEmail, _ := c.Locals("user_email").(string)
+	
+	if mode == "refined" {
+		if authEmail == "" || (email != "" && email != authEmail) {
+			// If not authenticated or trying to probe another user's email, fallback to 'all'
+			mode = "all"
+			email = ""
+		} else {
+			// Use the authenticated email
+			email = authEmail
+		}
+	}
 
 	var diseaseIDs []int
 	isRefined := false
