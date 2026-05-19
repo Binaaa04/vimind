@@ -346,6 +346,11 @@ button:active {
   padding: 100px 20px;
   text-align: center;
   background: white;
+  display: block;
+  clear: both;
+  overflow: hidden;
+  position: relative;
+  z-index: 10;
 }
 
 /* Badge tetap */
@@ -390,6 +395,14 @@ button:active {
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 20px;
+}
+
+@media (max-width: 768px) {
+  .fitur-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
 }
 
 @media (max-width: 768px) {
@@ -445,6 +458,11 @@ button:active {
 .testimoni {
   padding: 100px 0;
   background: #fafafa;
+  display: block;
+  clear: both;
+  overflow: hidden;
+  position: relative;
+  z-index: 5;
 }
 
 .testimoni-header {

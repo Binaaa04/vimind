@@ -116,27 +116,27 @@ export default function Home() {
           <h2>Kenali dirimu lebih baik lagi</h2>
           <p>Berikut adalah fitur menarik yang bisa bantu kamu buat lebih memahami dan menjaga kesehatan mental setiap hari.</p>
         </div>
-        <div className="fitur-grid" style={{ display: 'flex', flexDirection: 'column', gap: '30px', alignItems: 'center' }}>
-          <div className="fitur-card" style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
+        <div className="fitur-grid">
+          <div className="fitur-card">
             <div className="fitur-icon">
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
             </div>
-            <h3 style={{ fontSize: '22px', margin: '0 0 10px 0', whiteSpace: 'normal' }}>Deteksi Dini Cerdas</h3>
-            <p style={{ margin: 0 }}>Refleksi diri instan melalui tes yang dirancang oleh pakar untuk memahami kondisi psikologismu saat ini.</p>
+            <h3>Deteksi Dini Cerdas</h3>
+            <p>Refleksi diri instan melalui tes yang dirancang oleh pakar untuk memahami kondisi psikologismu saat ini.</p>
           </div>
-          <div className="fitur-card" style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
+          <div className="fitur-card">
             <div className="fitur-icon">
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20v-6M6 20V10M18 20V4"></path></svg>
             </div>
-            <h3 style={{ fontSize: '22px', margin: '0 0 10px 0', whiteSpace: 'normal' }}>Daily Mood Tracker</h3>
-            <p style={{ margin: 0 }}>Pantau dinamika emosimu setiap hari. Lihat pola perasaanmu melalui visualisasi grafik yang intuitif.</p>
+            <h3>Daily Mood Tracker</h3>
+            <p>Pantau dinamika emosimu setiap hari. Lihat pola perasaanmu melalui visualisasi grafik yang intuitif.</p>
           </div>
-          <div className="fitur-card" style={{ width: '100%', maxWidth: '100%', boxSizing: 'border-box' }}>
+          <div className="fitur-card">
             <div className="fitur-icon">
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
             </div>
-            <h3 style={{ fontSize: '22px', margin: '0 0 10px 0', whiteSpace: 'normal' }}>Ruang Aman & Pribadi</h3>
-            <p style={{ margin: 0 }}>Privasi adalah prioritas. Seluruh data dan hasil tesmu dienkripsi secara aman, memberikanmu ketenangan pikiran.</p>
+            <h3>Ruang Aman & Pribadi</h3>
+            <p>Privasi adalah prioritas. Seluruh data dan hasil tesmu dienkripsi secara aman, memberikanmu ketenangan pikiran.</p>
           </div>
         </div>
       </section>
@@ -144,7 +144,7 @@ export default function Home() {
       <section id="testimoni" className="testimoni">
         <div className="testimoni-header">
           <span className="badge">Testimoni</span>
-          <h2 style={{ fontSize: '32px', margin: '0 0 24px 0', whiteSpace: 'normal', overflowWrap: 'break-word' }}>Kisah Perjalanan Bersama ViMind</h2>
+          <h2>Kisah Perjalanan Bersama ViMind</h2>
           <p>Apa kata mereka yang telah menemukan ketenangan dan kejernihan pikiran melalui refleksi harian.</p>
         </div>
         <div className="marquee-container">
