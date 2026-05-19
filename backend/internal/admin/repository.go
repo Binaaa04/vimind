@@ -3,6 +3,7 @@ package admin
 import (
 	"context"
 	"fmt"
+	"sync"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -291,108 +292,160 @@ func (r *Repository) GetAllUsers() ([]AdminUser, error) {
 
 func (r *Repository) GetDashboardAnalytics() (AnalyticsSummary, error) {
 	var summary AnalyticsSummary
+	var wg sync.WaitGroup
+	var mu sync.Mutex
 
 	// Query 1: Most Disease
-	rows, err := r.pool.Query(context.Background(), `
-		SELECT d.disease_name, COUNT(diag.diagnosis_id) as cnt
-		FROM diagnosis diag
-		JOIN disease d ON diag.disease_id = d.disease_id
-		GROUP BY d.disease_name
-		ORDER BY cnt DESC
-	`)
-	if err == nil {
-		var list []DiseaseStat
-		var total int
-		rank := 1
-		for rows.Next() {
-			var name string
-			var count int
-			if err := rows.Scan(&name, &count); err == nil {
-				list = append(list, DiseaseStat{Rank: rank, Name: name, Cases: count})
-				total += count
-				rank++
-			}
-		}
-		rows.Close()
-		for i := range list {
-			if total > 0 {
-				list[i].Percentage = fmt.Sprintf("%.1f%%", float64(list[i].Cases)*100/float64(total))
-			} else {
-				list[i].Percentage = "0%"
-			}
-		}
-		
-		if len(list) > 0 {
-			summary.MostDisease = list[0].Name
-			summary.DiseaseRate = list[0].Cases
-		}
-		summary.DiseaseList = list
-	}
-
-	// Query 2: Age Range Mode
-	rows2, err := r.pool.Query(context.Background(), `
-		WITH age_data AS (
-			SELECT EXTRACT(YEAR FROM age(CURRENT_DATE, birth_date)) AS age
-			FROM users WHERE birth_date IS NOT NULL
-		),
-		ranges AS (
-			SELECT CASE 
-				WHEN age < 18 THEN '13-17'
-				WHEN age BETWEEN 18 AND 24 THEN '18-24'
-				WHEN age BETWEEN 25 AND 34 THEN '25-34'
-				WHEN age BETWEEN 35 AND 44 THEN '35-44'
-				WHEN age BETWEEN 45 AND 54 THEN '45-54'
-				ELSE '55+' END AS age_range
-			FROM age_data WHERE age IS NOT NULL
-		)
-		SELECT age_range, COUNT(*) FROM ranges GROUP BY age_range ORDER BY age_range ASC
-	`)
-	if err == nil {
-		var list []AgeStat
-		colors := map[string]string{
-			"13-17": "#8b5cf6", "18-24": "#c4b5fd", "25-34": "#3b0764",
-			"35-44": "#f3e8ff", "45-54": "#a855f7", "55+": "#5b21b6",
-		}
-		var maxCount int
-		var mostAge string
-		for rows2.Next() {
-			var name string
-			var count int
-			if err := rows2.Scan(&name, &count); err == nil {
-				color := colors[name]
-				if color == "" { color = "#8b5cf6" }
-				list = append(list, AgeStat{Name: name, Value: count, Color: color})
-				if count > maxCount {
-					maxCount = count
-					mostAge = name
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		rows, err := r.pool.Query(context.Background(), `
+			SELECT d.disease_name, COUNT(diag.diagnosis_id) as cnt
+			FROM diagnosis diag
+			JOIN disease d ON diag.disease_id = d.disease_id
+			GROUP BY d.disease_name
+			ORDER BY cnt DESC
+		`)
+		if err == nil {
+			defer rows.Close()
+			var list []DiseaseStat
+			var total int
+			rank := 1
+			for rows.Next() {
+				var name string
+				var count int
+				if err := rows.Scan(&name, &count); err == nil {
+					list = append(list, DiseaseStat{Rank: rank, Name: name, Cases: count})
+					total += count
+					rank++
 				}
 			}
+			for i := range list {
+				if total > 0 {
+					list[i].Percentage = fmt.Sprintf("%.1f%%", float64(list[i].Cases)*100/float64(total))
+				} else {
+					list[i].Percentage = "0%"
+				}
+			}
+			
+			mu.Lock()
+			if len(list) > 0 {
+				summary.MostDisease = list[0].Name
+				summary.DiseaseRate = list[0].Cases
+			}
+			summary.DiseaseList = list
+			mu.Unlock()
 		}
-		rows2.Close()
-		summary.AgeList = list
-		summary.AgeRange = mostAge
-	}
+	}()
+
+	// Query 2: Age Range Mode
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		rows, err := r.pool.Query(context.Background(), `
+			WITH age_data AS (
+				SELECT EXTRACT(YEAR FROM age(CURRENT_DATE, birth_date)) AS age
+				FROM users WHERE birth_date IS NOT NULL
+			),
+			ranges AS (
+				SELECT CASE 
+					WHEN age < 18 THEN '13-17'
+					WHEN age BETWEEN 18 AND 24 THEN '18-24'
+					WHEN age BETWEEN 25 AND 34 THEN '25-34'
+					WHEN age BETWEEN 35 AND 44 THEN '35-44'
+					WHEN age BETWEEN 45 AND 54 THEN '45-54'
+					ELSE '55+' END AS age_range
+				FROM age_data WHERE age IS NOT NULL
+			)
+			SELECT age_range, COUNT(*) FROM ranges GROUP BY age_range ORDER BY age_range ASC
+		`)
+		if err == nil {
+			defer rows.Close()
+			var list []AgeStat
+			colors := map[string]string{
+				"13-17": "#8b5cf6", "18-24": "#c4b5fd", "25-34": "#3b0764",
+				"35-44": "#f3e8ff", "45-54": "#a855f7", "55+": "#5b21b6",
+			}
+			var maxCount int
+			var mostAge string
+			for rows.Next() {
+				var name string
+				var count int
+				if err := rows.Scan(&name, &count); err == nil {
+					color := colors[name]
+					if color == "" { color = "#8b5cf6" }
+					list = append(list, AgeStat{Name: name, Value: count, Color: color})
+					if count > maxCount {
+						maxCount = count
+						mostAge = name
+					}
+				}
+			}
+			mu.Lock()
+			summary.AgeList = list
+			summary.AgeRange = mostAge
+			mu.Unlock()
+		}
+	}()
 
 	// Query 3: Average Rating & Total Feedbacks
-	_ = r.pool.QueryRow(context.Background(), `SELECT COALESCE(AVG(rating), 0), COUNT(*) FROM testimonials`).Scan(&summary.AverageRating, &summary.TotalFeedbacks)
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		var avg float64
+		var count int
+		_ = r.pool.QueryRow(context.Background(), `SELECT COALESCE(AVG(rating), 0), COUNT(*) FROM testimonials`).Scan(&avg, &count)
+		mu.Lock()
+		summary.AverageRating = avg
+		summary.TotalFeedbacks = count
+		mu.Unlock()
+	}()
 
 	// Query 4: Deleted Accounts
-	_ = r.pool.QueryRow(context.Background(), `SELECT COUNT(*) FROM account_feedbacks`).Scan(&summary.DeletedAccounts)
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		var count int
+		_ = r.pool.QueryRow(context.Background(), `SELECT COUNT(*) FROM account_feedbacks`).Scan(&count)
+		mu.Lock()
+		summary.DeletedAccounts = count
+		mu.Unlock()
+	}()
+
+	// Query 5 was removed
 
 	// Query 6: Weekly Active
-	_ = r.pool.QueryRow(context.Background(), `
-		SELECT 
-		  COUNT(*) FILTER (WHERE last_active_at >= CURRENT_DATE - INTERVAL '7 days'),
-		  COUNT(*)
-		FROM users
-	`).Scan(&summary.WeeklyActive, &summary.TotalUsers)
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		var weekly, total int
+		_ = r.pool.QueryRow(context.Background(), `
+			SELECT 
+			  COUNT(*) FILTER (WHERE last_active_at >= CURRENT_DATE - INTERVAL '7 days'),
+			  COUNT(*)
+			FROM users
+		`).Scan(&weekly, &total)
+		mu.Lock()
+		summary.WeeklyActive = weekly
+		summary.TotalUsers = total
+		mu.Unlock()
+	}()
 
 	// Query 7: Top Region
-	_ = r.pool.QueryRow(context.Background(), `
-		SELECT last_region FROM users 
-		WHERE last_region IS NOT NULL AND last_region != ''
-		GROUP BY last_region ORDER BY COUNT(*) DESC LIMIT 1
-	`).Scan(&summary.TopRegion)
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		var region string
+		_ = r.pool.QueryRow(context.Background(), `
+			SELECT last_region FROM users 
+			WHERE last_region IS NOT NULL AND last_region != ''
+			GROUP BY last_region ORDER BY COUNT(*) DESC LIMIT 1
+		`).Scan(&region)
+		mu.Lock()
+		summary.TopRegion = region
+		mu.Unlock()
+	}()
 
+	wg.Wait()
 	return summary, nil
 }
