@@ -114,3 +114,15 @@ func (r *Repository) SaveMood(email, mood string) error {
 	`, uid, mood)
 	return err
 }
+
+func (r *Repository) HasRated(email string) (bool, error) {
+	var count int
+	err := r.pool.QueryRow(context.Background(),
+		"SELECT COUNT(*) FROM testimonials WHERE email=$1", email,
+	).Scan(&count)
+	if err != nil {
+		return false, err
+	}
+	return count > 0, nil
+}
+

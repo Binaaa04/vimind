@@ -89,9 +89,8 @@ const DashboardAnalytics = () => {
 
   /* how tall should the bar chart be? */
   const barHeight = Math.max(280, barChartData.length * 40);
-  /* longest disease name length → left margin */
-  const maxLabelLen = barChartData.reduce((mx, d) => Math.max(mx, d.name?.length || 0), 0);
-  const leftMargin = Math.min(220, Math.max(100, maxLabelLen * 7));
+  /* Y-axis label width — enough to fit names but not too wide */
+  const yAxisWidth = 160;
 
   return (
     <div className="dashboard-container">
@@ -154,7 +153,7 @@ const DashboardAnalytics = () => {
               <BarChart
                 data={barChartData}
                 layout="vertical"
-                margin={{ top: 0, right: 24, left: leftMargin, bottom: 0 }}
+                margin={{ top: 0, right: 24, left: 0, bottom: 0 }}
               >
                 <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f3f0ff" />
                 <XAxis
@@ -169,7 +168,7 @@ const DashboardAnalytics = () => {
                   axisLine={false}
                   tickLine={false}
                   tick={{ fill: '#374151', fontSize: 12, fontWeight: 500 }}
-                  width={leftMargin - 8}
+                  width={yAxisWidth}
                 />
                 <Tooltip content={<CustomBarTooltip />} cursor={{ fill: 'rgba(139,92,246,0.06)' }} />
                 <Bar dataKey="cases" radius={[0, 6, 6, 0]} barSize={18}>

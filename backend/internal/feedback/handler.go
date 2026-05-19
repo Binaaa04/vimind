@@ -110,3 +110,17 @@ func (h *Handler) SaveMood(c *fiber.Ctx) error {
 
 	return c.JSON(fiber.Map{"message": "Mood saved successfully"})
 }
+
+func (h *Handler) CheckRating(c *fiber.Ctx) error {
+	email := c.Query("email")
+	if email == "" {
+		return c.Status(400).JSON(fiber.Map{"error": "Email is required"})
+	}
+
+	hasRated, err := h.repo.HasRated(email)
+	if err != nil {
+		return c.Status(500).JSON(fiber.Map{"error": "Failed to check rating"})
+	}
+
+	return c.JSON(fiber.Map{"has_rated": hasRated})
+}

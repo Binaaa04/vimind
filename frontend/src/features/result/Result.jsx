@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/services/supabaseClient";
 import { getProfile } from "@/features/auth/api";
-import { submitTestimonial } from "@/features/home/api";
+import { submitTestimonial, checkRating } from "@/features/home/api";
 import { saveMoodToBackend } from "@/features/dashboard/api";
 import MoodModal from "@/features/detection/components/MoodModal";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
@@ -32,7 +32,8 @@ export default function Result() {
     const [comment, setComment] = useState("");
     const [submittingFeedback, setSubmittingFeedback] = useState(false);
     const [feedbackSubmitted, setFeedbackSubmitted] = useState(false);
-    const [hasRated, setHasRated] = useState(localStorage.getItem("has_rated_test") === "true");
+    const [hasRated, setHasRated] = useState(false);
+    const [checkingRating, setCheckingRating] = useState(true);
 
     // Get data from location state (Passed from DetectionQuestion)
     const stateDiagnosis = location.state?.diagnosis;
@@ -57,6 +58,19 @@ export default function Result() {
                     setShowMoodModal(true);
                 }
 
+                // Check rating status from backend (persistent)
+                try {
+                    const ratingRes = await checkRating(session.user.email);
+                    const rated = ratingRes.data?.has_rated === true;
+                    setHasRated(rated);
+                    localStorage.setItem("has_rated_test", rated ? "true" : "false");
+                } catch (err) {
+                    // Fallback to localStorage if backend fails
+                    setHasRated(localStorage.getItem("has_rated_test") === "true");
+                } finally {
+                    setCheckingRating(false);
+                }
+
                 try {
                     const profileRes = await getProfile(session.user.email);
                     setNickname(profileRes.data.name || session.user.email.split("@")[0]);
@@ -67,6 +81,7 @@ export default function Result() {
             } else {
                 setIsLoggedIn(false);
                 setShowModal(true);
+                setCheckingRating(false);
             }
         };
         checkAuthAndProfile();
@@ -82,7 +97,7 @@ export default function Result() {
     useEffect(() => {
         // Tampilkan pop-up setelah 1 detik halaman dimuat, 
         // asalkan ada hasil tes dan user tidak terhalang modal login (guest) dan tidak sedang milih mood
-        if (result && !showModal && !showMoodModal) {
+        if (result && !showModal && !showMoodModal && !checkingRating) {
             // Wajibkan rating bagi user login yang belum pernah rating
             if (isLoggedIn && !hasRated) {
                 const timer = setTimeout(() => {
@@ -91,7 +106,7 @@ export default function Result() {
                 return () => clearTimeout(timer); 
             }
         }
-    }, [result, showModal, showMoodModal, isLoggedIn, hasRated]);
+    }, [result, showModal, showMoodModal, isLoggedIn, hasRated, checkingRating]);
 
     if (!result) {
         return (
