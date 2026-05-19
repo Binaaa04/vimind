@@ -33,7 +33,7 @@ func (h *Handler) Chatbot(c *fiber.Ctx) error {
 
 	reply, err := h.service.GetReply(req.Messages, summary)
 	if err != nil {
-		return c.Status(500).JSON(fiber.Map{"error": err.Error()})
+		return c.Status(500).JSON(fiber.Map{"error": "Maaf, aku sedang tidak bisa diajak mengobrol sebentar. Coba lagi nanti ya!"})
 	}
 
 	return c.JSON(fiber.Map{

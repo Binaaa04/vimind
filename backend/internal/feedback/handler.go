@@ -28,7 +28,14 @@ func (h *Handler) SubmitTestimonial(c *fiber.Ctx) error {
 	if err := c.BodyParser(&t); err != nil {
 		return c.Status(400).JSON(fiber.Map{"error": "Invalid request body"})
 	}
-	if t.Name == "" || t.Comment == "" || t.Rating < 1 || t.Rating > 5 {
+
+	// Use authenticated email if available
+	email, ok := c.Locals("user_email").(string)
+	if ok && email != "" {
+		t.Email = email
+	}
+
+	if t.Email == "" || t.Name == "" || t.Comment == "" || t.Rating < 1 || t.Rating > 5 {
 		return c.Status(400).JSON(fiber.Map{"error": "Invalid testimonial data"})
 	}
 	if err := h.repo.InsertTestimonial(t); err != nil {
@@ -45,8 +52,15 @@ func (h *Handler) SubmitAccountFeedback(c *fiber.Ctx) error {
 	if err := c.BodyParser(&body); err != nil {
 		return c.Status(400).JSON(fiber.Map{"error": "Invalid request body"})
 	}
-	if body.Reason == "" {
-		return c.Status(400).JSON(fiber.Map{"error": "Reason is required"})
+
+	// Use authenticated email if available
+	email, ok := c.Locals("user_email").(string)
+	if ok && email != "" {
+		body.Email = email
+	}
+
+	if body.Email == "" || body.Reason == "" {
+		return c.Status(400).JSON(fiber.Map{"error": "Email and reason are required"})
 	}
 	if err := h.repo.InsertAccountFeedback(body.Email, body.Reason); err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to submit account feedback"})
@@ -96,7 +110,12 @@ func (h *Handler) GetAllAccountFeedbacks(c *fiber.Ctx) error {
 
 
 func (h *Handler) CheckRating(c *fiber.Ctx) error {
-	email := c.Query("email")
+	// Use authenticated email if available
+	email, ok := c.Locals("user_email").(string)
+	if !ok || email == "" {
+		email = c.Query("email")
+	}
+
 	if email == "" {
 		return c.Status(400).JSON(fiber.Map{"error": "Email is required"})
 	}

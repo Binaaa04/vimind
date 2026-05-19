@@ -48,6 +48,12 @@ SCOPE & BATASAN:
 
 ` + contextMsg
 
+	// Limit history to the last 10 messages to save tokens and avoid context overflow
+	maxHistory := 10
+	if len(messages) > maxHistory {
+		messages = messages[len(messages)-maxHistory:]
+	}
+
 	var contents []GeminiContent
 	for _, m := range messages {
 		role := m.Role

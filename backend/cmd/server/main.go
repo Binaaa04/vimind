@@ -27,20 +27,29 @@ func main() {
 
 	app.Use(recover.New())
 	app.Use(helmet.New())
+	
+	// Restrict CORS to authorized origins
+	frontendURL := os.Getenv("FRONTEND_URL")
+	if frontendURL == "" {
+		frontendURL = "*" // Fallback for dev, but warn
+		log.Println("Warning: FRONTEND_URL not set, allowing all origins (*)")
+	}
+
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "*",
-		AllowHeaders: "*",
+		AllowOrigins: frontendURL,
+		AllowHeaders: "Origin, Content-Type, Accept, Authorization, X-Admin-Email",
+		AllowMethods: "GET, POST, PUT, DELETE, OPTIONS",
 	}))
 
 	app.Use(limiter.New(limiter.Config{
-		Max:        50,
+		Max:        100, // Increased slightly for production
 		Expiration: 1 * time.Minute,
 		KeyGenerator: func(c *fiber.Ctx) string {
 			return c.IP()
 		},
 		LimitReached: func(c *fiber.Ctx) error {
 			return c.Status(429).JSON(fiber.Map{
-				"error": "Mencurigakan! Kamu terlalu cepat, silakan istirahat 1 menit.",
+				"error": "Terlalu banyak permintaan! Silakan coba lagi dalam 1 menit.",
 			})
 		},
 	}))

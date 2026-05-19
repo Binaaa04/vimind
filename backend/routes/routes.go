@@ -52,6 +52,10 @@ func RegisterRoutes(app *fiber.App, db *pgxpool.Pool) {
 	chatSvc := chatbot.NewService()
 	sessionCache := session.NewCache()
 
+	// ---- Worker Pools ----
+	authWorker := auth.NewWorkerPool(authRepo, 1000, 5) // Buffer 1000, 5 workers
+	authWorker.Start()
+
 	newsSvc := news.NewService(func(limit int) ([]news.NewsItem, error) {
 		articles, err := adminRepo.GetArticles(true)
 		if err != nil {
@@ -75,7 +79,7 @@ func RegisterRoutes(app *fiber.App, db *pgxpool.Pool) {
 	})
 
 	// ---- Handlers ----
-	authHandler := auth.NewHandler(authRepo)
+	authHandler := auth.NewHandler(authRepo, authWorker)
 	diagHandler := diagnosis.NewHandler(diagRepo, diagSvc, authRepo)
 	chatHandler := chatbot.NewHandler(chatSvc, &chatDiagnosisProvider{authRepo: authRepo, diagRepo: diagRepo})
 	newsHandler := news.NewHandler(newsSvc)
@@ -84,35 +88,37 @@ func RegisterRoutes(app *fiber.App, db *pgxpool.Pool) {
 	adminHandler := admin.NewHandler(adminRepo)
 
 	// ---- Middleware ----
+	authRequired := middleware.AuthRequired()
 	adminAuth := middleware.AdminAuth(authRepo)
 
 	// ===================== PUBLIC =====================
 	api.Get("/questions", diagHandler.GetQuestions)
 	api.Post("/questions/discovery", diagHandler.GetDiscoveryQuestions)
 	api.Post("/diagnose", diagHandler.Diagnose)
-	api.Get("/profile", authHandler.GetProfile)
-	api.Post("/profile", authHandler.UpdateProfile)
-	api.Delete("/profile", authHandler.DeleteAccount)
-	api.Get("/history", diagHandler.GetHistory)
 	api.Get("/news", newsHandler.GetDynamicNews)
-	api.Post("/chat", chatHandler.Chatbot)
-
 	api.Get("/faq", adminHandler.GetFAQ)
 	api.Get("/banners", adminHandler.GetPublicBanners)
 	api.Get("/levels", diagHandler.GetLevelCategories)
-
-	api.Post("/test-session", sessionHandler.SaveTestSession)
-	api.Get("/test-session", sessionHandler.GetTestSession)
-	api.Delete("/test-session", sessionHandler.DeleteTestSession)
-
 	api.Get("/testimonials", feedbackHandler.GetPublicTestimonials)
-	api.Post("/testimonials", feedbackHandler.SubmitTestimonial)
-	api.Post("/account_feedbacks", feedbackHandler.SubmitAccountFeedback)
 
-	api.Get("/check-rating", feedbackHandler.CheckRating)
+	// ===================== AUTH REQUIRED =====================
+	user := api.Group("/", authRequired)
+	user.Get("/profile", authHandler.GetProfile)
+	user.Post("/profile", authHandler.UpdateProfile)
+	user.Delete("/profile", authHandler.DeleteAccount)
+	user.Get("/history", diagHandler.GetHistory)
+	user.Post("/chat", chatHandler.Chatbot)
+
+	user.Post("/test-session", sessionHandler.SaveTestSession)
+	user.Get("/test-session", sessionHandler.GetTestSession)
+	user.Delete("/test-session", sessionHandler.DeleteTestSession)
+
+	user.Post("/testimonials", feedbackHandler.SubmitTestimonial)
+	user.Post("/account_feedbacks", feedbackHandler.SubmitAccountFeedback)
+	user.Get("/check-rating", feedbackHandler.CheckRating)
 
 	// ===================== ADMIN =====================
-	admin := api.Group("/admin", adminAuth)
+	admin := api.Group("/admin", authRequired, adminAuth)
 
 	admin.Get("/analytics", adminHandler.GetAnalyticsDashboard)
 	admin.Get("/users", adminHandler.GetAdminUsers)

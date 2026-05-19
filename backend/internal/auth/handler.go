@@ -5,15 +5,21 @@ import (
 )
 
 type Handler struct {
-	repo *Repository
+	repo   *Repository
+	worker *WorkerPool
 }
 
-func NewHandler(repo *Repository) *Handler {
-	return &Handler{repo: repo}
+func NewHandler(repo *Repository, worker *WorkerPool) *Handler {
+	return &Handler{repo: repo, worker: worker}
 }
 
 func (h *Handler) GetProfile(c *fiber.Ctx) error {
-	email := c.Query("email")
+	// Use authenticated email from context if available
+	email, ok := c.Locals("user_email").(string)
+	if !ok || email == "" {
+		email = c.Query("email")
+	}
+
 	if email == "" {
 		return c.Status(400).JSON(fiber.Map{"error": "Email is required"})
 	}
@@ -23,8 +29,8 @@ func (h *Handler) GetProfile(c *fiber.Ctx) error {
 		return c.Status(404).JSON(fiber.Map{"error": "User not found"})
 	}
 
-	// Jalankan di background (goroutine) supaya tidak menghambat response API
-	go h.repo.TrackUserActivity(email, c.IP())
+	// Submit task to worker pool instead of raw goroutine
+	h.worker.Submit(email, c.IP())
 
 	return c.JSON(fiber.Map{
 		"id":         id,
@@ -42,6 +48,16 @@ func (h *Handler) UpdateProfile(c *fiber.Ctx) error {
 		return c.Status(400).JSON(fiber.Map{"error": "Invalid request"})
 	}
 
+	// Override email from body with authenticated email from context
+	email, ok := c.Locals("user_email").(string)
+	if ok && email != "" {
+		pr.Email = email
+	}
+
+	if pr.Email == "" {
+		return c.Status(400).JSON(fiber.Map{"error": "Email is required"})
+	}
+
 	err := h.repo.UpsertProfile(pr.Email, pr.Name, pr.AvatarURL, pr.BirthDate)
 	if err != nil {
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to update profile"})
@@ -51,7 +67,12 @@ func (h *Handler) UpdateProfile(c *fiber.Ctx) error {
 }
 
 func (h *Handler) DeleteAccount(c *fiber.Ctx) error {
-	email := c.Query("email")
+	// Use authenticated email from context
+	email, ok := c.Locals("user_email").(string)
+	if !ok || email == "" {
+		email = c.Query("email")
+	}
+
 	if email == "" {
 		return c.Status(400).JSON(fiber.Map{"error": "Email is required"})
 	}

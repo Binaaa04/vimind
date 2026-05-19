@@ -41,6 +41,8 @@ func (s *Service) CalculateCF(answers []Answer, refinedDiseaseID int, userUID in
 		}
 	}
 
+	// Removed biased history-based CF boosting to ensure diagnosis accuracy reflects current state.
+	/* 
 	if isRefinedAnchor && userUID > 0 {
 		if lastDiseaseID, err := s.repo.GetLatestDiagnosisDiseaseID(userUID); err == nil && lastDiseaseID > 0 && lastDiseaseID != 10 {
 			if entry, ok := resultsMap[lastDiseaseID]; ok {
@@ -49,6 +51,7 @@ func (s *Service) CalculateCF(answers []Answer, refinedDiseaseID int, userUID in
 			}
 		}
 	}
+	*/
 
 	var finalResults []DiagnosisResult
 	for _, res := range resultsMap {

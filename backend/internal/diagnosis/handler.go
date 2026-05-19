@@ -141,11 +141,21 @@ func (h *Handler) Diagnose(c *fiber.Ctx) error {
 		}
 	}
 
+	// Use authenticated email if available
+	email, ok := c.Locals("user_email").(string)
+	isAuthenticated := ok && email != ""
+	
+	if isAuthenticated {
+		req.UserEmail = email
+	}
+
 	var internalUserID *int
 
-	if req.UserEmail != "" {
+	// Only attempt to find or create a user and save results if authenticated
+	if isAuthenticated && req.UserEmail != "" {
 		uid, err := h.users.GetUserIDByEmail(req.UserEmail)
 		if err != nil {
+			// Create user if they are authenticated but not in our DB yet
 			uid, err = h.users.CreateUser(req.UserEmail, strings.Split(req.UserEmail, "@")[0])
 			if err == nil {
 				internalUserID = &uid
@@ -167,6 +177,7 @@ func (h *Handler) Diagnose(c *fiber.Ctx) error {
 
 	top := finalResults[0]
 
+	// Only save to DB if we have an authenticated user ID
 	if internalUserID != nil {
 		levelID := h.service.DetermineLevelID(top.Percentage)
 
@@ -188,7 +199,12 @@ func (h *Handler) Diagnose(c *fiber.Ctx) error {
 }
 
 func (h *Handler) GetHistory(c *fiber.Ctx) error {
-	email := c.Query("email")
+	// Use authenticated email if available
+	email, ok := c.Locals("user_email").(string)
+	if !ok || email == "" {
+		email = c.Query("email")
+	}
+
 	if email == "" {
 		return c.Status(400).JSON(fiber.Map{"error": "Email is required"})
 	}

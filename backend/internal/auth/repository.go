@@ -2,10 +2,7 @@ package auth
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
-	"net/http"
-	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 )
@@ -62,10 +59,30 @@ func (r *Repository) DeleteUser(email string) error {
 		return err
 	}
 
-	_, _ = r.pool.Exec(context.Background(), "DELETE FROM diagnosis_detail WHERE symptoms_id IN (SELECT symptoms_id FROM symptoms) AND diagnosis_id IN (SELECT diagnosis_id FROM diagnosis WHERE user_id=$1)", uid)
-	_, _ = r.pool.Exec(context.Background(), "DELETE FROM diagnosis WHERE user_id=$1", uid)
-	_, err = r.pool.Exec(context.Background(), "DELETE FROM users WHERE user_id=$1", uid)
-	return err
+	ctx := context.Background()
+	tx, err := r.pool.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback(ctx)
+
+	// Clean up related data first
+	_, err = tx.Exec(ctx, "DELETE FROM diagnosis_detail WHERE diagnosis_id IN (SELECT diagnosis_id FROM diagnosis WHERE user_id=$1)", uid)
+	if err != nil {
+		return fmt.Errorf("failed to delete diagnosis details: %w", err)
+	}
+
+	_, err = tx.Exec(ctx, "DELETE FROM diagnosis WHERE user_id=$1", uid)
+	if err != nil {
+		return fmt.Errorf("failed to delete diagnosis records: %w", err)
+	}
+
+	_, err = tx.Exec(ctx, "DELETE FROM users WHERE user_id=$1", uid)
+	if err != nil {
+		return fmt.Errorf("failed to delete user: %w", err)
+	}
+
+	return tx.Commit(ctx)
 }
 
 func (r *Repository) CheckAdmin(email string) error {
@@ -77,40 +94,4 @@ func (r *Repository) CheckAdmin(email string) error {
 		return fmt.Errorf("user is not admin")
 	}
 	return nil
-}
-
-func (r *Repository) TrackUserActivity(email, ip string) {
-	if email == "" || ip == "" || ip == "127.0.0.1" || ip == "::1" {
-		return
-	}
-
-	var lastIP string
-	err := r.pool.QueryRow(context.Background(), "SELECT COALESCE(last_ip, '') FROM users WHERE email=$1", email).Scan(&lastIP)
-	if err != nil {
-		return
-	}
-
-	region := ""
-	if ip != lastIP {
-		client := &http.Client{Timeout: 5 * time.Second}
-		resp, err := client.Get("http://ip-api.com/json/" + ip)
-		if err == nil {
-			defer resp.Body.Close()
-			var result struct {
-				City   string `json:"city"`
-				Region string `json:"regionName"`
-			}
-			if json.NewDecoder(resp.Body).Decode(&result) == nil {
-				if result.City != "" {
-					region = result.City + ", " + result.Region
-				}
-			}
-		}
-	}
-
-	if region != "" {
-		_, _ = r.pool.Exec(context.Background(), "UPDATE users SET last_active_at = CURRENT_TIMESTAMP, last_ip = $1, last_region = $2 WHERE email = $3", ip, region, email)
-	} else {
-		_, _ = r.pool.Exec(context.Background(), "UPDATE users SET last_active_at = CURRENT_TIMESTAMP WHERE email = $1", email)
-	}
 }

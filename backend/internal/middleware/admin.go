@@ -10,9 +10,15 @@ type AdminChecker interface {
 
 func AdminAuth(checker AdminChecker) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		email := c.Get("X-Admin-Email")
-		if email == "" {
-			email = c.Query("admin_email")
+		// Prioritize email from JWT context (set by AuthRequired middleware)
+		email, ok := c.Locals("user_email").(string)
+		
+		if !ok || email == "" {
+			// Fallback to header/query for backward compatibility (DEPRECATED)
+			email = c.Get("X-Admin-Email")
+			if email == "" {
+				email = c.Query("admin_email")
+			}
 		}
 
 		if email == "" {
