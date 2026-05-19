@@ -8,10 +8,12 @@ import logoLeft from "@/assets/logovimind.png";
 import logoTop from "@/assets/logovimind2.png";
 import { supabase } from "@/services/supabaseClient";
 import { getProfile, updateProfile } from "@/features/auth/api";
+import { useAuth } from "@/shared/context/AuthContext";
 
 const Login = () => {
 
   const navigate = useNavigate();
+  const { setRole } = useAuth();
   useEffect(() => {
     document.title = "Login | Vimind";
   }, []);
@@ -77,19 +79,36 @@ const Login = () => {
       let userRole = "user";
       let profileData = null;
       try {
-        const profileRes = await getProfile(form.email);
+        const profileRes = await getProfile();
         profileData = profileRes.data;
         userRole = profileRes.data?.role || "user";
         localStorage.setItem("userRole", userRole);
+        setRole(userRole);
       } catch (err) {
-        // User not found in backend DB — auto-create them
-        console.warn("Profile not found, auto-creating user in backend...");
-        try {
-          const fallbackName = data.user?.user_metadata?.full_name || form.email.split("@")[0];
-          await updateProfile(form.email, fallbackName, "", "");
-          console.log("User auto-created in backend.");
-        } catch (createErr) {
-          console.error("Failed to auto-create user:", createErr);
+        console.warn("Profile fetch failed:", err?.response?.status || err.message);
+        // Check if we have a stored role from a previous session
+        const storedRole = localStorage.getItem("userRole");
+        if (storedRole === "admin") {
+          userRole = "admin";
+          setRole("admin");
+        }
+        // If profile fetch fails but user is not admin, try to auto-create
+        if (userRole !== "admin") {
+          try {
+            const fallbackName = data.user?.user_metadata?.full_name || form.email.split("@")[0];
+            await updateProfile(form.email, fallbackName, "", "");
+            console.log("User auto-created in backend.");
+            // Try fetching profile again after creation
+            try {
+              const retryRes = await getProfile();
+              profileData = retryRes.data;
+              userRole = retryRes.data?.role || "user";
+              localStorage.setItem("userRole", userRole);
+              setRole(userRole);
+            } catch (_) {}
+          } catch (createErr) {
+            console.error("Failed to auto-create user:", createErr);
+          }
         }
       }
 

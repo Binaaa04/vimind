@@ -15,8 +15,13 @@ export const AuthProvider = ({ children }) => {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        // We'll fetch the role later or assume 'user' for now
-        setRole(session.user.user_metadata?.role || 'user');
+        // Check localStorage for cached role first (backend is source of truth)
+        const cachedRole = localStorage.getItem('userRole');
+        if (cachedRole) {
+          setRole(cachedRole);
+        } else {
+          setRole('user');
+        }
       }
       setLoading(false);
     });
@@ -26,9 +31,15 @@ export const AuthProvider = ({ children }) => {
       setSession(session);
       setUser(session?.user ?? null);
       if (session?.user) {
-        setRole(session.user.user_metadata?.role || 'user');
+        const cachedRole = localStorage.getItem('userRole');
+        if (cachedRole) {
+          setRole(cachedRole);
+        } else {
+          setRole('user');
+        }
       } else {
         setRole('guest');
+        localStorage.removeItem('userRole');
       }
       setLoading(false);
     });
@@ -46,7 +57,11 @@ export const AuthProvider = ({ children }) => {
     setRole, // Allow handlers to update role if fetched from backend
     isAuthenticated: !!user,
     isAdmin: role === 'admin',
-    signOut: () => supabase.auth.signOut(),
+    signOut: async () => {
+      localStorage.removeItem('userRole');
+      localStorage.removeItem('isLogin');
+      await supabase.auth.signOut();
+    },
   };
 
   return (
