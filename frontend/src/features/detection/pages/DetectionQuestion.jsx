@@ -276,7 +276,7 @@ export default function Detection() {
         sessionStorage.setItem("latest_diagnosis", JSON.stringify(result.data));
         sessionStorage.removeItem("pending_answers");
       } else {
-        sessionStorage.removeItem("latest_diagnosis");
+        sessionStorage.setItem("latest_diagnosis", JSON.stringify(result.data));
         sessionStorage.setItem("pending_answers", JSON.stringify(apiAnswers));
       }
 

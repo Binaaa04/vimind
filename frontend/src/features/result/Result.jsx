@@ -259,6 +259,7 @@ export default function Result() {
                             disabled={loading}
                             onClick={() => {
                                 setLoading(true);
+                                localStorage.setItem("redirectAfterLogin", "/hasil");
                                 navigate("/login");
                             }}
                         >
