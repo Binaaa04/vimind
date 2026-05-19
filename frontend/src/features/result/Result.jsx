@@ -191,17 +191,19 @@ export default function Result() {
                         <p>{result?.description || "Berdasarkan jawaban kuesioner, sistem sedang menganalisis kondisi Anda."}</p>
                     </div>
 
-                    <div className="card-section">
-                        <h3>Indikator yang Diukur</h3>
-                        <ResponsiveContainer width="100%" height={Math.max(chartData.length * 50 + 40, 120)}>
-                            <BarChart data={chartData} layout="vertical" margin={{ left: 10, right: 30, top: 10, bottom: 10 }}>
-                                <XAxis type="number" domain={[0, 100]} hide />
-                                <YAxis type="category" dataKey="name" width={180} tick={{ fontSize: 12, fill: "#555" }} />
-                                <Tooltip formatter={(val) => `${val.toFixed(1)}%`} />
-                                <Bar dataKey="score" fill="#8B5CF6" radius={[0, 6, 6, 0]} barSize={20} />
-                            </BarChart>
-                        </ResponsiveContainer>
-                    </div>
+                    {chartData.length > 0 && (
+                        <div className="card-section">
+                            <h3>Indikator yang Diukur</h3>
+                            <ResponsiveContainer width="100%" height={Math.max(chartData.length * 50 + 40, 120)}>
+                                <BarChart data={chartData} layout="vertical" margin={{ left: 10, right: 30, top: 10, bottom: 10 }}>
+                                    <XAxis type="number" domain={[0, 100]} hide />
+                                    <YAxis type="category" dataKey="name" width={180} tick={{ fontSize: 12, fill: "#555" }} />
+                                    <Tooltip formatter={(val) => `${val.toFixed(1)}%`} />
+                                    <Bar dataKey="score" fill="#8B5CF6" radius={[0, 6, 6, 0]} barSize={20} />
+                                </BarChart>
+                            </ResponsiveContainer>
+                        </div>
+                    )}
 
                     <div className="card-section">
                         <h3>Saran Perbaikan</h3>

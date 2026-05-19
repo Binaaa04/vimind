@@ -152,7 +152,7 @@
 ================================ */
 .result-card-container {
     max-width: 800px;
-    margin-top: 40px;
+    margin: 40px auto 0 auto;
     transition: filter 0.3s ease;
 }
 
@@ -234,7 +234,7 @@
 .result-footer {
     display: flex;
     justify-content: center;
-    align-items: center; 
+    align-items: center;
     gap: 15px;
     margin-top: 20px;
     width: 100%;
@@ -242,43 +242,50 @@
 
 .dashboard-btn, .btn-secondary,
 .next-btn, .btn-primary {
-    border: none;
-    padding: 12px 16px;
+    padding: 0 10px !important;
     border-radius: 8px !important;
-    font-weight: 600;
+    font-weight: 600 !important;
     cursor: pointer;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'Poppins', sans-serif !important;
     transition: all 0.2s;
     flex: 1; 
     max-width: 250px; 
-    height: 50px; 
+    height: 54px !important; 
+    min-height: 54px !important;
+    max-height: 54px !important;
+    box-sizing: border-box !important;
+    overflow: hidden !important;
+    margin: 0 !important;
     display: flex;
     justify-content: center;
     align-items: center;
     text-align: center;
     font-size: 14px;
-    line-height: 1.2;
+    line-height: 1.3;
 }
 
-/* Warna khusus tombol Rangkuman Dashboard (Abu-abu) */
+/* Warna khusus tombol Rangkuman Dashboard */
 .dashboard-btn, .btn-secondary {
+    background: #8B5CF6 !important;
     color: #ffffff !important;
+    border: 1.5px solid #8B5CF6 !important;
 }
 
 .dashboard-btn:hover, .btn-secondary:hover {
-    background: #e5e7eb;
+    background: #7241eb !important;
+    border-color: #7241eb !important;
 }
 
-/* Warna khusus tombol Penilaian Tes (Ungu) */
+/* Warna khusus tombol Penilaian Tes (Outline) */
 .next-btn, .btn-primary {
     background: transparent !important;
-    color: #8a5cff !important;
-    font-weight: 400 !important;
+    color: #8B5CF6 !important;
+    border: 1.5px solid #8B5CF6 !important;
 }
 
 .next-btn:hover:not(:disabled), .btn-primary:hover:not(:disabled) {
-    background: rgba(138, 92, 255, 0.1) !important;
-    color: #8a5cff !important;
+    background: rgba(139, 92, 246, 0.1) !important;
+    color: #7241eb !important;
 }
 
 .next-btn:disabled, .btn-primary:disabled {
