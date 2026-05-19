@@ -31,14 +31,16 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%; /* Dibuat bulat agar lebih natural di tengah garis */
+    border-radius: 50%;
+    /* Dibuat bulat agar lebih natural di tengah garis */
     border: none;
     background: #8b5cf6;
     color: white;
     font-size: 14px;
     cursor: pointer;
     z-index: 999;
-    box-shadow: 0 2px 6px rgba(139, 92, 246, 0.4); /* Tambahan shadow agar tidak tenggelam dengan garis tepi */
+    box-shadow: 0 2px 6px rgba(139, 92, 246, 0.4);
+    /* Tambahan shadow agar tidak tenggelam dengan garis tepi */
   }
 
   /* ================= LOGO ================= */
@@ -52,11 +54,11 @@
     gap: 10px;
   }
 
-  .logo-img {       
-    height: auto;        
-    max-width: 70%;     
+  .logo-img {
+    height: auto;
+    max-width: 70%;
     transition: opacity 0.2s;
-    object-fit: contain; 
+    object-fit: contain;
     margin-left: 2px;
   }
 
@@ -77,14 +79,14 @@
   }
 
   .menu-item {
-    display: flex;       
-    align-items: center; 
+    display: flex;
+    align-items: center;
     padding: 12px 14px;
     border-radius: 12px;
     text-decoration: none;
     color: #333;
     transition: 0.2s;
-    gap: 12px;            
+    gap: 12px;
   }
 
   .menu-item:hover {
@@ -98,9 +100,12 @@
 
   .menu-item span {
     transition: opacity 0.2s ease;
-    white-space: nowrap;       /* Paksa teks menu jadi 1 baris */
-    overflow: hidden;          /* Sembunyikan sisa teks */
-    text-overflow: ellipsis;   /* Tambahkan titik-titik (...) */
+    white-space: nowrap;
+    /* Paksa teks menu jadi 1 baris */
+    overflow: hidden;
+    /* Sembunyikan sisa teks */
+    text-overflow: ellipsis;
+    /* Tambahkan titik-titik (...) */
     font-weight: 500;
   }
 
@@ -115,7 +120,7 @@
   }
 
   .menu-item.active .menu-icon-img {
-    filter: brightness(0) invert(1); 
+    filter: brightness(0) invert(1);
   }
 
   /* ================= BOTTOM SIDEBAR ================= */
@@ -136,7 +141,8 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    max-width: 170px; /* Batas maksimal lebar nama user */
+    max-width: 170px;
+    /* Batas maksimal lebar nama user */
   }
 
   .sidebar-avatar {
@@ -145,8 +151,34 @@
     border-radius: 50%;
   }
 
+  .logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px; /* Match .menu-item gap */
+    width: 100%;
+    padding: 12px 14px !important; /* Match .menu-item padding */
+    background: transparent !important;
+    border: none !important;
+    color: #ef4444 !important; /* Red for logout */
+    font-size: 15px !important;
+    font-weight: 600 !important;
+    cursor: pointer;
+    border-radius: 12px !important;
+    transition: 0.2s;
+    justify-content: flex-start;
+  }
+
   .logout-btn:hover {
-    opacity: 0.9;
+    background: #fee2e2 !important; /* light red background on hover */
+    transform: none !important;
+  }
+
+  .logout-icon {
+    width: 22px;
+    height: 22px;
+    object-fit: contain;
+    flex-shrink: 0;
+    filter: brightness(0) saturate(100%) invert(35%) sepia(87%) saturate(2250%) hue-rotate(338deg) brightness(98%) contrast(93%); /* Makes the SVG red #ef4444 */
   }
 
   /* ================= POPUP PROFILE ================= */
@@ -214,8 +246,10 @@
 
   /* ================= COLLAPSED STATE ================= */
   .admin-sidebar.collapsed .menu-section {
-    margin-bottom: 10px; /* Jarak antar grup disamakan dengan jarak dalam grup */
-    gap: 10px; /* Jarak dalam grup (antar ikon) */
+    margin-bottom: 10px;
+    /* Jarak antar grup disamakan dengan jarak dalam grup */
+    gap: 10px;
+    /* Jarak dalam grup (antar ikon) */
   }
 
   .admin-sidebar.collapsed .menu-item {
@@ -223,7 +257,8 @@
     padding: 0;
     width: 44px;
     height: 44px;
-    margin: 0 auto; /* Hapus margin bawah individual agar tidak double dengan gap */
+    margin: 0 auto;
+    /* Hapus margin bawah individual agar tidak double dengan gap */
   }
 
   .admin-sidebar.collapsed .menu-item span {
@@ -240,14 +275,14 @@
 
   /* 2. Aturan khusus Logo saat Sidebar mengecil */
   .admin-sidebar.collapsed .logo {
-    justify-content: center; 
+    justify-content: center;
     margin-bottom: 30px;
     padding: 0;
   }
 
   .admin-sidebar.collapsed .logo-img {
-    display: block !important; /* Paksa muncul */
-    width: 36px;     
+    display: block !important;
+    width: 36px;
     height: auto;
     margin: 0 auto;
     max-width: 100%;
@@ -259,113 +294,110 @@
     margin: 0 auto;
   }
 
-  /* ================= LOGOUT BUTTON ================= */
-.logout-btn {
-  width: 100%;
-  background: transparent !important;
-  border: none !important;
-  padding: 10px 12px;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: 600;
-  transition: none !important;
-  transform: none !important;
-
-
-  display: flex;
-  align-items: center;
-  justify-content: flex-start; 
-  gap: 10px; 
-}
-
-/* ================= POPUP LOGOUT ================= */
-.logout-popup {
-  position: absolute;
-  left: 100px;
-  bottom: 20px; 
-  width: 200px;
-  background: white;
-  border-radius: 14px;
-  padding: 16px;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
-  border: 1px solid #f3f4f6;
-  text-align: center;
-  z-index: 9999;
-}
-
-.logout-popup h4 {
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 12px;
-  color: #333;
-}
-
-.logout-popup-actions {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-}
-
-.btn-cancel {
-  flex: 1;
-  padding: 8px;
-  font-size: 12px;
-  font-weight: 600;
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-  background: transparent !important;
-  color: #6b7280;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.btn-cancel:hover {
-  background: #f3f4f6 !important;
-}
-
-.btn-confirm {
-  flex: 1;
-  padding: 8px;
-  font-size: 12px;
-  font-weight: 600;
-  border-radius: 8px;
-  border: none;
-  background: #ef4444;
-  color: white;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.btn-confirm:hover {
-  background: #dc2626;
-}
-
-/* Hover tetap clean */
-.logout-btn:hover {
-  background-color: #eeeeee !important;
-}
-
-/* ================= LOGOUT ICON ================= */
-.logout-icon {
-  width: 22px;
-  height: 22px;
-  object-fit: contain;;
-  filter: none;
-}
-
-/* ================= TEXT LOGOUT ================= */
-.logout-btn span {
-  color: #ef4444; 
-  font-weight: 600;
-}
-
-  /* ================= COLLAPSED STATE ================= */
   .admin-sidebar.collapsed .logout-btn {
+    width: 44px !important;
+    height: 44px !important;
+    padding: 0 !important;
+    margin: 0 auto !important;
+    justify-content: center !important;
+    border-radius: 50% !important; /* Make it circular like profile when collapsed */
+  }
+
+  /* ================= OVERLAY & CENTERING ================= */
+  .logout-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
     justify-content: center;
-    padding: 0;
-    width: 44px;
-    height: 44px;
-    margin: 0 auto;
+    z-index: 9999;
+  }
+
+  /* ================= MODAL CONTAINER ================= */
+  .logout-modal {
+    background: #ffffff !important;
+    width: 380px;
+    border-radius: 24px;
+    padding: 40px 32px;
+    text-align: center;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  }
+
+  /* ================= ICON ================= */
+  .modal-icon-container {
+    width: 72px;
+    height: 72px;
+    background: #c4a5ff !important;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px auto;
+  }
+
+  .modal-icon-exclamation {
+    color: #ffffff;
+    font-size: 36px;
+    font-weight: 700;
+  }
+
+  /* ================= TYPOGRAPHY ================= */
+  .modal-title {
+    color: #2e1065;
+    font-size: 24px;
+    font-weight: 800;
+    margin: 0 0 12px 0;
+    letter-spacing: -0.5px;
+  }
+
+  .modal-subtitle {
+    color: #64748b;
+    font-size: 15px;
+    margin: 0 0 32px 0;
+    font-weight: 400;
+    line-height: 1.5;
+  }
+
+  /* ================= BUTTONS ================= */
+  .logout-modal-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .btn-modal-action {
+    width: 100%;
+    padding: 14px;
+    font-size: 15px;
+    font-weight: 600;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-modal-action.primary {
+    background-color: #8b5cf6 !important;
+    color: #ffffff !important;
+    border: 1px solid #8b5cf6 !important;
+  }
+
+  .btn-modal-action.primary:hover {
+    background-color: #7c3aed !important;
+    border-color: #7c3aed !important;
+  }
+
+  .btn-modal-action.secondary {
+    background-color: #ffffff !important;
+    color: #8b5cf6 !important;
+    border: 1px solid #8b5cf6 !important;
+  }
+
+  .btn-modal-action.secondary:hover {
+    background-color: #f5f3ff !important;
   }
 
   /* ================= MOBILE RESPONSIVE ================= */
@@ -389,7 +421,10 @@
       height: 70px;
     }
 
-    .logo, .menu-title, .sidebar-bottom, .toggle-btn {
+    .logo,
+    .menu-title,
+    .sidebar-bottom,
+    .toggle-btn {
       display: none !important;
     }
 
@@ -400,13 +435,13 @@
       width: 100%;
       justify-content: space-evenly;
     }
-    
+
     .menu-item {
       margin-bottom: 0;
       padding: 10px;
     }
 
     .menu-item span {
-      display: none; 
+      display: none;
     }
   }

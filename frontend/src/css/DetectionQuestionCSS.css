@@ -199,7 +199,7 @@ body {
 }
 
 /* Base style untuk keduanya (Hanya yang sama saja) */
-.prev-btn, .next-btn {
+.action-buttons .prev-btn, .action-buttons .next-btn {
   font-family: 'Poppins', sans-serif !important;
   font-weight: 600 !important;
   border-radius: 8px !important;
@@ -211,12 +211,15 @@ body {
   transition: all 0.2s ease !important;
   box-sizing: border-box !important;
   line-height: 1.2 !important;
+  white-space: nowrap !important;
+  margin: 0 !important;
+  align-self: center !important;
 }
 
-/* --- KHUSUS TOMBOL KEMBALI (Dibuat lebih pendek) --- */
-.prev-btn {
-  width: 130px !important;
-  height: 38px !important; 
+/* --- KHUSUS TOMBOL KEMBALI --- */
+.action-buttons .prev-btn {
+  width: 220px !important;
+  height: 44px !important; 
   font-size: 14px !important;
   background-color: transparent !important;
   color: #8a5cff !important;
@@ -224,22 +227,21 @@ body {
   padding: 0 !important; 
 }
 
-/* --- KHUSUS TOMBOL LANJUTKAN (Bisa menyesuaikan teks) --- */
-.next-btn {
-  width: 160px !important;
-  min-height: 38px !important; 
+/* --- KHUSUS TOMBOL LANJUTKAN --- */
+.action-buttons .next-btn {
+  width: 220px !important;
+  height: 44px !important; 
   font-size: 14px !important;
   background-color: #8a5cff !important;
   color: #ffffff !important;
   border: 1.5px solid #8a5cff !important;
-  margin-bottom: 40px !important;
-  padding: 8px 15px !important; 
+  padding: 0 !important; 
 }
 
 /* Hover Effects */
-.prev-btn:hover { background-color: rgba(138, 92, 255, 0.1) !important; }
-.next-btn:hover:not(:disabled) { background-color: #7241eb !important; }
-.next-btn:disabled { opacity: 0.5 !important; cursor: not-allowed !important; }
+.action-buttons .prev-btn:hover { background-color: rgba(138, 92, 255, 0.1) !important; }
+.action-buttons .next-btn:hover:not(:disabled) { background-color: #7241eb !important; }
+.action-buttons .next-btn:disabled { opacity: 0.5 !important; cursor: not-allowed !important; }
 
 
 /* ==========================================

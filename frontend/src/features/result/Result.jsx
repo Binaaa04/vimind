@@ -345,6 +345,14 @@ export default function Result() {
                             <>
                                 <h2 className="success-title">Terima Kasih! 🎉</h2>
                                 <p>Ulasan Anda telah kami terima.</p>
+                                <div className="feedback-actions" style={{ marginTop: '20px' }}>
+                                    <button
+                                        className="btn-send"
+                                        onClick={() => setShowFeedbackModal(false)}
+                                    >
+                                        Tutup
+                                    </button>
+                                </div>
                             </>
                         )}
                     </div>
