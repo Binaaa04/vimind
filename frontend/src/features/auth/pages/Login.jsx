@@ -114,7 +114,7 @@ const Login = () => {
 
       // Check if there's a pending redirect (e.g., from guest result page)
       const redirectAfterLogin = localStorage.getItem("redirectAfterLogin");
-      const pendingAnswersRaw = localStorage.getItem("pending_answers");
+      const pendingAnswersRaw = sessionStorage.getItem("pending_answers");
 
       if (userRole === "admin") {
         if (redirectAfterLogin) localStorage.removeItem("redirectAfterLogin");

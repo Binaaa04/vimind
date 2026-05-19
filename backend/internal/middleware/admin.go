@@ -10,18 +10,9 @@ type AdminChecker interface {
 
 func AdminAuth(checker AdminChecker) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		// Prioritize email from JWT context (set by AuthRequired middleware)
+		// Email is always set by AuthRequired middleware which runs before this
 		email, ok := c.Locals("user_email").(string)
-		
 		if !ok || email == "" {
-			// Fallback to header/query for backward compatibility (DEPRECATED)
-			email = c.Get("X-Admin-Email")
-			if email == "" {
-				email = c.Query("admin_email")
-			}
-		}
-
-		if email == "" {
 			return c.Status(403).JSON(fiber.Map{"error": "Unauthorized: Admin identification missing"})
 		}
 

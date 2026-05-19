@@ -199,14 +199,10 @@ func (h *Handler) Diagnose(c *fiber.Ctx) error {
 }
 
 func (h *Handler) GetHistory(c *fiber.Ctx) error {
-	// Use authenticated email if available
+	// Strictly use authenticated email from JWT context
 	email, ok := c.Locals("user_email").(string)
 	if !ok || email == "" {
-		email = c.Query("email")
-	}
-
-	if email == "" {
-		return c.Status(400).JSON(fiber.Map{"error": "Email is required"})
+		return c.Status(401).JSON(fiber.Map{"error": "Not authenticated"})
 	}
 
 	uid, err := h.users.GetUserIDByEmail(email)

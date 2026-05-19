@@ -2,7 +2,6 @@ package admin
 
 import (
 	"log"
-	"os"
 
 	"github.com/gofiber/fiber/v2"
 )
@@ -87,7 +86,6 @@ func (h *Handler) UpsertFAQ(c *fiber.Ctx) error {
 	}
 	if err := h.repo.UpsertFAQ(req); err != nil {
 		log.Printf("ERROR UpsertFAQ: %v", err)
-		_ = os.WriteFile("admin_error.log", []byte(err.Error()), 0644)
 		return c.Status(500).JSON(fiber.Map{"error": "Failed to save FAQ"})
 	}
 	return c.JSON(fiber.Map{"message": "FAQ saved successfully"})

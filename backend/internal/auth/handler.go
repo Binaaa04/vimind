@@ -14,14 +14,10 @@ func NewHandler(repo *Repository, worker *WorkerPool) *Handler {
 }
 
 func (h *Handler) GetProfile(c *fiber.Ctx) error {
-	// Use authenticated email from context if available
+	// Strictly use authenticated email from JWT context
 	email, ok := c.Locals("user_email").(string)
 	if !ok || email == "" {
-		email = c.Query("email")
-	}
-
-	if email == "" {
-		return c.Status(400).JSON(fiber.Map{"error": "Email is required"})
+		return c.Status(401).JSON(fiber.Map{"error": "Not authenticated"})
 	}
 
 	id, name, userEmail, avatarURL, role, birthDate, err := h.repo.GetProfile(email)
@@ -67,14 +63,10 @@ func (h *Handler) UpdateProfile(c *fiber.Ctx) error {
 }
 
 func (h *Handler) DeleteAccount(c *fiber.Ctx) error {
-	// Use authenticated email from context
+	// Strictly use authenticated email from JWT context
 	email, ok := c.Locals("user_email").(string)
 	if !ok || email == "" {
-		email = c.Query("email")
-	}
-
-	if email == "" {
-		return c.Status(400).JSON(fiber.Map{"error": "Email is required"})
+		return c.Status(401).JSON(fiber.Map{"error": "Not authenticated"})
 	}
 
 	err := h.repo.DeleteUser(email)

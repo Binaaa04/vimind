@@ -112,8 +112,8 @@ export default function Detection() {
 
     const init = async () => {
       // Bersihkan sisa data lama
-      localStorage.removeItem("quiz_draft");
-      localStorage.removeItem("quiz_active");
+      sessionStorage.removeItem("quiz_draft");
+      sessionStorage.removeItem("quiz_active");
 
       try {
         const { data: { session } } = await supabase.auth.getSession();
@@ -263,7 +263,7 @@ export default function Detection() {
     const apiAnswers = finalAnswers.map(({ symptom_id, value }) => ({ symptom_id, value }));
 
     if (!navigator.onLine) {
-      localStorage.setItem("pending_answers", JSON.stringify(apiAnswers));
+      sessionStorage.setItem("pending_answers", JSON.stringify(apiAnswers));
       setRetryAnswers(finalAnswers);
       setSubmitting(false);
       return;
@@ -273,11 +273,11 @@ export default function Detection() {
       const result = await diagnose(apiAnswers, userEmail, historyDiseaseID);
 
       if (userEmail) {
-        localStorage.setItem("latest_diagnosis", JSON.stringify(result.data));
-        localStorage.removeItem("pending_answers");
+        sessionStorage.setItem("latest_diagnosis", JSON.stringify(result.data));
+        sessionStorage.removeItem("pending_answers");
       } else {
-        localStorage.removeItem("latest_diagnosis");
-        localStorage.setItem("pending_answers", JSON.stringify(apiAnswers));
+        sessionStorage.removeItem("latest_diagnosis");
+        sessionStorage.setItem("pending_answers", JSON.stringify(apiAnswers));
       }
 
       // Hapus session cache di backend
@@ -288,7 +288,7 @@ export default function Detection() {
       navigate("/selesai", { state: { diagnosis: result.data, isGuest: !userEmail } });
     } catch (err) {
       console.error("Diagnosis failed:", err);
-      localStorage.setItem("pending_answers", JSON.stringify(apiAnswers));
+      sessionStorage.setItem("pending_answers", JSON.stringify(apiAnswers));
       setRetryAnswers(finalAnswers);
       setSubmitting(false);
     }

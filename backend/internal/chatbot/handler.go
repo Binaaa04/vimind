@@ -24,8 +24,10 @@ func (h *Handler) Chatbot(c *fiber.Ctx) error {
 	}
 
 	var summary DiagnosisSummary
-	if req.Email != "" {
-		s, err := h.diagInfo.GetLatestDiagnosisSummary(req.Email)
+	// Use authenticated email from JWT context, NOT from request body (prevents IDOR)
+	email, _ := c.Locals("user_email").(string)
+	if email != "" {
+		s, err := h.diagInfo.GetLatestDiagnosisSummary(email)
 		if err == nil && s != nil {
 			summary = *s
 		}

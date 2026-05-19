@@ -36,7 +36,7 @@ const LengkapiBiodata = () => {
         const res = await getProfile(session.user.email);
         // Jika birth_date sudah terisi, artinya gak usah kesini, lempar ke dashboard
         if (res.data?.birth_date) {
-            const pendingAnswersRaw = localStorage.getItem("pending_answers");
+            const pendingAnswersRaw = sessionStorage.getItem("pending_answers");
             const redirectAfterLogin = localStorage.getItem("redirectAfterLogin");
             if (pendingAnswersRaw || redirectAfterLogin) {
               if (redirectAfterLogin) localStorage.removeItem("redirectAfterLogin");

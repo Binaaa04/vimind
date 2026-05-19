@@ -38,7 +38,7 @@ export default function Result() {
 
     // Get data from location state (Passed from DetectionQuestion)
     const stateDiagnosis = location.state?.diagnosis;
-    const storedDiagnosis = JSON.parse(localStorage.getItem("latest_diagnosis"));
+    const storedDiagnosis = JSON.parse(sessionStorage.getItem("latest_diagnosis"));
     const diagnosis = stateDiagnosis || storedDiagnosis;
 
     useEffect(() => {
