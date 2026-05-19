@@ -45,7 +45,7 @@ func (r *Repository) UpsertProfile(email, name, avatarURL, birthDate string) err
 	if birthDate != "" {
 		_, err = r.pool.Exec(context.Background(), `
 			INSERT INTO users (email, name, avatar_url, birth_date) VALUES ($1, $2, $3, $4)
-			ON CONFLICT (email) DO UPDATE SET name=$2, avatar_url=COALESCE(NULLIF($3, ''), users.avatar_url), birth_date=CAST(NULLIF($4, '') AS DATE)
+			ON CONFLICT (email) DO UPDATE SET name=$2, avatar_url=COALESCE(NULLIF($3, ''), users.avatar_url), birth_date=$4
 		`, email, name, avatarURL, birthDate)
 	} else {
 		_, err = r.pool.Exec(context.Background(), `

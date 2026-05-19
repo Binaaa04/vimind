@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/services/supabaseClient";
-import { getProfile } from "@/features/auth/api";
+import { getProfile, updateProfile } from "@/features/auth/api";
 import { submitTestimonial, checkRating } from "@/features/home/api";
 import { saveMoodToBackend } from "@/features/dashboard/api";
 import MoodModal from "@/features/detection/components/MoodModal";
@@ -76,7 +76,14 @@ export default function Result() {
                     setNickname(profileRes.data.name || session.user.email.split("@")[0]);
                     setAvatarUrl(profileRes.data.avatar_url || "");
                 } catch (err) {
-                    setNickname(session.user.email.split("@")[0]);
+                    console.warn("Profile not found in Result, auto-creating user in backend...");
+                    const fallbackName = session.user.user_metadata?.full_name || session.user.email.split("@")[0];
+                    setNickname(fallbackName);
+                    try {
+                        await updateProfile(session.user.email, fallbackName, "", "");
+                    } catch (e) {
+                        console.error("Failed to auto-create user in Result:", e);
+                    }
                 }
             } else {
                 setIsLoggedIn(false);

@@ -110,9 +110,15 @@ const Dashboard = () => {
           }
 
         } catch (err) {
-          console.error("Profile not found, using default.");
+          console.error("Profile not found, auto-creating user in backend...");
           const name = session.user.user_metadata?.full_name || session.user.email.split("@")[0];
           setNickname(name);
+          try {
+            await updateProfile(session.user.email, name, "", "");
+            navigate("/lengkapi-biodata", { replace: true });
+          } catch (createErr) {
+            console.error("Failed to auto-create user:", createErr);
+          }
         } finally {
           setIsProfileLoading(false); // FIX UX #3: loading selesai
         }
@@ -271,6 +277,14 @@ const Dashboard = () => {
     }, 3000);
     return () => clearInterval(slideTimer);
   }, [carouselSlides.length]);
+
+  if (isProfileLoading) {
+    return (
+      <div style={{ display: 'flex', height: '100vh', justifyContent: 'center', alignItems: 'center', backgroundColor: '#0f0c29' }}>
+        <p style={{ color: 'white', fontFamily: 'Inter' }}>Memuat data...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="dashboard-page">

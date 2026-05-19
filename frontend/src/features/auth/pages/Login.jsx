@@ -82,7 +82,15 @@ const Login = () => {
         userRole = profileRes.data?.role || "user";
         localStorage.setItem("userRole", userRole);
       } catch (err) {
-        console.warn("Could not fetch user role during login, defaulting to user.");
+        // User not found in backend DB — auto-create them
+        console.warn("Profile not found, auto-creating user in backend...");
+        try {
+          const fallbackName = data.user?.user_metadata?.full_name || form.email.split("@")[0];
+          await updateProfile(form.email, fallbackName, "", "");
+          console.log("User auto-created in backend.");
+        } catch (createErr) {
+          console.error("Failed to auto-create user:", createErr);
+        }
       }
 
       // Check if there's a pending redirect (e.g., from guest result page)
@@ -92,7 +100,8 @@ const Login = () => {
       if (userRole === "admin") {
         if (redirectAfterLogin) localStorage.removeItem("redirectAfterLogin");
         navigate("/admin");
-      } else if (profileData && !profileData.birth_date) {
+      } else if (!profileData || !profileData.birth_date) {
+        // If profile doesn't exist or birth_date is missing, redirect to complete biodata
         navigate("/lengkapi-biodata");
       } else {
         if (redirectAfterLogin || pendingAnswersRaw) {
