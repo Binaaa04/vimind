@@ -5,6 +5,7 @@ import { getPublicFAQ, getPublicTestimonials } from "@/features/home/api";
 import logo from "@/assets/logovimind2.png";
 import heroImg from "@/assets/BgLanding.svg";
 import arrowUp from "@/assets/Upbutton.svg";
+import AiVivi from "@/assets/AiVivi.svg";
 
 export default function Home() {
   useEffect(() => {
@@ -50,7 +51,7 @@ export default function Home() {
     { id: 7, question: "Apakah saya harus login untuk menggunakan Vimind?", answer: "Ya, login diperlukan agar kami bisa menyimpan riwayat perkembangan kondisimu dengan aman." },
     { id: 8, question: "Apakah Vimind tersedia di Android dan iOS?", answer: "Saat ini Vimind dapat diakses melalui web browser di berbagai perangkat." },
   ];
-  
+
   const STATIC_TESTIMONIALS = [
     { id: 1, name: "Andi Wijaya", comment: "Vimind membantu saya lebih sadar dengan kondisi perasaan saya setiap hari...", rating: 5 },
     { id: 2, name: "Siti Nurhaliza", comment: "Sangat mudah dipahami dan hasilnya cukup akurat untuk introspeksi diri.", rating: 4 },
@@ -68,11 +69,11 @@ export default function Home() {
       const data = res.data || [];
       const filled = data.filter((f) => f.question?.trim());
       if (filled.length > 0) setFaqData(filled);
-    }).catch(() => {});
+    }).catch(() => { });
     getPublicTestimonials().then((res) => {
       const data = res.data || [];
       if (data.length > 0) setTestimonialsData(data);
-    }).catch(() => {});
+    }).catch(() => { });
   }, []);
 
   const toggleFaq = (index) => {
@@ -138,6 +139,13 @@ export default function Home() {
             <h3>Ruang Aman & Pribadi</h3>
             <p>Privasi adalah prioritas. Seluruh data dan hasil tesmu dienkripsi secara aman, memberikanmu ketenangan pikiran.</p>
           </div>
+          <div className="fitur-card">
+            <div className="fitur-icon">
+              <img src={AiVivi} alt="Ikon AiVivi" width="32" height="32" />
+            </div>
+            <h3>Curhat Sama Vivi</h3>
+            <p>Vimind punya chat bot AI bernama Vivi, jadi kamu bisa curhat kapan saja dengan tenang tanpa ada yang judge kamu.</p>
+          </div>
         </div>
       </section>
 
@@ -188,7 +196,7 @@ export default function Home() {
       {/* SECTION FAQ */}
       <section id="faq" className="faq-section-wrapper">
         <div className="faq-main-container">
-          
+
           {/* HEADER (BAGIAN ATAS) */}
           <div className="faq-header-content">
             <span className="faq-pill-badge">FAQ</span>
@@ -208,7 +216,7 @@ export default function Home() {
                   <span className="faq-question-text">{item.question}</span>
                   <div className="faq-chevron-icon">
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
                     </svg>
                   </div>
                 </div>

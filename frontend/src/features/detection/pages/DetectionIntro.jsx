@@ -26,7 +26,7 @@ export default function DetectionIntro() {
       </div>
 
       <div className="question-container">
-        <h1>EVALUASI KESEHATAN MENTAL</h1>
+        <h1>EVALUASI KESEHATAN MENTAL</h1> 
         <p>A. Mood dan Emosi</p>
 
         <button

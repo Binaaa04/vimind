@@ -312,12 +312,12 @@ export default function Detection() {
   // Label tombol Next
   // ============================================================
   const getNextButtonLabel = () => {
-  if (submitting) return "Mengolah...";
-  if (currentPage < totalPages - 1) {
-    return "Halaman Selanjutnya"; // Selalu gunakan label netral
-  }
-  return "Selesai & Lihat Hasil";
-};
+    if (submitting) return "Mengolah...";
+    if (currentPage < totalPages - 1) {
+      return "Halaman Selanjutnya"; // Selalu gunakan label netral
+    }
+    return "Selesai & Lihat Hasil";
+  };
 
   // ============================================================
   // Render — Loading
@@ -393,8 +393,7 @@ export default function Detection() {
               </h2>
 
               <div className="options-wrapper">
-                <div className="label-left">Setuju</div>
-
+                {/* Bagian Lingkaran di Atas */}
                 <div className="circles">
                   {[1, 2, 3, 4].map((i) => (
                     <div
@@ -405,8 +404,10 @@ export default function Detection() {
                   ))}
                 </div>
 
-                <div className="label-right">
-                  Tidak<br />Setuju
+                {/* Bagian Label di Bawah */}
+                <div className="labels-row">
+                  <div className="label-text">Setuju</div>
+                  <div className="label-text">Tidak Setuju</div>
                 </div>
               </div>
             </div>

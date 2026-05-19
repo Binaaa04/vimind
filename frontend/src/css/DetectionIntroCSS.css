@@ -96,3 +96,18 @@
   transform: translateY(-2px);
   box-shadow: 0 6px 15px rgba(109, 74, 255, 0.4);
 }
+
+@media (max-width: 768px) {
+  .question-container h1 {
+    font-size: 2rem;
+  }
+
+  .next-btn {
+    padding: 10px 30px;
+    font-size: 0.9rem;
+  }
+
+  .back-btn {
+    display: none !important;
+  }
+}
