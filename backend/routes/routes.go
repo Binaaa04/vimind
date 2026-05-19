@@ -89,12 +89,13 @@ func RegisterRoutes(app *fiber.App, db *pgxpool.Pool) {
 
 	// ---- Middleware ----
 	authRequired := middleware.AuthRequired()
+	optionalAuth := middleware.OptionalAuth()
 	adminAuth := middleware.AdminAuth(authRepo)
 
 	// ===================== PUBLIC =====================
 	api.Get("/questions", diagHandler.GetQuestions)
 	api.Post("/questions/discovery", diagHandler.GetDiscoveryQuestions)
-	api.Post("/diagnose", diagHandler.Diagnose)
+	api.Post("/diagnose", optionalAuth, diagHandler.Diagnose)
 	api.Get("/news", newsHandler.GetDynamicNews)
 	api.Get("/faq", adminHandler.GetFAQ)
 	api.Get("/banners", adminHandler.GetPublicBanners)

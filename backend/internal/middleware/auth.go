@@ -275,3 +275,44 @@ func AuthRequired() fiber.Handler {
 		return c.Next()
 	}
 }
+
+func OptionalAuth() fiber.Handler {
+	jwtSecret := os.Getenv("JWT_SECRET")
+	keyFunc := getKeyFunc(jwtSecret)
+
+	return func(c *fiber.Ctx) error {
+		authHeader := c.Get("Authorization")
+		if authHeader == "" {
+			return c.Next()
+		}
+
+		parts := strings.Split(authHeader, " ")
+		if len(parts) != 2 || parts[0] != "Bearer" {
+			return c.Next()
+		}
+
+		tokenString := parts[1]
+		token, err := jwt.Parse(tokenString, keyFunc)
+		if err != nil || !token.Valid {
+			return c.Next()
+		}
+
+		claims, ok := token.Claims.(jwt.MapClaims)
+		if !ok {
+			return c.Next()
+		}
+
+		email, _ := claims["email"].(string)
+		if email == "" {
+			if metadata, ok := claims["user_metadata"].(map[string]interface{}); ok {
+				email, _ = metadata["email"].(string)
+			}
+		}
+
+		if email != "" {
+			c.Locals("user_email", email)
+		}
+
+		return c.Next()
+	}
+}

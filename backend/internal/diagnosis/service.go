@@ -86,7 +86,7 @@ func (s *Service) CalculateCF(answers []Answer, refinedDiseaseID int, userUID in
 			})
 		} else {
 			finalResults = append(finalResults, DiagnosisResult{
-				DiseaseName:     "Mental Stabil (Healthy)",
+				DiseaseName:     "Mentally Stable (Healthy)",
 				Description:     "Based on your answers, there are no significant indications of mental health issues. Your current mental condition is considered stable and healthy.",
 				CFValue:         0,
 				Percentage:      0,
@@ -103,8 +103,7 @@ func (s *Service) DetermineLevelID(percentage float64) int {
 		return 1
 	} else if percentage > 40 {
 		return 2
-	} else if percentage > 20 {
-		return 3
 	}
-	return 4
+	// Fallback to 3 (Low Risk/Mild) instead of 4 to ensure compatibility with standard 3-level DB schemas
+	return 3
 }

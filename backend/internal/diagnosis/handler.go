@@ -2,6 +2,7 @@ package diagnosis
 
 import (
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/gofiber/fiber/v2"
@@ -155,10 +156,12 @@ func (h *Handler) Diagnose(c *fiber.Ctx) error {
 	if isAuthenticated && req.UserEmail != "" {
 		uid, err := h.users.GetUserIDByEmail(req.UserEmail)
 		if err != nil {
-			// Create user if they are authenticated but not in our DB yet
+			log.Printf("INFO: User '%s' not found in database, attempting to create. Error was: %v", req.UserEmail, err)
 			uid, err = h.users.CreateUser(req.UserEmail, strings.Split(req.UserEmail, "@")[0])
 			if err == nil {
 				internalUserID = &uid
+			} else {
+				log.Printf("ERROR: Failed to create user '%s': %v", req.UserEmail, err)
 			}
 		} else {
 			internalUserID = &uid
@@ -182,14 +185,23 @@ func (h *Handler) Diagnose(c *fiber.Ctx) error {
 		levelID := h.service.DetermineLevelID(top.Percentage)
 
 		topDiseaseID, err := h.repo.GetDiseaseIDByName(top.DiseaseName)
-		if err == nil {
+		if err != nil {
+			log.Printf("ERROR SaveDiagnosis: GetDiseaseIDByName failed for '%s': %v", top.DiseaseName, err)
+		} else {
 			diagnosisID, err := h.repo.SaveDiagnosis(*internalUserID, topDiseaseID, levelID, top.CFValue, top.Percentage)
-			if err == nil {
+			if err != nil {
+				log.Printf("CRITICAL ERROR SaveDiagnosis: Failed for user %d (DiseaseID: %d, LevelID: %d): %v", *internalUserID, topDiseaseID, levelID, err)
+			} else {
 				for _, ans := range req.Answers {
-					h.repo.SaveDiagnosisDetail(diagnosisID, ans.SymptomID, ans.Value)
+					errDetail := h.repo.SaveDiagnosisDetail(diagnosisID, ans.SymptomID, ans.Value)
+					if errDetail != nil {
+						log.Printf("ERROR SaveDiagnosisDetail: failed for diagnosis %d, symptom %d: %v", diagnosisID, ans.SymptomID, errDetail)
+					}
 				}
 			}
 		}
+	} else {
+		log.Printf("INFO Diagnose: Skipping save (internalUserID is nil). Authenticated: %t, Email: '%s'", isAuthenticated, email)
 	}
 
 	return c.JSON(fiber.Map{
