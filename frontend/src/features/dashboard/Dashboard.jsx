@@ -11,7 +11,7 @@ import LogoutModal from "@/shared/components/LogoutModal";
 import TestOptionsModal from "@/features/detection/components/TestOptionsModal";
 import { getProfile, updateProfile } from "@/features/auth/api";
 import { diagnose } from "@/features/detection/api";
-import { sendChatMessage, saveMoodToBackend } from "@/features/dashboard/api";
+import { sendChatMessage } from "@/features/dashboard/api";
 import logo from "@/assets/logovimind2.png";
 
 import chatbotIcon from "@/assets/chatbot.png";
@@ -173,15 +173,6 @@ const Dashboard = () => {
   const handleMoodSelected = async (selectedMood) => {
     setMoodToast(`Mood "${selectedMood}" tersimpan! ✓`);
     setTimeout(() => setMoodToast(""), 3000);
-    
-    // Simpan ke backend
-    if (userEmail) {
-      try {
-        await saveMoodToBackend(userEmail, selectedMood);
-      } catch(e) {
-        console.error("Gagal menyimpan mood ke server", e);
-      }
-    }
   };
 
 

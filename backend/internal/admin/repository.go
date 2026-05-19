@@ -412,19 +412,7 @@ func (r *Repository) GetDashboardAnalytics() (AnalyticsSummary, error) {
 		mu.Unlock()
 	}()
 
-	// Query 5: Most Mood
-	wg.Add(1)
-	go func() {
-		defer wg.Done()
-		var mood string
-		_ = r.pool.QueryRow(context.Background(), `
-			SELECT mood FROM user_moods 
-			GROUP BY mood ORDER BY COUNT(*) DESC LIMIT 1
-		`).Scan(&mood)
-		mu.Lock()
-		summary.MostMood = mood
-		mu.Unlock()
-	}()
+	// Query 5 was removed
 
 	// Query 6: Weekly Active
 	wg.Add(1)

@@ -108,7 +108,7 @@ func RegisterRoutes(app *fiber.App, db *pgxpool.Pool) {
 	api.Get("/testimonials", feedbackHandler.GetPublicTestimonials)
 	api.Post("/testimonials", feedbackHandler.SubmitTestimonial)
 	api.Post("/account_feedbacks", feedbackHandler.SubmitAccountFeedback)
-	api.Post("/mood", feedbackHandler.SaveMood)
+
 	api.Get("/check-rating", feedbackHandler.CheckRating)
 
 	// ===================== ADMIN =====================

@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/services/supabaseClient";
 import { getProfile, updateProfile } from "@/features/auth/api";
 import { submitTestimonial, checkRating } from "@/features/home/api";
-import { saveMoodToBackend } from "@/features/dashboard/api";
+
 import MoodModal from "@/features/detection/components/MoodModal";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import "../../css/Result.css";
@@ -284,13 +284,6 @@ export default function Result() {
             {showMoodModal && (
                 <MoodModal 
                     onSelect={async (m) => {
-                        try {
-                            if (userEmail) {
-                                await saveMoodToBackend(userEmail, m);
-                            }
-                        } catch (e) {
-                            console.error("Gagal simpan mood", e);
-                        }
                         setShowMoodModal(false);
                     }}
                     onClose={() => setShowMoodModal(false)}

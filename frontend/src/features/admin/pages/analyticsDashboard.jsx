@@ -123,11 +123,7 @@ const DashboardAnalytics = () => {
           <h2>{data.age_range || '-'}</h2>
         </div>
 
-        <div className="kpi-card">
-          <div className="kpi-icon-wrapper"><Smile size={20} className="kpi-icon" /></div>
-          <p className="kpi-label">Mood Terbanyak</p>
-          <h2>{data.most_mood || '-'}</h2>
-        </div>
+
 
         <div className="kpi-card">
           <div className="kpi-icon-wrapper"><MapPin size={20} className="kpi-icon" /></div>

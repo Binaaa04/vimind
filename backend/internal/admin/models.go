@@ -104,7 +104,6 @@ type AnalyticsSummary struct {
 	AverageRating   float64       `json:"average_rating"`
 	TotalFeedbacks  int           `json:"total_feedbacks"`
 	DeletedAccounts int           `json:"deleted_accounts"`
-	MostMood        string        `json:"most_mood"`
 	WeeklyActive    int           `json:"weekly_active"`
 	TotalUsers      int           `json:"total_users"`
 	TopRegion       string        `json:"top_region"`
