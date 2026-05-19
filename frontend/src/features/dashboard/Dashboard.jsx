@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { supabase } from "@/services/supabaseClient";
+import { useAuth } from "@/shared/context/AuthContext";
 import SummaryModal from "@/features/detection/components/SummaryModal";
 import MoodResultModal from "@/features/detection/components/MoodResultModal";
 import { useNavigate } from "react-router-dom";
@@ -10,15 +10,16 @@ import NicknameSuccessModal from "@/features/auth/components/NicknameSuccessModa
 import LogoutModal from "@/shared/components/LogoutModal";
 import TestOptionsModal from "@/features/detection/components/TestOptionsModal";
 import { getProfile, updateProfile } from "@/features/auth/api";
-import { diagnose } from "@/features/detection/api";
 import { sendChatMessage } from "@/features/dashboard/api";
 import logo from "@/assets/logovimind2.png";
 
 import chatbotIcon from "@/assets/chatbot.png";
-// Pastikan path ini sesuai dengan lokasi file CSS-mu
 import "@/css/DashboardCSS.css"; 
 
 const Dashboard = () => {
+  const { user, isAdmin, signOut } = useAuth();
+  const navigate = useNavigate();
+
   useEffect(() => {
     document.title = "Dashboard Utama | Vimind";
   }, []);
@@ -33,11 +34,9 @@ const Dashboard = () => {
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showChatbot, setShowChatbot] = useState(false);
   const [showTestOptions, setShowTestOptions] = useState(false);
-
-  // FIX #4 (clean): showMood — hanya satu deklarasi
   const [showMood, setShowMood] = useState(false);
 
-  // === STATE CHAT — persist di sessionStorage ===
+  // === STATE CHAT ===
   const [chatMessages, setChatMessagesRaw] = useState(() => {
     try {
       const saved = sessionStorage.getItem("vivi_chat");
@@ -54,26 +53,16 @@ const Dashboard = () => {
 
   const [chatInput, setChatInput] = useState("");
   const [isChatLoading, setIsChatLoading] = useState(false);
-  // FIX #3: track apakah user sedang scroll ke atas
   const chatEndRef = useRef(null);
   const chatBodyRef = useRef(null);
-  const isUserScrollingUp = useRef(false);
 
   // === STATE USER ===
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [userEmail, setUserEmail] = useState("");
-  const [isProfileLoading, setIsProfileLoading] = useState(true); // FIX #1
-  const [nickname, setNickname] = useState(
-    localStorage.getItem("nickname") || "..."
-  );
-  const [avatarUrl, setAvatarUrl] = useState(
-    localStorage.getItem("avatar_url") || ""
-  );
-  // FIX #2: toast feedback setelah pilih mood
+  const [isProfileLoading, setIsProfileLoading] = useState(true);
+  const [nickname, setNickname] = useState(localStorage.getItem("nickname") || "...");
+  const [avatarUrl, setAvatarUrl] = useState(localStorage.getItem("avatar_url") || "");
   const [moodToast, setMoodToast] = useState("");
-
   const [banners, setBanners] = useState([]);
-  const navigate = useNavigate();
+
   const mood = localStorage.getItem("mood");
 
   const checkShouldShowMood = () => {
@@ -83,19 +72,15 @@ const Dashboard = () => {
   };
 
   useEffect(() => {
-    const fetchUserAndProfile = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user?.email) {
-        setUserEmail(session.user.email);
+    const fetchProfile = async () => {
+      if (user?.email) {
         try {
-          const res = await getProfile(session.user.email);
-          const name = res.data?.name || session.user.user_metadata?.full_name || session.user.email.split("@")[0];
+          const res = await getProfile(); // Email removed, uses JWT
+          const name = res.data?.name || user.user_metadata?.full_name || user.email.split("@")[0];
           const avatar = res.data?.avatar_url || "";
-          const userRole = res.data?.role || "user";
 
           setNickname(name);
           setAvatarUrl(avatar);
-          setIsAdmin(userRole === "admin");
 
           localStorage.setItem("nickname", name);
           if (avatar) {
@@ -104,25 +89,14 @@ const Dashboard = () => {
             localStorage.removeItem("avatar_url");
           }
 
-          // FIX: Redirect if birth_date is missing (Google Login / Guest flow)
-          if (userRole !== "admin" && (!res.data || !res.data.birth_date)) {
+          if (!isAdmin && (!res.data || !res.data.birth_date)) {
             navigate("/lengkapi-biodata", { replace: true });
           }
-
         } catch (err) {
-          console.error("Profile not found, auto-creating user in backend...");
-          const name = session.user.user_metadata?.full_name || session.user.email.split("@")[0];
-          setNickname(name);
-          try {
-            await updateProfile(session.user.email, name, "", "");
-            navigate("/lengkapi-biodata", { replace: true });
-          } catch (createErr) {
-            console.error("Failed to auto-create user:", createErr);
-          }
+          console.error("Profile fetch error:", err);
         } finally {
-          setIsProfileLoading(false); // FIX UX #3: loading selesai
+          setIsProfileLoading(false);
         }
-
       }
     };
 
@@ -136,19 +110,18 @@ const Dashboard = () => {
       }
     };
 
-    fetchUserAndProfile();
+    fetchProfile();
     fetchBanners();
 
-    // FIX UX: Cek apakah perlu tampilkan MoodModal hari ini
     if (checkShouldShowMood()) {
       setShowMood(true);
     }
-  }, []);
+  }, [user, isAdmin, navigate]);
 
   const handleSaveNickname = async (newNickname) => {
     const finalNickname = newNickname?.trim() || "User";
     try {
-      await updateProfile(userEmail, finalNickname);
+      await updateProfile("", finalNickname); // email empty, uses JWT
       setNickname(finalNickname);
       localStorage.setItem("nickname", finalNickname);
       setShowNicknameModal(false);
@@ -159,7 +132,6 @@ const Dashboard = () => {
     }
   };
 
-  // FIX #3: Smart auto-scroll — hanya scroll ke bawah jika user tidak sedang scroll ke atas
   useEffect(() => {
     const body = chatBodyRef.current;
     if (!body) return;
@@ -169,19 +141,15 @@ const Dashboard = () => {
     }
   }, [chatMessages, isChatLoading]);
 
-  // FIX #2: Handler untuk mood toast
   const handleMoodSelected = async (selectedMood) => {
     setMoodToast(`Mood "${selectedMood}" tersimpan! ✓`);
     setTimeout(() => setMoodToast(""), 3000);
   };
 
-
-
   const fetchChatbotReply = async (newMessages) => {
     try {
       setIsChatLoading(true);
-      const emailToUse = userEmail || "guest";
-      const res = await sendChatMessage(emailToUse, newMessages);
+      const res = await sendChatMessage("", newMessages); // uses JWT
 
       setChatMessages((prev) => [
         ...prev,
@@ -213,18 +181,16 @@ const Dashboard = () => {
 
   const handleLogout = async () => {
     try {
-      await supabase.auth.signOut();
+      await signOut();
       localStorage.removeItem("nickname");
       localStorage.removeItem("avatar_url");
       localStorage.removeItem("mood");
-      localStorage.removeItem("mood_date"); // FIX: clear mood date juga saat logout
-      localStorage.removeItem("quizFrom");
-      sessionStorage.removeItem("vivi_chat"); // FIX UX #2: bersihkan chat saat logout
+      localStorage.removeItem("mood_date");
+      sessionStorage.removeItem("vivi_chat");
       setShowLogoutModal(false);
       navigate("/login");
     } catch (error) {
       console.error("Logout error:", error.message);
-      alert("Gagal logout: " + error.message);
     }
   };
 
@@ -338,7 +304,7 @@ const Dashboard = () => {
             onOpenLogoutModal={() => setShowLogoutModal(true)}
             nickname={nickname}
             avatarUrl={avatarUrl}
-            userEmail={userEmail}
+            userEmail={user?.email}
             isAdmin={isAdmin}
             onAvatarUpdate={(newUrl) => {
               setAvatarUrl(newUrl);

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { adminGetFAQ, adminUpsertFAQ, adminDeleteFAQ } from "@/features/admin/api";
 import "@/css/adminFAQ.css";
 
-const AdminFAQ = ({ adminEmail }) => {
+const AdminFAQ = () => {
   const [faq, setFaq] = useState([]);
   const [loading, setLoading] = useState(true);
   const [savingIndex, setSavingIndex] = useState(null);
@@ -12,21 +12,19 @@ const AdminFAQ = ({ adminEmail }) => {
   const [deleteTarget, setDeleteTarget] = useState(null);
 
   const fetchFAQ = async () => {
-    if (adminEmail) {
-      try {
-        const res = await adminGetFAQ(adminEmail);
-        setFaq(res.data || []);
-      } catch (err) {
-        console.error("Gagal ambil FAQ", err);
-      } finally {
-        setLoading(false);
-      }
+    try {
+      const res = await adminGetFAQ();
+      setFaq(res.data || []);
+    } catch (err) {
+      console.error("Gagal ambil FAQ", err);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchFAQ();
-  }, [adminEmail]);
+  }, []);
 
   const handleChange = (index, field, value) => {
     const updated = [...faq];
@@ -58,7 +56,7 @@ const AdminFAQ = ({ adminEmail }) => {
     }
     
     try {
-      await adminDeleteFAQ(item.id, adminEmail);
+      await adminDeleteFAQ(item.id);
       setFaq(faq.filter((_, i) => i !== index));
     } catch (err) {
       alert("Gagal menghapus");
@@ -73,7 +71,7 @@ const AdminFAQ = ({ adminEmail }) => {
     }
     setSavingIndex(index);
     try {
-      await adminUpsertFAQ({ ...item, admin_email: adminEmail });
+      await adminUpsertFAQ(item);
       alert("Berhasil disimpan!");
       fetchFAQ();
     } catch (err) {

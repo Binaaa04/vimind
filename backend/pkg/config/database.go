@@ -34,9 +34,9 @@ func ConnectDB() *pgxpool.Pool {
 	}
 
 	if !strings.Contains(connStr, "?") {
-		connStr += "?default_query_exec_mode=exec"
+		connStr += "?default_query_exec_mode=exec&pool_max_conns=20&pool_min_conns=2"
 	} else {
-		connStr += "&default_query_exec_mode=exec"
+		connStr += "&default_query_exec_mode=exec&pool_max_conns=20&pool_min_conns=2"
 	}
 
 	db, err := pgxpool.New(context.Background(), connStr)

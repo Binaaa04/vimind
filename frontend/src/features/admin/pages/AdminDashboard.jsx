@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Routes, Route } from "react-router-dom";
-import { supabase } from "@/services/supabaseClient";
+import { useAuth } from "@/shared/context/AuthContext";
 import AdminSidebar from "@/features/admin/components/AdminSidebar";
 import DashboardAnalytics from "@/features/admin/pages/analyticsDashboard";
 import AdminFAQ from "@/features/admin/pages/AdminFAQ";
@@ -11,7 +11,7 @@ import { adminGetBanners, adminUpsertBanner, adminDeleteBanner } from "@/feature
 import { getProfile } from "@/features/auth/api";
 import "@/css/AdminDashboard.css";
 
-const BannerCard = ({ bannerData, index, adminEmail, onImageClick }) => {
+const BannerCard = ({ bannerData, index, onImageClick }) => {
   const [linkUrl, setLinkUrl] = useState(bannerData?.link_url || "");
   const [imageUrl, setImageUrl] = useState(bannerData?.image_url || "");
   const [title, setTitle] = useState(bannerData?.title || "");
@@ -53,7 +53,7 @@ const BannerCard = ({ bannerData, index, adminEmail, onImageClick }) => {
     }
 
     try {
-      await adminDeleteBanner(adminEmail, bannerData.id);
+      await adminDeleteBanner(bannerData.id);
       window.location.reload();
     } catch (err) {
       alert("Gagal menghapus banner.");
@@ -61,10 +61,9 @@ const BannerCard = ({ bannerData, index, adminEmail, onImageClick }) => {
   };
 
   const handleSubmit = async () => {
-    if (!adminEmail) return;
     setSaving(true);
     try {
-      await adminUpsertBanner(adminEmail, bannerPayload());
+      await adminUpsertBanner(bannerPayload());
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
       window.location.reload(); // Reload supaya dapat ID asli dari database
@@ -77,10 +76,9 @@ const BannerCard = ({ bannerData, index, adminEmail, onImageClick }) => {
   };
 
   const handleToggle = async (newState) => {
-    if (!adminEmail) return;
     setIsActive(newState);
     try {
-      await adminUpsertBanner(adminEmail, { ...bannerPayload(), is_active: newState });
+      await adminUpsertBanner({ ...bannerPayload(), is_active: newState });
     } catch (_) { }
   };
 
@@ -186,40 +184,41 @@ const BannerCard = ({ bannerData, index, adminEmail, onImageClick }) => {
 };
 
 const AdminDashboard = () => {
+  const { user } = useAuth();
   const [banners, setBanners] = useState([]);
   const [loadingBanners, setLoadingBanners] = useState(true);
-  const [adminEmail, setAdminEmail] = useState("");
   const [adminName, setAdminName] = useState("Admin");
   const [adminAvatar, setAdminAvatar] = useState("");
   const [previewImage, setPreviewImage] = useState(null);
 
   useEffect(() => {
-    const fetchSession = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user?.email) {
-        setAdminEmail(session.user.email);
-
+    const fetchAdminProfile = async () => {
+      if (user?.email) {
         try {
-          const profileRes = await getProfile(session.user.email);
-          const name = profileRes.data?.name || session.user.user_metadata?.full_name || session.user.email.split("@")[0];
+          const profileRes = await getProfile();
+          const name = profileRes.data?.name || user.user_metadata?.full_name || user.email.split("@")[0];
           const avatar = profileRes.data?.avatar_url || "";
           setAdminName(name);
           setAdminAvatar(avatar);
-        } catch (err) {
+        } catch {
           console.warn("Could not fetch admin profile, using defaults.");
         }
 
-        adminGetBanners(session.user.email)
-          .then((res) => setBanners(res.data || []))
-          .catch(() => { })
-          .finally(() => setLoadingBanners(false));
+        try {
+          const res = await adminGetBanners();
+          setBanners(res.data || []);
+        } catch {
+          console.error("Failed to fetch banners");
+        } finally {
+          setLoadingBanners(false);
+        }
       } else {
         setLoadingBanners(false);
       }
     };
 
-    fetchSession();
-  }, []);
+    fetchAdminProfile();
+  }, [user]);
 
   return (
     <div className="admin-container">
@@ -254,7 +253,6 @@ const AdminDashboard = () => {
                         key={b.id || i}
                         bannerData={b}
                         index={i}
-                        adminEmail={adminEmail}
                         onImageClick={setPreviewImage}
                       />
                     ))}
@@ -268,9 +266,9 @@ const AdminDashboard = () => {
           />
 
           {/* FAQ */}
-          <Route path="faq" element={<AdminFAQ adminEmail={adminEmail} />} />
-          <Route path="test" element={<AdminTest adminEmail={adminEmail} />} />
-          <Route path="feedback" element={<AdminFeedback adminEmail={adminEmail} />} />
+          <Route path="faq" element={<AdminFAQ />} />
+          <Route path="test" element={<AdminTest />} />
+          <Route path="feedback" element={<AdminFeedback />} />
         </Routes>
       </div>
 

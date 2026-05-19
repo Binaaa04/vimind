@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Users, Search, Shield, User } from 'lucide-react';
 import { adminGetUsers } from '@/features/admin/api';
-import { supabase } from '@/services/supabaseClient';
 import '@/css/AdminUsers.css';
 
 const AdminUsers = () => {
@@ -11,10 +10,8 @@ const AdminUsers = () => {
 
   useEffect(() => {
     const fetchUsers = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) { setLoading(false); return; }
       try {
-        const res = await adminGetUsers(session.user.email);
+        const res = await adminGetUsers();
         setUsers(res.data || []);
       } catch (err) {
         console.error(err);

@@ -4,8 +4,7 @@ import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend
 } from 'recharts';
-import api, { adminConfig } from "@/shared/api/client";
-import { supabase } from '@/services/supabaseClient';
+import api from "@/shared/api/client";
 import '@/css/analyticsDashboard.css';
 
 /* ---------- helpers ---------- */
@@ -48,10 +47,8 @@ const DashboardAnalytics = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
       try {
-        const res = await api.get('/api/admin/analytics', adminConfig(session.user.email));
+        const res = await api.get('/api/admin/analytics');
         setData(res.data);
       } catch (err) {
         console.error("Failed to fetch analytics", err);

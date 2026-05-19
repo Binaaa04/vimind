@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { adminGetNews, adminUpsertNews, adminDeleteNews } from "@/features/admin/api";
 import "@/css/AdminDashboard.css";
 
-const ArticleCard = ({ article, adminEmail, onRefresh }) => {
+const ArticleCard = ({ article, onRefresh }) => {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     id: article?.id || "",
@@ -18,7 +18,7 @@ const ArticleCard = ({ article, adminEmail, onRefresh }) => {
     if (!formData.title) return alert("Judul wajib diisi!");
     setLoading(true);
     try {
-      await adminUpsertNews(adminEmail, formData);
+      await adminUpsertNews(formData);
       alert("Artikel berhasil disimpan!");
       onRefresh();
     } catch (err) {
@@ -31,7 +31,7 @@ const ArticleCard = ({ article, adminEmail, onRefresh }) => {
   const handleDelete = async () => {
     if (!window.confirm("Yakin ingin menghapus artikel ini?")) return;
     try {
-      await adminDeleteNews(adminEmail, article.id);
+      await adminDeleteNews(article.id);
       onRefresh();
     } catch (err) {
       alert("Gagal menghapus.");
@@ -98,15 +98,14 @@ const ArticleCard = ({ article, adminEmail, onRefresh }) => {
   );
 };
 
-const AdminNews = ({ adminEmail }) => {
+const AdminNews = () => {
   const [articles, setArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
 
   const fetchNews = async () => {
-    if (!adminEmail) return;
     try {
-      const res = await adminGetNews(adminEmail);
+      const res = await adminGetNews();
       setArticles(res.data || []);
     } catch (err) {
       console.error(err);
@@ -117,7 +116,7 @@ const AdminNews = ({ adminEmail }) => {
 
   useEffect(() => {
     fetchNews();
-  }, [adminEmail]);
+  }, []);
 
   return (
     <div className="admin-news-page">
@@ -138,7 +137,7 @@ const AdminNews = ({ adminEmail }) => {
 
       {isAdding && (
         <div style={{ marginBottom: 30, borderBottom: "1px solid rgba(255,255,255,0.1)", paddingBottom: 20 }}>
-          <ArticleCard adminEmail={adminEmail} onRefresh={() => { fetchNews(); setIsAdding(false); }} />
+          <ArticleCard onRefresh={() => { fetchNews(); setIsAdding(false); }} />
         </div>
       )}
 
@@ -151,7 +150,7 @@ const AdminNews = ({ adminEmail }) => {
       ) : (
         <div style={{ display: "grid", gap: 20 }}>
           {articles.map((art) => (
-            <ArticleCard key={art.id} article={art} adminEmail={adminEmail} onRefresh={fetchNews} />
+            <ArticleCard key={art.id} article={art} onRefresh={fetchNews} />
           ))}
         </div>
       )}

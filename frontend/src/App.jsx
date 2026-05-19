@@ -16,32 +16,41 @@ import Dashboard from "@/features/dashboard/Dashboard";
 import AdminDashboard from "@/features/admin/pages/AdminDashboard";
 import AuthCallback from "@/features/auth/pages/AuthCallback";
 import { useAuthSync } from "@/shared/hooks/useAuthSync";
+import { AuthProvider } from "@/shared/context/AuthContext";
+import { ProtectedRoute, AdminRoute } from "@/shared/components/RouteGuards";
 
 function App() {
   useAuthSync();
 
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Home/>}/>
-        <Route path="/deteksi" element={<DetectionIntro />} />
-        <Route path="/deteksi/soal" element={<DetectionQuestion />} />
-        <Route path="/selesai" element={<Finish />} />
-        <Route path="/hasil" element={<Result />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/lengkapi-biodata" element={<LengkapiBiodata />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/success" element={<Success />} />
-        <Route path="/forgot-password" element={<ForgotPassword />} />
-        <Route path="/reset-sent" element={<ResetSent />} />
-        <Route path="/reset-password" element={<ResetPassword />} />
-        <Route path="/reset-success" element={<ResetSuccess />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/admin" element={<Navigate to="/admin/dashboard" />} />
-        <Route path="/admin/*" element={<AdminDashboard />} />
-        <Route path="/auth/callback" element={<AuthCallback />} />
-      </Routes>
-    </BrowserRouter>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Home/>}/>
+          <Route path="/deteksi" element={<DetectionIntro />} />
+          <Route path="/deteksi/soal" element={<DetectionQuestion />} />
+          <Route path="/selesai" element={<Finish />} />
+          <Route path="/hasil" element={<Result />} />
+          <Route path="/login" element={<Login />} />
+          
+          <Route path="/register" element={<Register />} />
+          <Route path="/success" element={<Success />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-sent" element={<ResetSent />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
+          <Route path="/reset-success" element={<ResetSuccess />} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
+
+          {/* PROTECTED ROUTES */}
+          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/lengkapi-biodata" element={<ProtectedRoute><LengkapiBiodata /></ProtectedRoute>} />
+          
+          {/* ADMIN ROUTES */}
+          <Route path="/admin" element={<AdminRoute><Navigate to="/admin/dashboard" /></AdminRoute>} />
+          <Route path="/admin/*" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+        </Routes>
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

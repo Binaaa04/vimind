@@ -2,7 +2,7 @@ import "@/css/ProfileSidebar.css";
 import logo from "@/assets/logovimind2.png";
 import { useNavigate } from "react-router-dom";
 import { useRef, useState } from "react";
-import { supabase } from "@/services/supabaseClient";
+import { useAuth } from "@/shared/context/AuthContext";
 import { updateProfile, deleteAccount, submitAccountFeedback } from "@/features/auth/api";
 
 const ProfileSidebar = ({
@@ -12,10 +12,10 @@ const ProfileSidebar = ({
   onOpenLogoutModal,
   nickname,
   avatarUrl,
-  userEmail,
   isAdmin,
   onAvatarUpdate
 }) => {
+  const { signOut } = useAuth();
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -24,7 +24,6 @@ const ProfileSidebar = ({
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteFeedback, setDeleteFeedback] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
-  // =========================================
 
   const handlePhotoClick = () => {
     fileInputRef.current.click();
@@ -32,12 +31,13 @@ const ProfileSidebar = ({
 
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
-    if (!file || !userEmail) return;
+    if (!file) return;
 
     setIsUploading(true);
     try {
+      const { supabase } = await import("@/services/supabaseClient");
       const fileName = `${Date.now()}_${file.name}`;
-      const { data, error: uploadError } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from("avatars")
         .upload(fileName, file);
 
@@ -47,31 +47,29 @@ const ProfileSidebar = ({
         .from("avatars")
         .getPublicUrl(fileName);
 
-      await updateProfile(userEmail, nickname, publicUrl);
+      await updateProfile("", nickname, publicUrl); // Uses JWT
       onAvatarUpdate(publicUrl);
-      console.log("Foto Berhasil Diubah!");
     } catch (err) {
       console.error("Gagal ganti foto:", err.message);
-      alert("Gagal ganti foto: " + err.message + "\n(Pastikan bucket 'avatars' sudah ada di Supabase)");
+      alert("Gagal ganti foto.");
     } finally {
       setIsUploading(false);
     }
   };
 
-  // === FUNGSI EKSEKUSI HAPUS AKUN ===
   const handleConfirmDelete = async () => {
     setIsDeleting(true);
     try {
       if (deleteFeedback.trim()) {
         try {
-          await submitAccountFeedback({ email: userEmail, reason: deleteFeedback });
+          await submitAccountFeedback({ reason: deleteFeedback }); // Email empty, uses JWT
         } catch (err) {
           console.error("Gagal mengirim feedback penghapusan:", err);
         }
       }
 
-      await deleteAccount(userEmail);
-      await supabase.auth.signOut();
+      await deleteAccount(); // Uses JWT
+      await signOut();
       localStorage.clear();
       alert("Akun berhasil dihapus.");
       navigate("/login");

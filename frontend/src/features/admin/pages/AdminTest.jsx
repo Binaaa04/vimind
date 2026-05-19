@@ -6,7 +6,7 @@ import {
 } from "@/features/admin/api";
 import "@/css/AdminTest.css";
 
-const AdminTest = ({ adminEmail }) => {
+const AdminTest = () => {
   const [rules, setRules] = useState([]);
   const [symptoms, setSymptoms] = useState([]);
   const [diseases, setDiseases] = useState([]);
@@ -28,13 +28,12 @@ const AdminTest = ({ adminEmail }) => {
   };
 
   const fetchData = async () => {
-    if (!adminEmail) return;
     setLoading(true);
     try {
       const [r, s, d] = await Promise.all([
-        adminGetRules(adminEmail),
-        adminGetSymptoms(adminEmail),
-        adminGetDiseases(adminEmail),
+        adminGetRules(),
+        adminGetSymptoms(),
+        adminGetDiseases(),
       ]);
       setRules(r.data || []);
       setSymptoms(s.data || []);
@@ -48,7 +47,7 @@ const AdminTest = ({ adminEmail }) => {
 
   useEffect(() => {
     fetchData();
-  }, [adminEmail]);
+  }, []);
 
   // ---- FUNGSI TRIGGER MODAL HAPUS ----
   const handleDeleteClick = (type, id) => {
@@ -70,9 +69,9 @@ const AdminTest = ({ adminEmail }) => {
     }
 
     try {
-      if (type === "rule") await adminDeleteRule(adminEmail, id);
-      if (type === "symptom") await adminDeleteSymptom(adminEmail, id);
-      if (type === "disease") await adminDeleteDisease(adminEmail, id);
+      if (type === "rule") await adminDeleteRule(id);
+      if (type === "symptom") await adminDeleteSymptom(id);
+      if (type === "disease") await adminDeleteDisease(id);
       fetchData();
     } catch (err) {
       alert("Gagal menghapus data.");
@@ -83,15 +82,15 @@ const AdminTest = ({ adminEmail }) => {
   const handleSaveItem = async (type, item) => {
     try {
       if (type === "rule") {
-        await adminUpsertRule(adminEmail, item);
+        await adminUpsertRule(item);
         setEditingRuleId(null);
       }
       if (type === "symptom") {
-        await adminUpsertSymptom(adminEmail, item);
+        await adminUpsertSymptom(item);
         setEditingSymptomId(null);
       }
       if (type === "disease") {
-        await adminUpsertDisease(adminEmail, item);
+        await adminUpsertDisease(item);
         setEditingDiseaseId(null);
       }
       fetchData();

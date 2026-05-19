@@ -1,25 +1,34 @@
-import api, { adminConfig } from "@/shared/api/client";
+import api from "@/shared/api/client";
 
-export const adminGetBanners = (email) => api.get("/api/admin/banners", adminConfig(email));
-export const adminUpsertBanner = (email, data) => api.post("/api/admin/banners", data, adminConfig(email));
-export const adminDeleteBanner = (email, id) => api.delete(`/api/admin/banners/${id}`, adminConfig(email));
-export const adminGetFAQ = (email) => api.get("/api/admin/faq", adminConfig(email));
-export const adminUpsertFAQ = (email, data) => api.post("/api/admin/faq", data, adminConfig(email));
-export const adminDeleteFAQ = (email, id) => api.delete(`/api/admin/faq/${id}`, adminConfig(email));
-export const adminGetNews = (email) => api.get("/api/admin/news", adminConfig(email));
-export const adminUpsertNews = (email, data) => api.post("/api/admin/news", data, adminConfig(email));
-export const adminDeleteNews = (email, id) => api.delete(`/api/admin/news/${id}`, adminConfig(email));
-export const adminGetSymptoms = (email) => api.get("/api/admin/symptoms", adminConfig(email));
-export const adminUpsertSymptom = (email, data) => api.post("/api/admin/symptoms", data, adminConfig(email));
-export const adminDeleteSymptom = (email, id) => api.delete(`/api/admin/symptoms/${id}`, adminConfig(email));
-export const adminGetDiseases = (email) => api.get("/api/admin/diseases", adminConfig(email));
-export const adminUpsertDisease = (email, data) => api.post("/api/admin/diseases", data, adminConfig(email));
-export const adminDeleteDisease = (email, id) => api.delete(`/api/admin/diseases/${id}`, adminConfig(email));
-export const adminGetRules = (email) => api.get("/api/admin/rules", adminConfig(email));
-export const adminUpsertRule = (email, data) => api.post("/api/admin/rules", data, adminConfig(email));
-export const adminDeleteRule = (email, id) => api.delete(`/api/admin/rules/${id}`, adminConfig(email));
-export const adminGetTestimonials = (email) => api.get("/api/admin/testimonials", adminConfig(email));
-export const adminUpdateTestimonialDisplay = (email, id, isDisplayed) => api.put(`/api/admin/testimonials/${id}/display`, { is_displayed: isDisplayed }, adminConfig(email));
-export const adminGetAccountFeedbacks = (email) => api.get("/api/admin/account_feedbacks", adminConfig(email));
+// Admin API calls now rely on JWT token for authentication and authorization.
+// The email parameter is kept as optional for legacy compatibility but is no longer required.
 
-export const adminGetUsers = (email) => api.get("/api/admin/users", adminConfig(email));
+export const adminGetBanners = () => api.get("/api/admin/banners");
+export const adminUpsertBanner = (data) => api.post("/api/admin/banners", data);
+export const adminDeleteBanner = (id) => api.delete(`/api/admin/banners/${id}`);
+
+export const adminGetFAQ = () => api.get("/api/admin/faq");
+export const adminUpsertFAQ = (data) => api.post("/api/admin/faq", data);
+export const adminDeleteFAQ = (id) => api.delete(`/api/admin/faq/${id}`);
+
+export const adminGetNews = () => api.get("/api/admin/news");
+export const adminUpsertNews = (data) => api.post("/api/admin/news", data);
+export const adminDeleteNews = (id) => api.delete(`/api/admin/news/${id}`);
+
+export const adminGetSymptoms = () => api.get("/api/admin/symptoms");
+export const adminUpsertSymptom = (data) => api.post("/api/admin/symptoms", data);
+export const adminDeleteSymptom = (id) => api.delete(`/api/admin/symptoms/${id}`);
+
+export const adminGetDiseases = () => api.get("/api/admin/diseases");
+export const adminUpsertDisease = (data) => api.post("/api/admin/diseases", data);
+export const adminDeleteDisease = (id) => api.delete(`/api/admin/diseases/${id}`);
+
+export const adminGetRules = () => api.get("/api/admin/rules");
+export const adminUpsertRule = (data) => api.post("/api/admin/rules", data);
+export const adminDeleteRule = (id) => api.delete(`/api/admin/rules/${id}`);
+
+export const adminGetTestimonials = () => api.get("/api/admin/testimonials");
+export const adminUpdateTestimonialDisplay = (id, isDisplayed) => api.put(`/api/admin/testimonials/${id}/display`, { is_displayed: isDisplayed });
+export const adminGetAccountFeedbacks = () => api.get("/api/admin/account_feedbacks");
+
+export const adminGetUsers = () => api.get("/api/admin/users");

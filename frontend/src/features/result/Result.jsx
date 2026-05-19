@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { supabase } from "@/services/supabaseClient";
-import { getProfile, updateProfile } from "@/features/auth/api";
+import { useAuth } from "@/shared/context/AuthContext";
+import { getProfile } from "@/features/auth/api";
 import { submitTestimonial, checkRating } from "@/features/home/api";
 
 import MoodModal from "@/features/detection/components/MoodModal";
@@ -13,14 +14,14 @@ export default function Result() {
         document.title = "Hasil Tes | Vimind";
     }, []);
 
+    const { user, isAuthenticated, loading: authLoading } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    
     const [nickname, setNickname] = useState("");
     const [avatarUrl, setAvatarUrl] = useState("");
     const [showModal, setShowModal] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [userEmail, setUserEmail] = useState("");
 
     // Mood States
     const [showMoodModal, setShowMoodModal] = useState(false);
@@ -47,12 +48,9 @@ export default function Result() {
             return lastMoodDate !== today;
         };
 
-        const checkAuthAndProfile = async () => {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (session) {
-                setIsLoggedIn(true);
+        const fetchProfileData = async () => {
+            if (isAuthenticated && user) {
                 setShowModal(false);
-                setUserEmail(session.user.email);
                 
                 if (checkShouldShowMood()) {
                     setShowMoodModal(true);
@@ -60,39 +58,32 @@ export default function Result() {
 
                 // Check rating status from backend (persistent)
                 try {
-                    const ratingRes = await checkRating(session.user.email);
+                    const ratingRes = await checkRating(); // Uses JWT
                     const rated = ratingRes.data?.has_rated === true;
                     setHasRated(rated);
                     localStorage.setItem("has_rated_test", rated ? "true" : "false");
                 } catch (err) {
-                    // Fallback to localStorage if backend fails
                     setHasRated(localStorage.getItem("has_rated_test") === "true");
                 } finally {
                     setCheckingRating(false);
                 }
 
                 try {
-                    const profileRes = await getProfile(session.user.email);
-                    setNickname(profileRes.data.name || session.user.email.split("@")[0]);
+                    const profileRes = await getProfile(); // Uses JWT
+                    setNickname(profileRes.data.name || user.email.split("@")[0]);
                     setAvatarUrl(profileRes.data.avatar_url || "");
                 } catch (err) {
-                    console.warn("Profile not found in Result, auto-creating user in backend...");
-                    const fallbackName = session.user.user_metadata?.full_name || session.user.email.split("@")[0];
+                    console.warn("Profile fetch error in Result");
+                    const fallbackName = user.user_metadata?.full_name || user.email.split("@")[0];
                     setNickname(fallbackName);
-                    try {
-                        await updateProfile(session.user.email, fallbackName, "", "");
-                    } catch (e) {
-                        console.error("Failed to auto-create user in Result:", e);
-                    }
                 }
-            } else {
-                setIsLoggedIn(false);
+            } else if (!authLoading) {
                 setShowModal(true);
                 setCheckingRating(false);
             }
         };
-        checkAuthAndProfile();
-    }, []);
+        fetchProfileData();
+    }, [user, isAuthenticated, authLoading]);
 
     const result = diagnosis?.top_result || (diagnosis?.all_results ? diagnosis.all_results[0] : null);
 
@@ -100,20 +91,16 @@ export default function Result() {
       .map(r => ({ name: r.disease_name, score: +r.percentage.toFixed(1) }))
       .sort((a, b) => b.score - a.score);
 
-    // --- FITUR BARU: AUTO POP-UP FEEDBACK ---
     useEffect(() => {
-        // Tampilkan pop-up setelah 1 detik halaman dimuat, 
-        // asalkan ada hasil tes dan user tidak terhalang modal login (guest) dan tidak sedang milih mood
         if (result && !showModal && !showMoodModal && !checkingRating) {
-            // Wajibkan rating bagi user login yang belum pernah rating
-            if (isLoggedIn && !hasRated) {
+            if (isAuthenticated && !hasRated) {
                 const timer = setTimeout(() => {
                     setShowFeedbackModal(true);
-                }, 1000); // 1000ms = 1 detik jeda
+                }, 1000);
                 return () => clearTimeout(timer); 
             }
         }
-    }, [result, showModal, showMoodModal, isLoggedIn, hasRated, checkingRating]);
+    }, [result, showModal, showMoodModal, isAuthenticated, hasRated, checkingRating]);
 
     if (!result) {
         return (
@@ -122,9 +109,9 @@ export default function Result() {
                 <p className="not-found-desc">Sepertinya kamu belum melakukan tes atau data sudah kedaluwarsa.</p>
                 <button
                     className="next-btn not-found-btn"
-                    onClick={() => navigate(isLoggedIn ? "/dashboard" : "/")}
+                    onClick={() => navigate(isAuthenticated ? "/dashboard" : "/")}
                 >
-                    {isLoggedIn ? "Kembali ke Dashboard" : "Kembali ke Beranda"}
+                    {isAuthenticated ? "Kembali ke Dashboard" : "Kembali ke Beranda"}
                 </button>
             </div>
         );
@@ -144,7 +131,7 @@ export default function Result() {
         try {
             await submitTestimonial({
                 name: nickname || "Guest",
-                email: isLoggedIn ? (await supabase.auth.getSession()).data.session?.user?.email : "guest@vimind.com",
+                email: isAuthenticated ? user.email : "guest@vimind.com",
                 rating,
                 comment,
             });
@@ -190,14 +177,14 @@ export default function Result() {
                             nickname ? nickname[0].toUpperCase() : "?"
                         )}
                     </div>
-                    {isLoggedIn && (
+                    {isAuthenticated && (
                         <button className="logout-mini-btn" onClick={handleLogout}>Keluar</button>
                     )}
                 </div>
             </div>
 
             {/* Blur hasil jika belum login ATAU (sudah login tapi belum rating & popup muncul) */}
-            <div className={`result-card-container ${(!isLoggedIn || (isLoggedIn && !hasRated)) ? "content-blur" : ""}`}>
+            <div className={`result-card-container ${(!isAuthenticated || (isAuthenticated && !hasRated)) ? "content-blur" : ""}`}>
                 <div className="result-card">
                     <div className="card-section">
                         <h3>Deskripsi Kondisi</h3>
@@ -241,7 +228,7 @@ export default function Result() {
                     </div>
                 </div>
 
-                {isLoggedIn ? (
+                {isAuthenticated ? (
                     <div className="result-footer">
                         <button className="dashboard-btn" onClick={() => navigate("/dashboard")}>
                             Lihat Rangkuman di Dashboard
@@ -331,7 +318,7 @@ export default function Result() {
                                     </button>
                                     
                                     {/* Sembunyikan tombol "Nanti Saja" jika user login & belum rating (Wajib!) */}
-                                    {(!isLoggedIn || hasRated) && (
+                                    {(!isAuthenticated || hasRated) && (
                                         <button
                                             className="btn-later"
                                             onClick={() => setShowFeedbackModal(false)}

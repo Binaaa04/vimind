@@ -7,7 +7,7 @@ import "@/css/LoginCSS.css";
 import logoLeft from "@/assets/logovimind.png";
 import logoTop from "@/assets/logovimind2.png";
 import { supabase } from "@/services/supabaseClient";
-import { getProfile } from "@/features/auth/api";
+import { getProfile, updateProfile } from "@/features/auth/api";
 
 const Login = () => {
 
