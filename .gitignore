@@ -15,7 +15,7 @@ out/
 dist/
 bin/
 
-# Environment variables (PENTING: Biar API Key lu gak bocor)
+# Environment variables
 .env
 .env.local
 .env.*.local
@@ -23,3 +23,7 @@ bin/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Personal AI Agent Config (Antigravity CLI)
+.agents/
+.antigravitycli/

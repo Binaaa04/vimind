@@ -34,6 +34,9 @@ func (r *Repository) GetBanners() ([]Banner, error) {
 		}
 		banners = append(banners, b)
 	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
 	return banners, nil
 }
 
@@ -56,6 +59,9 @@ func (r *Repository) GetPublicBanners() ([]Banner, error) {
 			continue
 		}
 		banners = append(banners, b)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
 	}
 	return banners, nil
 }
@@ -98,6 +104,9 @@ func (r *Repository) GetFAQ() ([]FAQItem, error) {
 		}
 		items = append(items, f)
 	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
 	return items, nil
 }
 
@@ -138,6 +147,9 @@ func (r *Repository) GetArticles(onlyActive bool) ([]Article, error) {
 		}
 		articles = append(articles, a)
 	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
 	return articles, nil
 }
 
@@ -176,6 +188,9 @@ func (r *Repository) GetAllSymptoms() ([]AdminSymptom, error) {
 		}
 		list = append(list, s)
 	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
 	return list, nil
 }
 
@@ -210,6 +225,9 @@ func (r *Repository) GetAllDiseases() ([]AdminDisease, error) {
 		}
 		list = append(list, d)
 	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
 	return list, nil
 }
 
@@ -243,6 +261,9 @@ func (r *Repository) GetAllCFRules() ([]AdminRule, error) {
 			continue
 		}
 		list = append(list, rule)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
 	}
 	return list, nil
 }
@@ -286,6 +307,9 @@ func (r *Repository) GetAllUsers() ([]AdminUser, error) {
 			continue
 		}
 		list = append(list, u)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
 	}
 	return list, nil
 }

@@ -34,6 +34,9 @@ func (r *Repository) GetPublicTestimonials() ([]Testimonial, error) {
 		}
 		list = append(list, t)
 	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
 	return list, nil
 }
 
@@ -54,6 +57,9 @@ func (r *Repository) GetAllTestimonials() ([]Testimonial, error) {
 			continue
 		}
 		list = append(list, t)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
 	}
 	return list, nil
 }
@@ -97,6 +103,9 @@ func (r *Repository) GetAllAccountFeedbacks() ([]AccountFeedback, error) {
 			continue
 		}
 		list = append(list, f)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
 	}
 	return list, nil
 }

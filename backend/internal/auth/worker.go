@@ -54,12 +54,12 @@ func (p *WorkerPool) processTask(task ActivityTask) {
 	region := ""
 	if task.IP != lastIP {
 		client := &http.Client{Timeout: 5 * time.Second}
-		resp, err := client.Get("http://ip-api.com/json/" + task.IP)
+		resp, err := client.Get("https://ipapi.co/" + task.IP + "/json/")
 		if err == nil {
 			defer resp.Body.Close()
 			var result struct {
 				City   string `json:"city"`
-				Region string `json:"regionName"`
+				Region string `json:"region"`
 			}
 			if json.NewDecoder(resp.Body).Decode(&result) == nil {
 				if result.City != "" {

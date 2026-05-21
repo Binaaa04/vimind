@@ -74,6 +74,9 @@ func (r *Repository) GetQuestions(mode string, diseaseIDs []int) ([]Question, er
 		}
 		questions = append(questions, q)
 	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
 	return questions, nil
 }
 
@@ -96,6 +99,9 @@ func (r *Repository) GetAllRules() ([]Rule, error) {
 		}
 		rules = append(rules, rule)
 	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
 	return rules, nil
 }
 
@@ -114,6 +120,9 @@ func (r *Repository) GetSuspectDiseases(symptomIDs []int) ([]int, error) {
 		if err := rows.Scan(&id); err == nil {
 			ids = append(ids, id)
 		}
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
 	}
 	return ids, nil
 }
@@ -178,6 +187,9 @@ func (r *Repository) GetHistory(uid int) ([]HistoryItem, error) {
 		}
 		history = append(history, hi)
 	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
 	return history, nil
 }
 
@@ -211,6 +223,9 @@ func (r *Repository) GetLevelCategories() ([]LevelCategory, error) {
 			return nil, err
 		}
 		levels = append(levels, l)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
 	}
 	return levels, nil
 }
