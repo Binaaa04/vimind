@@ -58,7 +58,8 @@
 /* EXPORT BUTTON (HEADER) */
 .sm-export-btn {
   background: white;
-  color: #fff !important;
+  color: #8B5CF6 !important;
+  border: 1.5px solid #8B5CF6;
   padding: clamp(8px, 2vw, 10px) clamp(16px, 3vw, 24px);
   border-radius: 12px;
   font-weight: 700;

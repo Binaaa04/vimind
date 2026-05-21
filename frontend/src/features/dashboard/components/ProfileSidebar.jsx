@@ -93,10 +93,7 @@ const ProfileSidebar = ({
 
         <button
           className="profile-close"
-          onClick={() => {
-            onClose();
-            navigate("/dashboard");
-          }}
+          onClick={onClose}
         >
           ←
         </button>

@@ -180,21 +180,21 @@ body {
 
 /* Hero styles have been migrated and consolidated to HomeCSS.css to prevent conflicts */
 
-/* circles */
-.circle {
+/* circles — scoped to landing page only */
+.landing .circle {
   position: absolute;
   border-radius: 50%;
   background: rgba(155, 120, 255, 0.15);
 }
 
-.circle.top {
+.landing .circle.top {
   width: 500px;
   height: 500px;
   top: -150px;
   right: -150px;
 }
 
-.circle.bottom {
+.landing .circle.bottom {
   width: 500px;
   height: 500px;
   bottom: -150px;
@@ -292,8 +292,8 @@ body {
   line-height: 1.4;
 }
 
-/* OPTIONS */
-.options-wrapper {
+/* OPTIONS — scoped to detection-page legacy */
+.detection-page .options-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -303,7 +303,7 @@ body {
   width: 100%;
 }
 
-.label-left {
+.detection-page .label-left {
   text-align: right;
   font-size: 18px;
   font-weight: 600;
@@ -314,32 +314,32 @@ body {
 }
 
 @media (max-width: 600px) {
-    .options-wrapper {
+    .detection-page .options-wrapper {
         flex-direction: column;
         gap: 20px;
         margin: 30px 0;
     }
-    .label-left, .label-right {
+    .detection-page .label-left, .detection-page .label-right {
         text-align: center;
         max-width: 100%;
         font-size: 14px;
     }
-    .circles {
+    .detection-page .circles {
         gap: 15px;
     }
-    .circle {
+    .detection-page .circle {
         width: 35px;
         height: 35px;
         min-width: 35px;
         min-height: 35px;
     }
-    .question-container h1 {
+    .detection-page .question-container h1 {
         font-size: 22px;
         padding: 0 20px;
     }
 }
 
-.label-right {
+.detection-page .label-right {
   text-align: left;
   font-size: 18px;
   font-weight: 600;
@@ -348,7 +348,7 @@ body {
   max-width: 100px;
 }
 
-.circles {
+.detection-page .circles {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -357,7 +357,8 @@ body {
   /* Biar grup lingkaran punya ruang lebih tengah */
 }
 
-.circle {
+/* Scoped to question-page in App.css legacy styles */
+.detection-page .circle {
   width: 45px;
   height: 45px;
   min-width: 45px;
@@ -371,11 +372,11 @@ body {
   flex: none !important;
 }
 
-.circle.active {
+.detection-page .circle.active {
   background: #7a5cff;
 }
 
-.circle:hover {
+.detection-page .circle:hover {
   transform: scale(1.1);
 }
 

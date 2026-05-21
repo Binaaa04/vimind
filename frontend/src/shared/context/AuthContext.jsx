@@ -70,7 +70,35 @@ export const AuthProvider = ({ children }) => {
 
   return (
     <AuthContext.Provider value={value}>
-      {!loading && children}
+      {loading ? (
+        <div style={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignItems: 'center',
+          width: '100vw',
+          height: '100vh',
+          backgroundColor: '#fcfbfe',
+          fontFamily: "'Poppins', sans-serif"
+        }}>
+          <div style={{
+            width: '40px',
+            height: '40px',
+            border: '4px solid #e9ddff',
+            borderTop: '4px solid #8a5cff',
+            borderRadius: '50%',
+            animation: 'spin 1s linear infinite'
+          }} />
+          <style>{`
+            @keyframes spin {
+              0% { transform: rotate(0deg); }
+              100% { transform: rotate(360deg); }
+            }
+          `}</style>
+        </div>
+      ) : (
+        children
+      )}
     </AuthContext.Provider>
   );
 };

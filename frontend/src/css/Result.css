@@ -80,11 +80,11 @@
 
 .result-badge span {
     font-size: 14px;
-    color: #ffffff;
+    color: #64748b;
 }
 
 .result-badge h2 {
-    color: #ddd1fb !important;
+    color: #2b1b54 !important;
     margin: 5px 0 10px 0;
     font-size: 22px;
 }

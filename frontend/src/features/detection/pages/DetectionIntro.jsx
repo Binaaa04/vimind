@@ -1,11 +1,27 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/services/supabaseClient";
 import "@/css/DetectionIntroCSS.css";
 
 export default function DetectionIntro() {
+  const [hasSession, setHasSession] = useState(false);
+
   useEffect(() => {
     document.title = "Tes Gejala | Vimind";
+
+    const checkSession = async () => {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+          setHasSession(true);
+        }
+      } catch (err) {
+        console.error("Error checking session:", err);
+      }
+    };
+    checkSession();
   }, []);
+
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -15,7 +31,7 @@ export default function DetectionIntro() {
       {/* Tombol Back ke Dashboard */}
       <button
         className="back-btn"
-        onClick={() => navigate("/dashboard")}
+        onClick={() => navigate(hasSession ? "/dashboard" : "/")}
       >
         Keluar
       </button>

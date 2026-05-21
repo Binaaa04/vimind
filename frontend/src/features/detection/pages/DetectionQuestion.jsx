@@ -393,7 +393,10 @@ export default function Detection() {
               </h2>
 
               <div className="options-wrapper">
-                {/* Bagian Lingkaran di Atas */}
+                {/* Label Kiri */}
+                <div className="label-left">Setuju</div>
+
+                {/* Bagian Lingkaran */}
                 <div className="circles">
                   {[1, 2, 3, 4].map((i) => (
                     <div
@@ -404,11 +407,8 @@ export default function Detection() {
                   ))}
                 </div>
 
-                {/* Bagian Label di Bawah */}
-                <div className="labels-row">
-                  <div className="label-text">Setuju</div>
-                  <div className="label-text">Tidak Setuju</div>
-                </div>
+                {/* Label Kanan */}
+                <div className="label-right">Tidak Setuju</div>
               </div>
             </div>
           );

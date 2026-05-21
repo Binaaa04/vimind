@@ -20,23 +20,23 @@ body {
   position: relative;
   background-color: #fcfbfe;
   box-sizing: border-box;
-  padding-top: 140px; /* Jarak aman dari atas agar TERHINDAR dari progress bar */
-  padding-bottom: 100px; /* Jarak aman di bawah agar logo tidak mepet */
+  padding-top: 80px; /* Jarak aman dari atas agar TERHINDAR dari progress bar */
+  padding-bottom: 60px; /* Jarak aman di bawah agar logo tidak mepet */
 }
 
 /* ==========================================
    TOMBOL KELUAR (KIRI ATAS)
    ========================================== */
 .back-btn {
-  position: absolute !important;
-  top: 30px !important;
-  left: 30px !important;
-  background: transparent;
+  position: fixed !important;
+  top: 12px !important;
+  left: 16px !important;
+  background: rgba(252, 251, 254, 0.95) !important;
   color: #8a5cff;
   border: 2px solid #8a5cff;
-  padding: 8px 20px;
+  padding: 6px 16px;
   border-radius: 9999px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
   cursor: pointer;
   display: inline-flex;
@@ -85,11 +85,11 @@ body {
    PROGRESS BAR
    ========================================== */
 .progress-bar {
-  position: absolute;
-  top: 40px;
+  position: fixed;
+  top: 48px;
   left: 50%;
   transform: translateX(-50%);
-  width: 80%;
+  width: 55%;
   max-width: 900px;
   height: 6px;
   background-color: #e9ddff; 
@@ -129,8 +129,20 @@ body {
 
 /* Container untuk tiap pertanyaan */
 .question-item {
-  margin-bottom: 10px; 
+  margin-bottom: 30px; 
   width: 100%;
+  background: #ffffff;
+  border: 1px solid #e9e0ff;
+  border-radius: 20px;
+  padding: 35px 24px;
+  box-shadow: 0 8px 24px rgba(122, 92, 255, 0.03);
+  transition: all 0.3s ease;
+  box-sizing: border-box;
+}
+
+.question-item:hover {
+  box-shadow: 0 12px 30px rgba(122, 92, 255, 0.08);
+  border-color: #d6c6ff;
 }
 
 .question-item h2 {
@@ -138,7 +150,7 @@ body {
   color: #2b1b54; 
   font-weight: 700;
   line-height: 1.4;
-  margin: 0 auto -30px auto; /* Jarak pas antara teks soal ke bulatan Likert */
+  margin: 0 auto 24px auto; /* Positive margin to prevent text-overlap when wrapped */
   max-width: 700px;
   text-align: center;
 }
@@ -250,7 +262,7 @@ body {
 .logo-bottom {
   position: fixed !important;
   bottom: 25px;
-  right: 35px;
+  left: 35px;
   z-index: 100;
   display: flex;
   align-items: center;
@@ -265,25 +277,71 @@ body {
    RESPONSIVE DESIGN
    ========================================== */
 @media (max-width: 768px) {
-  .back-btn { top: 15px !important; left: 15px !important; }
-  .progress-bar { top: 22px; width: 85%; }
-  .question-page { padding: 100px 20px 80px 20px; }
-  .question-item h2 { font-size: 18px; }
-  .circle:nth-child(1), .circle:nth-child(4) { width: 45px; height: 45px; }
-  .circle:nth-child(2), .circle:nth-child(3) { width: 35px; height: 35px; }
-  .logo-bottom { bottom: 20px; right: 20px; }
-  .action-buttons { flex-direction: column-reverse; gap: 12px; }
-  .prev-btn, .next-btn { width: 100%; max-width: 300px; }
+  .back-btn { top: 10px !important; left: 12px !important; padding: 5px 14px !important; font-size: 12px !important; }
+  .progress-bar { top: 46px; width: 70%; }
+  .question-page { padding: 70px 16px 60px 16px; }
+  .question-item {
+    padding: 24px 16px;
+    margin-bottom: 20px;
+    border-radius: 16px;
+  }
+  .question-item h2 {
+    font-size: 16px;
+    margin: 0 auto 20px auto;
+  }
+  .circle:nth-child(1), .circle:nth-child(4) { width: 45px !important; height: 45px !important; }
+  .circle:nth-child(2), .circle:nth-child(3) { width: 35px !important; height: 35px !important; }
+  .logo-bottom { bottom: 16px; left: 16px; font-size: 16px; }
+  .action-buttons { flex-direction: column-reverse !important; gap: 12px !important; }
+  .action-buttons .prev-btn,
+  .action-buttons .next-btn { width: 100% !important; max-width: 300px !important; }
 }
 
 @media (max-width: 480px) {
   .back-btn { padding: 6px 12px; font-size: 12px; }
-  .question-item h2 { font-size: 16px; }
-  .options-wrapper { gap: 15px; }
-  .label-left, .label-right { font-size: 11px; width: 50px; }
-  .circle:nth-child(1), .circle:nth-child(4) { width: 40px; height: 40px; }
-  .circle:nth-child(2), .circle:nth-child(3) { width: 30px; height: 30px; }
-  .logo-bottom { bottom: 15px; right: 15px; font-size: 16px; }
+  .question-page { padding: 70px 12px 70px 12px; }
+  .question-item {
+    padding: 20px 12px;
+    margin-bottom: 16px;
+  }
+  .question-item h2 {
+    font-size: 14px;
+    margin: 0 auto 16px auto;
+  }
+  .options-wrapper {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas: 
+      "circles circles"
+      "label-left label-right";
+    justify-items: center;
+    gap: 12px;
+  }
+  .circles {
+    grid-area: circles;
+    gap: 10px;
+  }
+  .label-left {
+    grid-area: label-left;
+    text-align: left;
+    width: auto;
+    justify-self: start;
+    padding-left: 8px;
+    font-size: 11px;
+  }
+  .label-right {
+    grid-area: label-right;
+    text-align: right;
+    width: auto;
+    justify-self: end;
+    padding-right: 8px;
+    font-size: 11px;
+  }
+  .circle:nth-child(1), .circle:nth-child(4) { width: 40px !important; height: 40px !important; min-width: 40px !important; min-height: 40px !important; }
+  .circle:nth-child(2), .circle:nth-child(3) { width: 30px !important; height: 30px !important; min-width: 30px !important; min-height: 30px !important; }
+  .logo-bottom { bottom: 12px; left: 12px; font-size: 14px; }
+  .action-buttons .prev-btn,
+  .action-buttons .next-btn { max-width: 100% !important; }
 }
 
 /* ==========================================

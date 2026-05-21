@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect } from "react";
+import "@/css/DetectionQuestionCSS.css";
 
 export default function Finish() {
       useEffect(() => {

@@ -378,21 +378,13 @@ const Dashboard = () => {
           </>
         ) : (
           /* EMPTY STATE: Tampil kalau tidak ada banner dari admin */
-          <div style={{
-            margin: '0 0 20px 0',
-            padding: '24px 30px',
-            background: 'linear-gradient(135deg, #f5f3ff, #ede9fe)',
-            borderRadius: '16px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '16px',
-          }}>
-            <span style={{ fontSize: '2rem' }}>💜</span>
-            <div>
-              <p style={{ fontWeight: 700, color: '#5B4A78', fontSize: '0.95rem', margin: 0 }}>
+          <div className="dashboard-empty-banner">
+            <span className="empty-banner-emoji">💜</span>
+            <div className="empty-banner-text">
+              <p className="empty-banner-title">
                 Selamat datang di Vimind!
               </p>
-              <p style={{ color: '#8c7aad', fontSize: '0.82rem', margin: '4px 0 0 0' }}>
+              <p className="empty-banner-subtitle">
                 Gunakan fitur di bawah untuk mulai memantau kesehatan mentalmu.
               </p>
             </div>
@@ -404,7 +396,19 @@ const Dashboard = () => {
 
           <div className="bottom-left">
             {/* FIX #1: Skeleton loading pada greeting agar tidak glitch */}
-            <p style={{ fontSize: '0.85rem', color: '#a78bfa', fontWeight: 600, marginBottom: '6px' }}>
+            <p style={{ fontSize: '0.85rem', color: '#a78bfa', fontWeight: 600, marginBottom: '6px', minHeight: '18px' }}>
+              {nickname === '...' ? (
+                <span className="skeleton-text" style={{ 
+                  display: 'inline-block', 
+                  width: '80px', 
+                  height: '14px', 
+                  borderRadius: '4px', 
+                  backgroundColor: '#e9ddff',
+                  animation: 'pulse 1.5s infinite ease-in-out'
+                }} />
+              ) : (
+                `Halo, ${nickname || 'User'}!`
+              )}
             </p>
             <h2>Mari cek dan coba <br />beberapa manfaat Vimind</h2>
           </div>

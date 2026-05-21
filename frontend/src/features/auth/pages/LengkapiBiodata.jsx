@@ -116,13 +116,13 @@ const LengkapiBiodata = () => {
         <div className="card-right">
           <img src={logoTop} alt="logo" className="login-top-logo" style={{ marginTop: "20px" }} />
           
-          <h2 style={{ textAlign: "center", marginTop: "10px", marginBottom: "5px", color: "#fff" }}>Lengkapi Biodata</h2>
+          <h2 style={{ textAlign: "center", marginTop: "10px", marginBottom: "5px", color: "#2b1b54" }}>Lengkapi Biodata</h2>
           <p className="subtitle center-text" style={{ marginBottom: "30px" }}>
             Halo! Sebelum lanjut masuk, lengkapi datamu dulu ya.
           </p>
 
           <form onSubmit={handleSubmit} className="login-form">
-            <div style={{ textAlign: "left", width: "100%", marginBottom: "5px", color: "rgba(255,255,255,0.7)", fontSize: "14px" }}>
+            <div style={{ textAlign: "left", width: "100%", marginBottom: "5px", color: "#5b4a78", fontSize: "14px", fontWeight: "600" }}>
               Nama Lengkap / Panggilan
             </div>
             <input
@@ -134,7 +134,7 @@ const LengkapiBiodata = () => {
               onChange={handleChange}
             />
 
-            <div style={{ textAlign: "left", width: "100%", marginTop: "15px", marginBottom: "5px", color: "rgba(255,255,255,0.7)", fontSize: "14px" }}>
+            <div style={{ textAlign: "left", width: "100%", marginTop: "15px", marginBottom: "5px", color: "#5b4a78", fontSize: "14px", fontWeight: "600" }}>
               Tanggal Lahir
             </div>
             <input
@@ -143,7 +143,7 @@ const LengkapiBiodata = () => {
               className="input-field"
               value={form.birth_date}
               onChange={handleChange}
-              style={{ colorScheme: "dark" }} // Supaya date picker cocok sama tema gelap Vimind
+              style={{ colorScheme: "light" }}
             />
 
             <button type="submit" className="primary-btn full" disabled={loading} style={{ marginTop: "30px" }}>
