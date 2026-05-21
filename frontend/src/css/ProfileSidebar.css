@@ -2,10 +2,12 @@
 .profile-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.08);
+  background: rgba(15, 10, 25, 0.45);
+  backdrop-filter: blur(3px);
+  -webkit-backdrop-filter: blur(3px);
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.3s ease;
   z-index: 1500;
 }
 
@@ -390,19 +392,27 @@
     position: fixed;
     top: 0;
     right: 0;
-    width: 100%;
-    max-width: 100%;
+    width: 85%;
+    max-width: 320px;
     height: 100%;
-    border-radius: 0;
+    border-radius: 16px 0 0 16px;
     padding: 24px 18px;
-    box-shadow: none;
+    box-shadow: -5px 0 25px rgba(0, 0, 0, 0.15) !important;
     justify-content: flex-start;
     overflow-y: auto;
+    /* Slide transition native mobile style */
+    opacity: 1 !important;
+    transform: translateX(100%) !important;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.3s !important;
+  }
+
+  .profile-sidebar.open {
+    transform: translateX(0) !important;
+    visibility: visible !important;
   }
 
   .profile-close {
     top: 20px;
-    /* Sesuaikan posisi di mobile agar tidak terlalu rapat */
     left: 20px;
     right: auto;
     display: flex;
@@ -410,11 +420,12 @@
 
   .profile-top {
     padding-bottom: 12px;
+    width: 100%;
   }
 
   .profile-header h3 {
     font-size: 18px;
-    margin-top: 0;
+    margin-top: 40px; /* Jarak agar tidak bertabrakan dengan tombol close */
     margin-bottom: 8px;
     padding-bottom: 8px;
   }
@@ -425,13 +436,22 @@
     font-size: 13px;
   }
 
-  .profile-menu-btn,
+  /* Spacing & touch targets untuk tombol menu */
+  .profile-menu-btn {
+    height: 42px !important;
+    font-size: 13px !important;
+    border-radius: 8px !important;
+    padding: 0 12px !important;
+    margin-bottom: 0 !important; /* Hilangkan margin bawaan agar diatur oleh gap */
+  }
+
+  /* Spacing & touch targets untuk tombol logout */
   .profile-logout-btn {
-    height: 38px;
-    font-size: 12px;
-    border-radius: 6px;
-    padding: 12px 10px;
-    margin-bottom: 28px;
+    height: 42px !important;
+    font-size: 13px !important;
+    border-radius: 8px !important;
+    padding: 0 12px !important;
+    margin-bottom: 15px !important; /* Jarak pemisah ke brand logo */
   }
 
   .profile-menu {

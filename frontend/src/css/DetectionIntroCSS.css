@@ -14,7 +14,7 @@
 }
 
 /* Styling Tombol Kembali (Back to Dashboard) */
-.back-btn {
+.question-page .back-btn {
   position: absolute;
   top: 24px;
   left: 24px;
@@ -33,7 +33,7 @@
   z-index: 20;
 }
 
-.back-btn:hover {
+.question-page .back-btn:hover {
   background: #7241eb !important;
   color: white !important;
 }
@@ -112,7 +112,7 @@
     font-size: 0.9rem;
   }
 
-  .back-btn {
+  .question-page .back-btn {
     top: 12px !important;
     left: 16px !important;
     padding: 5px 14px !important;

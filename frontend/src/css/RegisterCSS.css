@@ -44,11 +44,13 @@
 /* ------------------------------- */
 
 /* TOMBOL KEMBALI (BACK TO LANDING PAGE) */
+/* Wadah tombol kembali diposisikan absolut di bagian kiri atas card pada desktop */
 .register-page .back-button-container {
-  width: 100%;
+  position: absolute;
+  top: 40px;
+  left: 40px;
+  width: auto;
   display: flex;
-  justify-content: flex-start;
-  margin-bottom: 16px;
   z-index: 10;
 }
 
@@ -234,49 +236,94 @@
 
 /* Mobile screens (768px and below) */
 @media (max-width: 768px) {
+  /* Sembunyiin ilustrasi kiri — kasih semua ruang ke form */
+  .register-page .card-left {
+    display: none !important;
+  }
+
+  /* Card jadi 1 kolom, padding lebih ramping */
+  .register-page .card {
+    padding: 30px 20px !important;
+    gap: 0 !important;
+  }
+
+  .register-page .card-right {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: none !important;
+    width: 100% !important;
+  }
+
+  /* Back button ke bawah */
   .register-page .back-button-container {
-    order: 10;
-    margin-top: 15px;
-    margin-bottom: 0;
-    justify-content: center;
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    order: 10 !important;
+    margin-top: 20px !important;
+    margin-bottom: 0 !important;
+    justify-content: center !important;
+    width: 100% !important;
   }
+
+  /* Logo container — reset margin aneh desktop */
   .register-page .logo-container {
-    margin-top: 10px !important;
+    margin-top: 8px !important;
     margin-right: 0 !important;
+    justify-content: center !important;
   }
+
   .register-page .logo-img {
-    width: 200px !important;
+    width: 130px !important;
   }
-  .register-page .card-left img {
-    max-width: 70%;
-    margin-bottom: 10px;
-  }
+
+  /* Subtitle */
   .register-page .subtitle {
     font-size: 0.95rem;
-    margin-bottom: 14px;
+    margin-bottom: 16px;
+    margin-top: 8px !important;
+    text-align: center;
   }
+
+  /* Input fields */
+  .register-page .login-form .input-field {
+    padding: 12px 16px;
+    font-size: 0.9rem;
+    margin-bottom: 0;
+  }
+
+  /* Tombol Daftar */
   .register-page .primary-btn {
     margin-top: 14px;
   }
+
+  /* "Sudah punya akun?" — center di mobile */
   .register-page .small-text {
-    font-size: 0.75rem;
-    margin-top: 6px;
+    font-size: 0.8rem;
+    margin-top: 10px;
+    text-align: center !important;
   }
+
+  /* Divider "Or" */
   .register-page .divider-text {
-    font-size: 0.75rem;
-    margin-top: -8px;
-    margin-bottom: 16px;
+    font-size: 0.8rem;
+    margin-top: 16px !important;
+    margin-bottom: 12px;
   }
+
+  /* Google button full-width di mobile */
   .register-page .google-btn {
     width: 100% !important;
     box-sizing: border-box;
     padding: 12px 20px !important;
     font-size: 0.85rem !important;
-    margin-bottom: 20px;
+    margin-top: 0 !important;
+    margin-bottom: 4px !important;
   }
+
   .register-page .google-btn img {
-    width: 14px;
-    height: 14px;
+    width: 16px;
+    height: 16px;
   }
 }
 

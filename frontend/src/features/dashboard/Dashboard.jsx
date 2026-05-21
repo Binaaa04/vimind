@@ -396,24 +396,29 @@ const Dashboard = () => {
 
           <div className="bottom-left">
             {/* FIX #1: Skeleton loading pada greeting agar tidak glitch */}
-            <p style={{ fontSize: '0.85rem', color: '#a78bfa', fontWeight: 600, marginBottom: '6px', minHeight: '18px' }}>
+            <div className="welcome-greeting" style={{ minHeight: '24px' }}>
               {nickname === '...' ? (
                 <span className="skeleton-text" style={{ 
                   display: 'inline-block', 
-                  width: '80px', 
-                  height: '14px', 
+                  width: '120px', 
+                  height: '18px', 
                   borderRadius: '4px', 
                   backgroundColor: '#e9ddff',
                   animation: 'pulse 1.5s infinite ease-in-out'
                 }} />
               ) : (
-                `Halo, ${nickname || 'User'}!`
+                <>
+                  <span className="wave-emoji" style={{ marginRight: '6px', fontSize: '1.1rem' }}>👋</span>
+                  <span className="welcome-text">
+                    Halo, <strong className="user-name-highlight">{nickname && nickname !== '...' ? nickname.split(' ').map(w => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase()).join(' ') : 'User'}</strong>!
+                  </span>
+                </>
               )}
-            </p>
-            <h2>Mari cek dan coba <br />beberapa manfaat Vimind</h2>
+            </div>
+            <h2 className="welcome-subtitle">Mari cek dan coba beberapa manfaat Vimind</h2>
           </div>
 
-          <div className="bottom-cards">
+          <div className="bottom-cards feature-cards">
 
             {/* MOOD RESULT */}
             <div

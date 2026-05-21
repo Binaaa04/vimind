@@ -31,7 +31,7 @@ body {
 /* ==========================================
    TOMBOL KELUAR (KIRI ATAS)
    ========================================== */
-.back-btn {
+.question-page .back-btn {
   position: fixed !important;
   top: 12px !important;
   left: 16px !important;
@@ -50,7 +50,7 @@ body {
   z-index: 20;
 }
 
-.back-btn:hover {
+.question-page .back-btn:hover {
   background: #7241eb;
   color: white;
   transform: translateY(-1px);
@@ -315,7 +315,7 @@ body {
    RESPONSIVE DESIGN
    ========================================== */
 @media (max-width: 768px) {
-  .back-btn {
+  .question-page .back-btn {
     top: 10px !important;
     left: 12px !important;
     padding: 5px 14px !important;
@@ -373,7 +373,7 @@ body {
 }
 
 @media (max-width: 480px) {
-  .back-btn {
+  .question-page .back-btn {
     padding: 6px 12px;
     font-size: 12px;
   }

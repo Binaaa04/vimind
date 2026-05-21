@@ -55,7 +55,7 @@
   display: block;
 }
 .login-top-logo {
-  width: 140px;   /* 🔥 kontrol ukuran di sini */
+  width: 140px;   /*  kontrol ukuran di sini */
   height: auto;
   display: block;
   margin: 0 auto 12px;
@@ -266,12 +266,13 @@
 
 /* TOMBOL KEMBALI (BACK TO LANDING PAGE) */
 
-/* Wadah tombol kembali diposisikan relatif di bagian atas card-right */
-.back-button-container {
-  width: 100%;
+/* Wadah tombol kembali diposisikan absolut di bagian kiri atas card pada desktop */
+.login-card .back-button-container {
+  position: absolute;
+  top: 40px;
+  left: 40px;
+  width: auto;
   display: flex;
-  justify-content: flex-start;
-  margin-bottom: 16px;
   z-index: 10;
 }
 
@@ -363,11 +364,14 @@
 
 /* Mobile screens (768px and below) - extending existing */
 @media (max-width: 768px) {
-  .back-button-container {
-    order: 10;
-    margin-top: 15px;
-    margin-bottom: 0;
-    justify-content: center;
+  .login-card .back-button-container {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    order: 10 !important;
+    margin-top: 15px !important;
+    margin-bottom: 0 !important;
+    justify-content: center !important;
   }
 
   .page-wrapper {
@@ -391,7 +395,9 @@
   }
 
   .card-right {
-    flex: none;
+    display: flex !important;
+    flex-direction: column !important;
+    flex: none !important;
   }
 
   .logo-img {

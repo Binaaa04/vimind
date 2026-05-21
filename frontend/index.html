@@ -196,6 +196,49 @@
       .goog-logo-link, .goog-te-gadget span, #google_translate_element img, .goog-te-banner-frame { 
         display: none !important; 
       }
+
+      /* Desktop: hide the text label */
+      #translate-label {
+        display: none;
+      }
+
+      /* 📱 MOBILE: pill style at bottom-left (avoids overlapping chatbot button) */
+      @media (max-width: 768px) {
+        #google_translate_widget_wrapper {
+          bottom: 20px !important;
+          left: 20px !important;
+          right: auto !important;
+          top: auto !important;
+          width: auto !important;
+          height: 38px !important;
+          border-radius: 50px !important;
+          padding: 0 14px 0 8px !important;
+          gap: 6px !important;
+          background: rgba(255, 255, 255, 0.92) !important;
+          backdrop-filter: blur(12px) !important;
+          border: 1.5px solid rgba(139, 92, 246, 0.25) !important;
+          box-shadow: 0 4px 16px rgba(139, 92, 246, 0.12) !important;
+        }
+        #google_translate_widget_wrapper:hover {
+          transform: scale(1.05) !important;
+          box-shadow: 0 6px 20px rgba(139, 92, 246, 0.2) !important;
+        }
+        #google_translate_widget_wrapper .translate-icon {
+          width: 22px !important;
+          height: 22px !important;
+          flex-shrink: 0 !important;
+        }
+        #translate-label {
+          display: inline-block !important;
+          font-size: 13px !important;
+          font-weight: 700 !important;
+          color: #5B4A78 !important;
+          white-space: nowrap !important;
+          pointer-events: none !important;
+          line-height: 1 !important;
+          font-family: 'Quicksand', sans-serif !important;
+        }
+      }
     </style>
 
     <script>
@@ -233,6 +276,13 @@
           : `https://flagcdn.com/w160/${countryCode}.png`;
           
         flagImg.src = flagUrl;
+
+        // Update mobile pill label text
+        const label = document.querySelector('#translate-label');
+        if (label) {
+          const displayCode = currentLang.toUpperCase().split('-')[0]; // 'ID', 'EN', 'ZH', etc.
+          label.textContent = '🌐 ' + displayCode;
+        }
       }
 
       // Watch for BOTH Widget Changes and HTML Lang Attribute Changes
@@ -258,6 +308,63 @@
       // Initial run
       window.addEventListener('load', updateFlag);
     </script>
+
+    <script>
+      // 🔒 AGGRESSIVELY SUPPRESS GOOGLE TRANSLATE BANNER
+      // GT sets body.style.top via JS *after* load, so we need setInterval + MutationObserver
+      function suppressTranslateBanner() {
+        // 1. Force body top to 0 via inline style (overrides GT's inline style injection)
+        if (document.body) {
+          document.body.style.setProperty('top', '0px', 'important');
+          document.body.style.setProperty('position', 'static', 'important');
+        }
+
+        // 2. Nuke the banner iframe
+        document.querySelectorAll('.goog-te-banner-frame, .goog-te-balloon-frame').forEach(function(el) {
+          el.style.setProperty('display', 'none', 'important');
+          el.style.setProperty('visibility', 'hidden', 'important');
+          el.style.setProperty('height', '0', 'important');
+        });
+
+        // 3. Nuke any iframe inside .skiptranslate
+        var skip = document.querySelector('.skiptranslate');
+        if (skip) {
+          skip.querySelectorAll('iframe').forEach(function(el) {
+            el.style.setProperty('display', 'none', 'important');
+          });
+        }
+
+        // 4. Remove height from html element GT might add
+        if (document.documentElement) {
+          document.documentElement.style.setProperty('margin-top', '0', 'important');
+        }
+      }
+
+      // Poll every 200ms - most reliable method for fighting GT's late JS injection
+      var gtInterval = setInterval(suppressTranslateBanner, 200);
+
+      // Also stop heavy polling after 10s, leave light interval running
+      setTimeout(function() {
+        clearInterval(gtInterval);
+        gtInterval = setInterval(suppressTranslateBanner, 2000);
+      }, 10000);
+
+      // MutationObserver as extra layer
+      var bannerObserver = new MutationObserver(suppressTranslateBanner);
+      document.addEventListener('DOMContentLoaded', function() {
+        suppressTranslateBanner();
+        bannerObserver.observe(document.body, {
+          childList: true,
+          subtree: true,
+          attributes: true,
+          attributeFilter: ['style', 'class']
+        });
+        bannerObserver.observe(document.documentElement, {
+          attributes: true,
+          attributeFilter: ['style', 'class']
+        });
+      });
+    </script>
   </head>
   <body>
     <!-- Google Translate floating widget -->
@@ -265,6 +372,7 @@
       <div class="translate-icon">
         <img id="current-flag" src="/flag-id.png" alt="ID" />
       </div>
+      <span id="translate-label">🌐 ID</span>
       <div id="google_translate_element"></div>
     </div>
 

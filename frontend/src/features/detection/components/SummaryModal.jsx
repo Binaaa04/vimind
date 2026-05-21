@@ -67,6 +67,15 @@ export default function SummaryModal({ onClose }) {
     });
   };
 
+  const formatChartDate = (dateStr) => {
+    if (!dateStr) return "—";
+    const d = new Date(dateStr);
+    return d.toLocaleDateString("id-ID", { 
+      day: "2-digit", 
+      month: "short"
+    });
+  };
+
   const formatDateLong = (dateStr) => {
     if (!dateStr) return "—";
     const d = new Date(dateStr);
@@ -214,6 +223,7 @@ export default function SummaryModal({ onClose }) {
             <p>Pantau perkembangan kesehatan mental kamu</p>
           </div>
           <button className="sm-export-btn" onClick={handleExport}>Ekspor Laporan</button>
+          <button className="sm-close-x-btn" onClick={onClose} aria-label="Tutup modal">✕</button>
         </div>
 
         {/* BODY */}
@@ -222,20 +232,28 @@ export default function SummaryModal({ onClose }) {
             <div className="sm-chart-label">Kondisi Terakhir Anda</div>
             
             {/* 1. GAUGE GRAFIK */}
-            <div
-              className="gauge-graphic"
-              style={{
-                background: `conic-gradient(from 270deg at 50% 100%, 
-                  #9061f9 0deg, 
-                  #9061f9 ${(latest?.percentage || 0) * 1.8}deg, 
-                  #cbd5e0 ${(latest?.percentage || 0) * 1.8}deg, 
-                  #cbd5e0 180deg
-                )`
-              }}
-            >
+            <div className="gauge-wrapper">
+              <div
+                className="gauge-graphic"
+                style={{
+                  background: latest 
+                    ? `conic-gradient(from 270deg at 50% 100%, 
+                        #9061f9 0deg, 
+                        #9061f9 ${(latest.percentage || 0) * 1.8}deg, 
+                        #cbd5e0 ${(latest.percentage || 0) * 1.8}deg, 
+                        #cbd5e0 180deg
+                      )`
+                    : `conic-gradient(from 270deg at 50% 100%, 
+                        #e2e8f0 0deg, 
+                        #e2e8f0 180deg
+                      )`
+                }}
+              />
               <div className="gauge-inner-circle">
-                <span className="gauge-value">{latest ? Math.round(latest.percentage) : 0}%</span>
-                <span className="gauge-label">Risiko</span>
+                <span className="gauge-value" style={!latest ? { color: '#a0aec0' } : {}}>
+                  {latest ? `${Math.round(latest.percentage)}%` : "—"}
+                </span>
+                <span className="gauge-label">{latest ? "Risiko" : "Data Tes"}</span>
               </div>
             </div>
 
@@ -288,9 +306,14 @@ export default function SummaryModal({ onClose }) {
                   {points.map((p, i) => {
                     const step = Math.ceil(points.length / 5);
                     if (i % step !== 0 && i !== points.length - 1) return null;
+                    
+                    let textAnchor = "middle";
+                    if (i === 0) textAnchor = "start";
+                    else if (i === points.length - 1) textAnchor = "end";
+
                     return (
-                      <text key={i} x={p.x} y={H - 6} fontSize="9" fill="#64748B" textAnchor="middle">
-                        {formatDate(p.item.date)}
+                      <text key={i} x={p.x} y={H - 6} fontSize="9" fill="#64748B" textAnchor={textAnchor}>
+                        {formatChartDate(p.item.date)}
                       </text>
                     );
                   })}

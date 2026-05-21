@@ -32,12 +32,14 @@
    ========================================== */
 .sm-header {
   padding: clamp(16px, 4vw, 20px) clamp(20px, 5vw, 32px);
+  padding-right: clamp(60px, 12vw, 80px) !important; /* Extra space on right for X button */
   background: white;
   display: flex;
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid #edf2f7;
   gap: 12px;
+  position: relative; /* Anchor for absolute X button */
 }
 
 .sm-title {
@@ -55,13 +57,47 @@
   margin-top: 2px;
 }
 
+/* CLOSE "X" BUTTON */
+.sm-close-x-btn {
+  position: absolute;
+  top: 50%;
+  right: clamp(16px, 4vw, 28px);
+  transform: translateY(-50%);
+  background: transparent !important;
+  border: none !important;
+  font-size: clamp(18px, 4vw, 22px);
+  color: #a0aec0;
+  cursor: pointer;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  border-radius: 50%;
+  width: clamp(36px, 8vw, 42px);
+  height: clamp(36px, 8vw, 42px);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 10;
+}
+
+.sm-close-x-btn:hover {
+  background-color: #f5f3ff !important;
+  color: #8b5cf6 !important;
+  transform: translateY(-50%) rotate(90deg);
+}
+
+.sm-close-x-btn:active {
+  transform: translateY(-50%) scale(0.9) rotate(90deg);
+}
+
 /* EXPORT BUTTON (HEADER) */
 .sm-export-btn {
-  background: white;
+  background: white !important;
+  background-color: white !important;
   color: #8B5CF6 !important;
-  border: 1.5px solid #8B5CF6;
+  border: 1.5px solid #8B5CF6 !important;
   padding: clamp(8px, 2vw, 10px) clamp(16px, 3vw, 24px);
-  border-radius: 12px;
+  border-radius: 50px !important; /* Unified Capsule Shape */
   font-weight: 700;
   font-size: clamp(12px, 3vw, 14px);
   cursor: pointer;
@@ -78,8 +114,10 @@
 }
 
 .sm-export-btn:hover {
-  background: #f5f3ff;
-  border-color: #c4b5fd;
+  background: #f5f3ff !important;
+  background-color: #f5f3ff !important;
+  border-color: #c4b5fd !important;
+  color: #7c3aed !important;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(124, 58, 237, 0.15);
 }
@@ -95,6 +133,19 @@
   overflow-y: auto;
 }
 
+/* Custom scrollbars for modal body */
+.sm-body::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.sm-body::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+  border-radius: 10px;
+}
+.sm-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
 /* GAUGE & CHART AREA (KIRI) */
 .summary-gauge-container {
   background: white;
@@ -108,14 +159,21 @@
   touch-action: pan-y; /* Digabungkan ke container utama */
 }
 
-.gauge-graphic {
-  position: relative; /* Digabungkan ke grafis utama */
+.gauge-wrapper {
+  position: relative;
   width: clamp(200px, 40vw, 260px);
   height: clamp(100px, 20vw, 130px);
+  margin-bottom: 15px;
+}
+
+.gauge-graphic {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
   border-radius: 150px 150px 0 0;
   -webkit-mask: radial-gradient(farthest-side at bottom, transparent 65%, black 66%);
   mask: radial-gradient(farthest-side at bottom, transparent 65%, black 66%);
-  margin-bottom: 15px;
   transition: all 0.5s ease-out;
   /* Background conic-gradient diatur via inline style di JSX */
 }
@@ -322,11 +380,11 @@
   background: #7a5cff;
   color: white;
   border: none;
-  padding: 10px 48px;
-  border-radius: 14px;
+  padding: 12px 48px; /* Slightly taller padding for capsule button */
+  border-radius: 50px !important; /* Unified Capsule Shape */
   font-weight: 700;
   cursor: pointer;
-  transition: 0.2s;
+  transition: all 0.2s ease;
   width: 100%;
   max-width: 300px;
 }
@@ -335,6 +393,8 @@
   /* BUG FIX: Diubah menjadi ungu gelap agar teks putih tetap terbaca saat dihover */
   background: #6544e5; 
   color: white;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(122, 92, 255, 0.2);
 }
 
 .sm-empty-container {
@@ -357,11 +417,18 @@
   background: #8b5cf6;
   color: white;
   border: none;
-  padding: 12px 24px;
-  border-radius: 12px;
+  padding: 12px 32px; /* Slightly wider padding for capsule layout */
+  border-radius: 50px !important; /* Unified Capsule Shape */
   font-weight: 600;
   margin-top: 16px;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sm-mulai-btn:hover {
+  background: #7c3aed;
+  transform: translateY(-1.5px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
 }
 
 /* ==========================================
@@ -377,6 +444,23 @@
   .sm-header {
     flex-direction: column;
     align-items: flex-start;
+    padding-right: clamp(20px, 5vw, 32px) !important; /* Reset padding-right to match padding-left */
+    padding-top: clamp(32px, 6vw, 44px) !important; /* Extra top padding for close button space */
+    gap: 16px;
+  }
+
+  .sm-close-x-btn {
+    top: clamp(12px, 3vw, 16px);
+    right: clamp(12px, 3vw, 16px);
+    transform: none;
+  }
+
+  .sm-close-x-btn:hover {
+    transform: rotate(90deg);
+  }
+
+  .sm-close-x-btn:active {
+    transform: scale(0.9) rotate(90deg);
   }
   
   .sm-export-btn {

@@ -85,15 +85,17 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  background-color: transparent !important;
-  border: none !important;
+  background-color: #FAF7FF !important;
+  border: 1.5px solid #E9E3FF !important;
   color: #5B4A78 !important;
   font-weight: 600;
   font-size: 0.9rem;
   cursor: pointer;
-  padding: 5px 10px;
+  padding: 4px 6px 4px 16px !important;
   margin-top: 1px;
-  box-shadow: none !important;
+  border-radius: 30px !important;
+  box-shadow: 0 2px 8px rgba(139, 92, 246, 0.04) !important;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 .mobile-menu-btn {
@@ -212,13 +214,23 @@ body {
   object-fit: cover;
 }
 
-/* Menghilangkan hover ungu pada tombol Artikel dan Profil */
-.nav-menu:hover,
-.profile-trigger:hover {
+.nav-menu:hover {
   background-color: transparent !important;
   color: #5B4A78 !important;
   box-shadow: none !important;
   opacity: 0.7;
+}
+
+.profile-trigger:hover {
+  background-color: #F3EEFF !important;
+  border-color: #8B5CF6 !important;
+  color: #8B5CF6 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.1) !important;
+}
+
+.profile-trigger:active {
+  transform: translateY(0) scale(0.98);
 }
 
 /*3. HERO SECTION*/
@@ -375,18 +387,33 @@ body {
 }
 
 /*4. FITUR KARTU (RANGKUMAN, MENTAL, DSB)*/
-/* Ganti .bottom-left dengan .feature-left jika di HTML Anda menggunakan class itu */
 .bottom-left {
   margin-left: 10px !important;
-  padding-left: 10px !important;
+  padding-left: 16px !important;
   text-align: left;
-  max-width: 300px;
+  max-width: 320px;
+  border-left: 4px solid #8B5CF6;
 }
 
-.bottom-left h2 {
-  line-height: 1.5 !important;
-  min-width: 350px !important;
+.welcome-greeting {
+  display: flex;
+  align-items: center;
+  color: #8B5CF6;
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.user-name-highlight {
   color: #5B4A78;
+  font-weight: 800;
+}
+
+.bottom-left h2,
+.welcome-subtitle {
+  line-height: 1.4 !important;
+  min-width: 350px !important;
+  color: #2E1065;
   font-size: 1.3rem;
   font-weight: 700;
   margin: 0;
@@ -596,8 +623,8 @@ body {
   .bottom-section {
     flex-direction: column;
     align-items: flex-start;
-    margin-left: auto !important;
-    padding: auto;
+    margin-left: 0 !important;
+    padding: 0;
   }
 
   .bottom-left {
@@ -885,20 +912,20 @@ body {
 /* Large tablet screens (1024px and below) */
 @media (max-width: 1024px) {
   .dashboard-navbar {
-    padding: 8px 3vw;
+    padding: 8px 15px;
   }
 
   .dashboard-navbar .nav-logo {
-    height: 60px !important;
-    margin-left: -30px;
+    height: 55px !important;
+    margin-left: 0 !important;
   }
 
   .divider {
-    margin-left: -30px;
+    margin-left: 0 !important;
   }
 
   .nav-profile-area {
-    margin-right: -30px;
+    margin-right: 0 !important;
   }
 
   .dashboard-hero {
@@ -1016,7 +1043,7 @@ body {
     flex-direction: row;
     align-items: center;
     justify-content: space-between !important;
-    padding: 15px 20px;
+    padding: 12px 16px !important;
     margin-bottom: 20px;
     gap: 15px;
     position: relative;
@@ -1031,8 +1058,8 @@ body {
   }
 
   .dashboard-navbar .nav-logo {
-    height: 15px !important;
-    width: 100px !important;
+    height: 40px !important;
+    width: auto !important;
     margin-left: 0;
     flex-shrink: 0;
   }
@@ -1045,33 +1072,57 @@ body {
     display: none;
   }
 
+  /* Sembunyikan hamburger menu karena isinya cuma Profile yang redudan */
   .mobile-menu-btn {
-    display: inline-flex;
-    margin-left: auto !important;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 2px;
-    border: none !important;
-    background: transparent !important;
-  }
-
-  .nav-profile-area {
-    display: none;
-  }
-
-  .profile-trigger {
-    font-size: 0.8rem;
     display: none !important;
   }
 
+  .mobile-menu-btn span {
+    display: none !important;
+  }
+
+  /* Munculkan profile trigger (avatar bulat) secara langsung di navbar mobile */
+  .nav-profile-area {
+    display: flex !important;
+    margin-left: auto !important;
+    margin-right: 0 !important;
+  }
+
+  .profile-trigger {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 42px !important;
+    height: 42px !important;
+    padding: 0 !important;
+    border-radius: 50% !important;
+    background-color: #FAF7FF !important;
+    border: 2px solid #8B5CF6 !important;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.12) !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    cursor: pointer !important;
+  }
+
+  .profile-trigger:hover {
+    background-color: #ffffff !important;
+    border-color: #7C3AED !important;
+    transform: scale(1.08) rotate(3deg) !important;
+    box-shadow: 0 6px 16px rgba(139, 92, 246, 0.2) !important;
+  }
+
+  .profile-trigger:active {
+    transform: scale(0.95) !important;
+  }
+
   .profile-trigger span {
-    display: none;
+    display: none !important; /* Hilangkan teks "Profile" di mobile */
   }
 
   .profile-trigger-avatar {
-    width: 32px;
-    height: 32px;
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 50% !important;
+    margin: 0 !important;
   }
 
   .article-menu-dropdown {
@@ -1121,10 +1172,22 @@ body {
 
   .bottom-left {
     margin-bottom: 15px;
+    margin-left: 0 !important;
+    padding-left: 16px !important;
+    border-left: 4px solid #8B5CF6 !important;
+    padding-top: 4px !important;
+    padding-bottom: 4px !important;
   }
 
-  .bottom-left h2 {
-    font-size: 1rem;
+  .welcome-greeting {
+    font-size: 0.85rem !important;
+    margin-bottom: 4px !important;
+  }
+
+  .welcome-subtitle {
+    font-size: 1.1rem !important;
+    min-width: unset !important;
+    line-height: 1.35 !important;
   }
 
   .bottom-cards {
@@ -1165,7 +1228,8 @@ body {
   }
 
   .chatbot-panel {
-    width: 280px;
+    width: calc(100% - 30px);
+    max-width: 320px;
     height: 360px;
     bottom: 75px;
     right: 15px;
@@ -1191,22 +1255,23 @@ body {
   }
 
   .dashboard-navbar .nav-logo {
-    height: 70px !important;
+    height: 40px !important;
+    width: auto !important;
     margin-left: 0;
   }
 
   .nav-profile-area {
     margin-left: auto;
+    margin-right: 0 !important;
   }
 
   .profile-trigger {
-    font-size: 0.75rem;
-    gap: 8px;
+    padding: 3px !important;
   }
 
   .profile-trigger-avatar {
-    width: 28px;
-    height: 28px;
+    width: 28px !important;
+    height: 28px !important;
   }
 
   .article-menu-dropdown {
@@ -1315,7 +1380,8 @@ body {
   }
 
   .chatbot-panel {
-    width: 260px;
+    width: calc(100% - 20px);
+    max-width: 290px;
     height: 340px;
     bottom: 65px;
     right: 10px;
@@ -1377,5 +1443,182 @@ body {
   }
   100% {
     opacity: 1;
+  }
+}
+
+/* ==========================================================================
+   FORCE HIGH SPECIFICITY RESPONSIVE DASHBOARD CARDS FOR MOBILE
+   ========================================================================== */
+@media (max-width: 768px) {
+  /* Lebarkan halaman dengan mengurangi padding container utama */
+  .dashboard-page {
+    padding: 15px 10px !important;
+  }
+
+  /* Hilangkan padding bottom-section agar card lebih lebar ke tepi kiri-kanan */
+  .dashboard-page .bottom-section {
+    padding: 0 !important;
+  }
+
+  /* Beri sedikit padding ke greeting text agar sejajar dengan border-left accent */
+  .dashboard-page .bottom-left {
+    margin-left: 0 !important;
+    padding-left: 16px !important;
+    border-left: 4px solid #8B5CF6 !important;
+  }
+
+  /* Sesuaikan padding navbar agar sejajar dengan konten lainnya dan mencegah nembus */
+  .dashboard-navbar {
+    padding: 12px 16px !important;
+  }
+
+  /* Hilangkan border & background container di mobile */
+  .dashboard-page .bottom-cards.feature-cards {
+    display: flex !important;
+    flex-direction: column !important;
+    width: 100% !important;
+    border: none !important;
+    box-shadow: none !important;
+    background-color: transparent !important;
+    background: transparent !important;
+    gap: 12px !important;
+    padding: 0 !important;
+    margin: 15px 0 0 0 !important;
+    overflow: visible !important;
+  }
+
+  /* Jadikan card terpisah, lebar penuh (tidak terpotong), dan responsive */
+  .dashboard-page .feature-card {
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    gap: 15px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: unset !important;
+    box-sizing: border-box !important;
+    border: 1.5px solid #e8e0f5 !important;
+    border-radius: 12px !important;
+    background-color: #ffffff !important;
+    background: #ffffff !important;
+    padding: 15px !important;
+    box-shadow: 0 4px 12px rgba(139, 92, 246, 0.05) !important;
+    margin: 0 0 12px 0 !important;
+    position: relative !important;
+    cursor: pointer !important;
+    transition: transform 0.2s ease, box-shadow 0.2s ease !important;
+    flex: none !important;
+  }
+
+  .dashboard-page .feature-card:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 16px rgba(139, 92, 246, 0.12) !important;
+  }
+
+  .dashboard-page .feature-card:last-child {
+    margin-bottom: 0 !important;
+  }
+
+  /* Reset border-bottom/right bawaan tablet */
+  .dashboard-page .feature-card,
+  .dashboard-page .feature-card:last-child {
+    border-bottom: 1.5px solid #e8e0f5 !important;
+    border-right: 1.5px solid #e8e0f5 !important;
+  }
+
+  /* Icon di dalam card */
+  .dashboard-page .feature-card .icon {
+    font-size: 2rem !important;
+    margin: 0 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Text & layout di dalam card */
+  .dashboard-page .feature-card > div {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 !important;
+    min-width: 0 !important; /* Allow wrapping */
+  }
+
+  .dashboard-page .feature-card h4 {
+    margin: 0 0 4px 0 !important;
+    color: #5B4A78 !important;
+    font-size: 0.85rem !important;
+    font-weight: 700 !important;
+    line-height: 1.2 !important;
+    white-space: normal !important;
+  }
+
+  .dashboard-page .feature-card p {
+    margin: 0 !important;
+    color: #8C8C8C !important;
+    font-size: 0.75rem !important;
+    line-height: 1.3 !important;
+    padding-right: 25px !important; /* Ruang untuk arrow */
+    white-space: normal !important;
+    word-break: break-word !important;
+  }
+
+  /* Panah Kanan tetap di kanan card */
+  .dashboard-page .feature-card::after {
+    content: '›' !important;
+    position: absolute !important;
+    right: 15px !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    font-size: 1.8rem !important;
+    color: #5B4A78 !important;
+    font-family: sans-serif !important;
+    pointer-events: none !important;
+  }
+}
+
+/* Penyesuaian khusus layar extra kecil */
+@media (max-width: 480px) {
+  /* Kurangi padding halaman lebih lanjut pada layar sangat kecil */
+  .dashboard-page {
+    padding: 10px 6px !important;
+  }
+
+  /* Sesuaikan padding navbar di layar sangat kecil */
+  .dashboard-navbar {
+    padding: 10px 12px !important;
+  }
+
+  .profile-trigger {
+    width: 36px !important;
+    height: 36px !important;
+  }
+
+  .profile-trigger-avatar {
+    width: 28px !important;
+    height: 28px !important;
+  }
+
+  .dashboard-page .bottom-left {
+    padding-left: 12px !important;
+    border-left: 3px solid #8B5CF6 !important;
+  }
+
+  .dashboard-page .feature-card {
+    padding: 12px !important;
+    gap: 10px !important;
+  }
+  
+  .dashboard-page .feature-card .icon {
+    font-size: 1.6rem !important;
+  }
+
+  .dashboard-page .feature-card h4 {
+    font-size: 0.8rem !important;
+  }
+
+  .dashboard-page .feature-card p {
+    font-size: 0.7rem !important;
+    padding-right: 20px !important;
   }
 }

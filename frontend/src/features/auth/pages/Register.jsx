@@ -16,7 +16,7 @@ const Register = () => {
   }, []);
 
   const handleBack = () => {
-    navigate("/");
+    navigate("/login");
   };
 
   // State untuk form & fitur mata (show/hide password)
