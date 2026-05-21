@@ -80,7 +80,27 @@
 /* Tombol Utama (Daftar) */
 .register-page .primary-btn {
   width: 100%;
-  margin-top: 18px; 
+  margin-top: 18px;
+  background: linear-gradient(135deg, #7a5cff, #6d28d9) !important;
+  border: none !important;
+  border-radius: 12px !important;
+  padding: 14px !important;
+  font-size: 1rem !important;
+  font-weight: 700 !important;
+  box-shadow: 0 6px 20px rgba(109, 40, 217, 0.35);
+  transition: all 0.3s ease;
+  letter-spacing: 0.3px;
+  color: white !important;
+}
+
+.register-page .primary-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(109, 40, 217, 0.45);
+}
+
+.register-page .primary-btn:active {
+  transform: translateY(0) scale(0.97);
+  box-shadow: 0 4px 12px rgba(109, 40, 217, 0.3);
 }
 
 /* Teks di bawah tombol rata kiri (sesuai gambar) */
@@ -137,6 +157,10 @@
   transform: translateY(-2px) !important; /* Biarkan tombol google tetap bisa naik dikit */
 }
 
+.register-page .google-btn:active {
+  transform: translateY(0) scale(0.97) !important;
+}
+
 
 /* =========================================
    3. RESPONSIVE DESIGN
@@ -189,8 +213,10 @@
     margin-bottom: 16px;
   }
   .register-page .google-btn {
-    padding: 16px 20px !important;
-    font-size: 0.8rem;
+    width: 100% !important;
+    box-sizing: border-box;
+    padding: 12px 20px !important;
+    font-size: 0.85rem !important;
     margin-bottom: 20px;
   }
   .register-page .google-btn img {
@@ -218,8 +244,10 @@
     margin-bottom: 12px;
   }
   .register-page .google-btn {
-    padding: 14px 18px !important;
-    font-size: 0.75rem;
+    width: 100% !important;
+    box-sizing: border-box;
+    padding: 10px 16px !important;
+    font-size: 0.8rem !important;
     margin-bottom: 16px;
   }
   .register-page .google-btn img {

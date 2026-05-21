@@ -160,6 +160,11 @@
   box-shadow: 0 10px 28px rgba(109, 40, 217, 0.45);
 }
 
+.primary-btn.full:active {
+  transform: translateY(0) scale(0.97);
+  box-shadow: 0 4px 12px rgba(109, 40, 217, 0.3);
+}
+
 /* 7. Elemen Tambahan (Garis Atau & Google Login) */
 .divider-text {
   display: flex;
@@ -213,6 +218,10 @@
 .google-btn.full:hover {
   background-color: #F8F5FF !important;
   border-color: #C4B5E0 !important;
+}
+
+.google-btn.full:active {
+  transform: scale(0.97);
 }
 
 .google-btn img {
@@ -431,9 +440,11 @@
   }
 
   .google-btn.full {
-    padding: 16px 20px !important;
-    font-size: 0.8rem;
-    margin-bottom: 10px;
+    width: 100% !important;
+    box-sizing: border-box;
+    padding: 12px 20px !important;
+    font-size: 0.85rem !important;
+    margin-bottom: 12px;
   }
 
   .google-btn img {
@@ -495,8 +506,11 @@
   }
 
   .google-btn.full {
-    padding: 14px 18px !important;
-    font-size: 0.75rem;
+    width: 100% !important;
+    box-sizing: border-box;
+    padding: 10px 16px !important;
+    font-size: 0.8rem !important;
+    margin-bottom: 10px;
   }
 
   .google-btn img {

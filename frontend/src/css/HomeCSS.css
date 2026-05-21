@@ -74,25 +74,39 @@ button:active {
 }
 
 .btn-signin {
-  background: linear-gradient(135deg, #7a5cff, #5e0edf);
+  background: linear-gradient(135deg, #7a5cff, #6366f1);
   color: white !important;
   border: none !important;
   padding: 10px 24px;
   border-radius: 50px;
   font-size: 14px;
-  font-weight: 700;
+  font-weight: 600;
   cursor: pointer;
-  box-shadow: 0 4px 15px rgba(122, 92, 255, 0.25);
+  box-shadow: 0 4px 15px rgba(122, 92, 255, 0.2);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  white-space: nowrap;
+  flex-shrink: 0;
   outline: none;
 }
 
 .btn-signin:hover {
+  background: linear-gradient(135deg, #8a6cff, #7376f1);
+  color: white !important;
+  box-shadow: 0 6px 20px rgba(122, 92, 255, 0.35);
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(122, 92, 255, 0.4);
+}
+
+.btn-signin:active {
+  transform: translateY(-1px) scale(0.96);
+}
+
+.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
 /* MOBILE HAMBURGER */
@@ -196,19 +210,31 @@ button:active {
     border-bottom: 1px solid #f3f4f6;
   }
 
-  .nav-right button {
-    width: 100%;
-    padding: 15px;
-    font-size: 16px;
+  .btn-signin {
+    padding: 8px 16px !important;
+    font-size: 13px !important;
+    font-weight: 600 !important;
+    box-shadow: 0 4px 12px rgba(122, 92, 255, 0.25) !important;
   }
 
-  .btn-signin {
-    width: 100%;
-    padding: 14px;
-    font-size: 16px;
-    border-radius: 16px !important;
-    text-align: center;
-    box-shadow: 0 4px 12px rgba(122, 92, 255, 0.2);
+  .btn-signin:hover {
+    transform: none !important;
+    box-shadow: 0 4px 12px rgba(122, 92, 255, 0.25) !important;
+  }
+
+  .btn-signin:active {
+    transform: scale(0.95) !important;
+  }
+
+  .nav-actions {
+    gap: 8px !important;
+  }
+
+  .navbar.navbar-sticky {
+    padding: 12px 20px !important;
+    background: rgba(255, 255, 255, 0.95) !important;
+    backdrop-filter: blur(10px) !important;
+    -webkit-backdrop-filter: blur(10px) !important;
   }
 }
 
@@ -281,7 +307,7 @@ button:active {
 @media (max-width: 768px) {
   .hero {
     min-height: 600px;
-    background: linear-gradient(135deg, #f5f3ff, #ede9fe) !important;
+    background: linear-gradient(to top, #8B5CF6, #A78BFA, #d1c1ff) !important;
   }
 
   .hero-bg {
@@ -292,12 +318,14 @@ button:active {
     font-size: 1.8rem;
     padding: 0 10px;
     line-height: 1.2;
+    color: #ffffff !important;
   }
 
   .hero-content p {
     font-size: 16px;
     padding: 0 20px;
     margin-bottom: 30px;
+    color: #ffffff !important;
   }
 }
 
@@ -508,6 +536,10 @@ button:active {
 
   .testimoni-header {
     margin-bottom: 40px;
+  }
+
+  .testimoni {
+    padding: 60px 0 !important;
   }
 }
 

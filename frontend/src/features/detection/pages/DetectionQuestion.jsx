@@ -276,7 +276,7 @@ export default function Detection() {
         sessionStorage.setItem("latest_diagnosis", JSON.stringify(result.data));
         sessionStorage.removeItem("pending_answers");
       } else {
-        sessionStorage.setItem("latest_diagnosis", JSON.stringify(result.data));
+        sessionStorage.removeItem("latest_diagnosis");
         sessionStorage.setItem("pending_answers", JSON.stringify(apiAnswers));
       }
 
@@ -361,23 +361,7 @@ export default function Detection() {
       {/* TOMBOL KELUAR */}
       <button className="back-btn" onClick={handleExit}>Keluar</button>
 
-      {/* PROGRESS BAR */}
-      <div className="progress-bar">
-        <div className="progress-fill" style={{ width: `${progressPercent}%` }}></div>
-      </div>
-
       <div className="question-container">
-        {/* NAMA PENYAKIT & INDIKATOR BAGIAN */}
-        <div className="phase-indicator">
-          EVALUASI GEJALA
-          {currentGroup.totalParts > 1 ? ` - BAGIAN ${currentGroup.part}` : ""}
-        </div>
-
-        {/* SUB-INFO: bagian ke-berapa + jumlah soal di halaman ini */}
-        <div style={{ textAlign: "center", color: "#888", fontSize: "13px", marginBottom: "16px" }}>
-          Halaman {currentPage + 1} dari {totalPages} &nbsp;·&nbsp; {currentQuestions.length} pertanyaan
-        </div>
-
         {/* DAFTAR SOAL — dibatasi 5 soal sesuai chunking */}
         {currentQuestions.map((q, idx) => {
           const questionNumber = ((currentGroup.part - 1) * 5) + idx + 1;
@@ -393,10 +377,7 @@ export default function Detection() {
               </h2>
 
               <div className="options-wrapper">
-                {/* Label Kiri */}
-                <div className="label-left">Setuju</div>
-
-                {/* Bagian Lingkaran */}
+                {/* Bagian Lingkaran di Atas */}
                 <div className="circles">
                   {[1, 2, 3, 4].map((i) => (
                     <div
@@ -407,8 +388,11 @@ export default function Detection() {
                   ))}
                 </div>
 
-                {/* Label Kanan */}
-                <div className="label-right">Tidak Setuju</div>
+                {/* Bagian Label di Bawah */}
+                <div className="labels-row">
+                  <div className="label-text">Setuju</div>
+                  <div className="label-text">Tidak Setuju</div>
+                </div>
               </div>
             </div>
           );

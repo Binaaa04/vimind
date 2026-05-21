@@ -19,21 +19,17 @@
   top: 30px;
   left: 40px;
   background: transparent;
-  color: #8a5cff;
-  border: 2px solid #8a5cff;
-  padding: 8px 20px;
-  border-radius: 9999px;
-  font-size: 14px;
+  border: none;
+  color: #ffffff;
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 6px;
-  transition: all 0.3s ease;
+  transition: color 0.3s ease;
 }
 
 .back-btn:hover {
-  background: #7241eb;
   color: white !important;
 }
 
@@ -112,9 +108,6 @@
   }
 
   .back-btn {
-    top: 15px;
-    left: 15px;
-    padding: 6px 12px;
-    font-size: 12px;
+    display: none !important;
   }
 }

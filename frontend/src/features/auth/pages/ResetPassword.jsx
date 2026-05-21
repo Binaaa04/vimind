@@ -136,9 +136,8 @@ const ResetPassword = () => {
 
               <button 
                 type="button" 
-                className="primary-btn" 
+                className="secondary-btn" 
                 onClick={handleBack} 
-                style={{ backgroundColor: '#e2e8f0', color: '#475569' }}
               >
                 Kembali
               </button>

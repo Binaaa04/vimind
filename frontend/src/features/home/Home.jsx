@@ -27,6 +27,17 @@ export default function Home() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMenuOpen]);
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -87,16 +98,18 @@ export default function Home() {
           <img src={logo} alt="Vimind Logo" />
         </div>
         <div className={`mobile-backdrop ${isMenuOpen ? "active" : ""}`} onClick={() => setIsMenuOpen(false)}></div>
-        <button className="hamburger-btn" onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label="Toggle Menu">
-          {isMenuOpen ? "✕" : "☰"}
-        </button>
         <div className={`nav-right ${isMenuOpen ? "open" : ""}`}>
           <div className="nav-links-pill">
             <span onClick={() => scrollToSection("fitur")}>Fitur</span>
             <span onClick={() => scrollToSection("testimoni")}>Testimoni</span>
             <span onClick={() => scrollToSection("faq")}>FAQ</span>
           </div>
-          <button className="btn-signin" onClick={() => { setIsMenuOpen(false); navigate("/login"); }}>Sign In</button>
+        </div>
+        <div className="nav-actions">
+          <button className="btn-signin" onClick={() => navigate("/login")}>Sign In</button>
+          <button className="hamburger-btn" onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label="Toggle Menu">
+            {isMenuOpen ? "✕" : "☰"}
+          </button>
         </div>
       </nav>
 
