@@ -265,7 +265,14 @@ export default function Result() {
                         >
                             {loading ? "Menuju Login..." : "Masuk Sekarang"}
                         </button>
-                        <p className="guest-note">Akurasi deteksi mental health bisa berubah seiring waktu.</p>
+                        <button
+                            type="button"
+                            className="back-home-btn"
+                            onClick={() => navigate("/")}
+                        >
+                            Kembali ke Beranda
+                        </button>
+                        <p className="guest-note" style={{ marginTop: "12px" }}>Akurasi deteksi mental health bisa berubah seiring waktu.</p>
                     </div>
                 </div>
             )}
@@ -320,13 +327,20 @@ export default function Result() {
                                         {submittingFeedback ? 'Mengirim...' : 'Kirim Ulasan'}
                                     </button>
                                     
-                                    {/* Sembunyikan tombol "Nanti Saja" jika user login & belum rating (Wajib!) */}
-                                    {(!isAuthenticated || hasRated) && (
+                                    {/* Sembunyikan tombol "Nanti Saja" jika user login & belum rating (Wajib!), tapi tampilkan tombol Ke Dashboard sebagai alternatif keluar */}
+                                    {(!isAuthenticated || hasRated) ? (
                                         <button
                                             className="btn-later"
                                             onClick={() => setShowFeedbackModal(false)}
                                         >
                                             Nanti Saja
+                                        </button>
+                                    ) : (
+                                        <button
+                                            className="btn-later"
+                                            onClick={() => navigate("/dashboard")}
+                                        >
+                                            Ke Dashboard
                                         </button>
                                     )}
                                 </div>

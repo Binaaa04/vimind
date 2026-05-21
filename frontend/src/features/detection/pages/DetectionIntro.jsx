@@ -33,7 +33,7 @@ export default function DetectionIntro() {
         className="back-btn"
         onClick={() => navigate(hasSession ? "/dashboard" : "/")}
       >
-        Keluar
+        <span>←</span> Keluar
       </button>
 
       {/* Progress Bar di bagian atas */}

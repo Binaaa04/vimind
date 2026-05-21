@@ -22,6 +22,7 @@
   width: 100%;
   padding: 40px;
   gap: 30px;
+  position: relative; /* Agar absolute positioning tombol kembali bekerja */
 }
 
 /* 2. Bagian Kiri (Ilustrasi) */
@@ -146,7 +147,7 @@
   background: linear-gradient(135deg, #7a5cff, #6d28d9);
   color: white;
   border: none;
-  border-radius: 12px;
+  border-radius: 50px;
   font-size: 1rem;
   font-weight: 700;
   cursor: pointer;
@@ -206,7 +207,7 @@
   justify-content: center;
   gap: 10px;
   padding: 11px 24px !important; /* Lebih kecil dari tombol Login */
-  border-radius: 12px !important;
+  border-radius: 50px !important;
   background-color: white !important;
   color: #8C8C8C !important; 
   border: 1px solid #E6D5FF !important;
@@ -265,33 +266,37 @@
 
 /* TOMBOL KEMBALI (BACK TO LANDING PAGE) */
 
-/* Wadah tombol agar rapi di kiri atas card-right */
+/* Wadah tombol kembali diposisikan relatif di bagian atas card-right */
 .back-button-container {
   width: 100%;
   display: flex;
   justify-content: flex-start;
-  margin-bottom: 10px; /* Jarak antara tombol kembali dengan logo */
+  margin-bottom: 16px;
+  z-index: 10;
 }
 
 /* Desain tombolnya */
 .back-btn {
-  background: transparent !important;
-  border: none;
-  color: #8a5cff; /* Sesuaikan dengan warna ungunya Vimind */
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1.5px solid #8a5cff !important;
+  color: #8a5cff !important;
   font-size: 0.9rem;
   font-weight: 600;
-  margin: 12px 20px;
-  padding: 12px 20px;
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 6px;
   transition: all 0.2s ease-in-out;
+  padding: 6px 16px;
+  border-radius: 50px;
+  box-shadow: 0 4px 10px rgba(138, 92, 255, 0.1);
 }
 
 .back-btn:hover {
-  color: #7241eb; /* Agak lebih gelap saat di-hover */
+  color: white !important;
+  background: #8a5cff !important;
   transform: translateX(-4px); /* Efek panah geser sedikit ke kiri saat di-hover */
+  box-shadow: 0 6px 16px rgba(138, 92, 255, 0.2);
 }
 
 .back-icon {
@@ -358,6 +363,13 @@
 
 /* Mobile screens (768px and below) - extending existing */
 @media (max-width: 768px) {
+  .back-button-container {
+    order: 10;
+    margin-top: 15px;
+    margin-bottom: 0;
+    justify-content: center;
+  }
+
   .page-wrapper {
     padding: 15px;
   }

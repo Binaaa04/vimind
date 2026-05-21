@@ -34,6 +34,7 @@
 /* Mengubah warna background card dan mematikan efek hover-nya */
 .register-page .card {
   background-color: rgb(233, 213, 255) !important;
+  position: relative; /* Agar absolute positioning tombol kembali bekerja */
 }
 
 /* Mematikan efek transform (membesar/naik) saat card di-hover */
@@ -41,6 +42,43 @@
   transform: none !important; 
 }
 /* ------------------------------- */
+
+/* TOMBOL KEMBALI (BACK TO LANDING PAGE) */
+.register-page .back-button-container {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 16px;
+  z-index: 10;
+}
+
+.register-page .back-btn {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border: 1.5px solid #8a5cff !important;
+  color: #8a5cff !important;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.2s ease-in-out;
+  padding: 6px 16px;
+  border-radius: 50px;
+  box-shadow: 0 4px 10px rgba(138, 92, 255, 0.1);
+}
+
+.register-page .back-btn:hover {
+  color: white !important;
+  background: #8a5cff !important;
+  transform: translateX(-4px); /* Efek panah geser sedikit ke kiri saat di-hover */
+  box-shadow: 0 6px 16px rgba(138, 92, 255, 0.2);
+}
+
+.register-page .back-icon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
 
 /* =========================================
    PENGATURAN LOGO VIMIND
@@ -63,7 +101,7 @@
 /* --- (Opsional) Jika ingin logonya mengecil di HP --- */
 @media (max-width: 768px) {
   .register-page .logo-img {
-    width: 90px; 
+    width: 200px; 
   }
 }
 
@@ -83,7 +121,7 @@
   margin-top: 18px;
   background: linear-gradient(135deg, #7a5cff, #6d28d9) !important;
   border: none !important;
-  border-radius: 12px !important;
+  border-radius: 50px !important;
   padding: 14px !important;
   font-size: 1rem !important;
   font-weight: 700 !important;
@@ -138,7 +176,7 @@
   justify-content: center;
   gap: 10px;
   padding: 20px 30px !important; 
-  border-radius: 12px !important;
+  border-radius: 50px !important;
   background-color: white !important;
   color: #8C8C8C !important; 
   border: 1px solid #E6D5FF !important;
@@ -196,6 +234,23 @@
 
 /* Mobile screens (768px and below) */
 @media (max-width: 768px) {
+  .register-page .back-button-container {
+    order: 10;
+    margin-top: 15px;
+    margin-bottom: 0;
+    justify-content: center;
+  }
+  .register-page .logo-container {
+    margin-top: 10px !important;
+    margin-right: 0 !important;
+  }
+  .register-page .logo-img {
+    width: 200px !important;
+  }
+  .register-page .card-left img {
+    max-width: 70%;
+    margin-bottom: 10px;
+  }
   .register-page .subtitle {
     font-size: 0.95rem;
     margin-bottom: 14px;
@@ -227,6 +282,12 @@
 
 /* Small mobile screens (480px and below) */
 @media (max-width: 480px) {
+  .register-page .logo-img {
+    width: 160px !important;
+  }
+  .register-page .card-left img {
+    max-width: 60%;
+  }
   .register-page .subtitle {
     font-size: 0.9rem;
     margin-bottom: 12px;

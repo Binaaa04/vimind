@@ -15,6 +15,10 @@ const Register = () => {
     document.title = "Buat akun baru | Vimind";
   }, []);
 
+  const handleBack = () => {
+    navigate("/");
+  };
+
   // State untuk form & fitur mata (show/hide password)
   const [form, setForm] = useState({
     name: "",
@@ -80,7 +84,6 @@ const Register = () => {
   };
 
   return (
-    // Penambahan 'register-page' di wrapper utama akan mengisolasi CSS kita
     <div className="page-wrapper register-page">
       <div className="card">
 
@@ -91,6 +94,12 @@ const Register = () => {
 
         {/* RIGHT */}
         <div className="card-right">
+          {/* 👇 TOMBOL KEMBALI DI DALAM CARD-RIGHT 👇 */}
+          <div className="back-button-container">
+            <button onClick={handleBack} className="back-btn">
+              <span className="back-icon">←</span> Kembali
+            </button>
+          </div>
 
           <div className="logo-container">
             <img src={logo} alt="Vimind Logo" className="logo-img" />

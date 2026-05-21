@@ -243,7 +243,7 @@ body {
 .action-buttons .next-btn {
   font-family: 'Poppins', sans-serif !important;
   font-weight: 600 !important;
-  border-radius: 8px !important;
+  border-radius: 50px !important;
   display: flex !important;
   justify-content: center !important;
   align-items: center !important;

@@ -243,7 +243,7 @@
 .dashboard-btn, .btn-secondary,
 .next-btn, .btn-primary {
     padding: 0 10px !important;
-    border-radius: 8px !important;
+    border-radius: 50px !important;
     font-weight: 600 !important;
     cursor: pointer;
     font-family: 'Poppins', sans-serif !important;
@@ -349,7 +349,7 @@
     border: none;
     padding: 12px 20px;
     width: 100%;
-    border-radius: 8px;
+    border-radius: 50px;
     font-weight: 600;
     cursor: pointer;
     font-size: 15px;
@@ -359,6 +359,18 @@
 
 .login-modal button:hover {
     background: #7241eb;
+}
+
+.login-modal button.back-home-btn {
+    background: transparent !important;
+    color: #8a5cff !important;
+    border: 1.5px solid #8a5cff !important;
+    margin-top: 5px;
+}
+
+.login-modal button.back-home-btn:hover {
+    background: rgba(138, 92, 255, 0.1) !important;
+    color: #7241eb !important;
 }
 
 .guest-note {
@@ -433,7 +445,7 @@
     flex: 1;
     padding: 10px;
     font-size: 14px;
-    border-radius: 8px;
+    border-radius: 50px;
     font-weight: 600;
     cursor: pointer;
     font-family: 'Poppins', sans-serif;
@@ -455,7 +467,7 @@
     flex: 1;
     padding: 10px;
     font-size: 14px;
-    border-radius: 8px;
+    border-radius: 50px;
     font-weight: 600;
     cursor: pointer;
     font-family: 'Poppins', sans-serif;
