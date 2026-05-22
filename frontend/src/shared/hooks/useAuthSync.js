@@ -10,7 +10,12 @@ export function useAuthSync() {
         if (pendingAnswersRaw) {
           try {
             const parsedAnswers = JSON.parse(pendingAnswersRaw);
-            const diagRes = await diagnose(parsedAnswers, session.user.email);
+            const config = session?.access_token ? {
+              headers: {
+                Authorization: `Bearer ${session.access_token}`
+              }
+            } : {};
+            const diagRes = await diagnose(parsedAnswers, session.user.email, 0, config);
             sessionStorage.setItem("latest_diagnosis", JSON.stringify(diagRes.data));
             sessionStorage.removeItem("pending_answers");
             console.log("App: Successfully synced pending diagnosis to DB.");

@@ -101,6 +101,9 @@ func RegisterRoutes(app *fiber.App, db *pgxpool.Pool) {
 	api.Get("/banners", adminHandler.GetPublicBanners)
 	api.Get("/levels", diagHandler.GetLevelCategories)
 	api.Get("/testimonials", feedbackHandler.GetPublicTestimonials)
+	api.Post("/test-session", optionalAuth, sessionHandler.SaveTestSession)
+	api.Get("/test-session", optionalAuth, sessionHandler.GetTestSession)
+	api.Delete("/test-session", optionalAuth, sessionHandler.DeleteTestSession)
 
 	// ===================== AUTH REQUIRED =====================
 	user := api.Group("/", authRequired)
@@ -109,10 +112,6 @@ func RegisterRoutes(app *fiber.App, db *pgxpool.Pool) {
 	user.Delete("/profile", authHandler.DeleteAccount)
 	user.Get("/history", diagHandler.GetHistory)
 	user.Post("/chat", chatHandler.Chatbot)
-
-	user.Post("/test-session", sessionHandler.SaveTestSession)
-	user.Get("/test-session", sessionHandler.GetTestSession)
-	user.Delete("/test-session", sessionHandler.DeleteTestSession)
 
 	user.Post("/testimonials", feedbackHandler.SubmitTestimonial)
 	user.Post("/account_feedbacks", feedbackHandler.SubmitAccountFeedback)
@@ -127,6 +126,10 @@ func RegisterRoutes(app *fiber.App, db *pgxpool.Pool) {
 	admin.Get("/banners", adminHandler.GetBanners)
 	admin.Post("/banners", adminHandler.UpsertBanner)
 	admin.Delete("/banners/:id", adminHandler.DeleteBanner)
+
+	admin.Get("/news", adminHandler.GetAdminArticles)
+	admin.Post("/news", adminHandler.UpsertAdminArticle)
+	admin.Delete("/news/:id", adminHandler.DeleteAdminArticle)
 
 	admin.Get("/faq", adminHandler.GetFAQ)
 	admin.Post("/faq", adminHandler.UpsertFAQ)

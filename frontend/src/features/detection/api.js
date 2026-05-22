@@ -8,9 +8,9 @@ export const getQuestions = (mode = "default", diseaseIDs = [], email = "") => {
   return api.get(url);
 };
 
-export const diagnose = (answers, userEmail = "", refinedDiseaseID = 0) => {
+export const diagnose = (answers, userEmail = "", refinedDiseaseID = 0, config = {}) => {
   // userEmail can be empty if authenticated
-  return api.post("/api/diagnose", { answers, user_email: userEmail, refined_disease_id: refinedDiseaseID });
+  return api.post("/api/diagnose", { answers, user_email: userEmail, refined_disease_id: refinedDiseaseID }, config);
 };
 
 export const getDiscoveryQuestions = (answers) => api.post("/api/questions/discovery", { answers });

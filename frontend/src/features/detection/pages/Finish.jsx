@@ -1,41 +1,39 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect } from "react";
-import "@/css/DetectionQuestionCSS.css";
+import { CheckCircle2, ArrowRight } from "lucide-react";
+import "@/css/FinishCSS.css";
 
 export default function Finish() {
-      useEffect(() => {
-        document.title = "Selesai | Vimind";
-        window.scrollTo(0, 0);
-      }, []);
+  useEffect(() => {
+    document.title = "Selesai | Vimind";
+    window.scrollTo(0, 0);
+  }, []);
+
   const navigate = useNavigate();
   const location = useLocation();
 
   return (
-    <div className="question-page">
+    <div className="finish-page">
+      <div className="finish-card">
+        <div className="success-icon-wrapper">
+          <CheckCircle2 size={44} strokeWidth={1.8} />
+        </div>
 
-      <div className="progress-bar">
-        <div className="progress-fill" style={{ width: "100%" }}></div>
-      </div>
+        <h1>Tes Selesai!</h1>
 
-      <div className="question-container">
-        <h1>Selesaii !!!</h1>
-
-        <p style={{ marginTop: "10px", color: "#7a5cff" }}>
-          Mari kita cek hasil tes kamu
+        <p>
+          Jawaban Anda telah disimpan secara aman. Mari kita lihat rangkuman analisis kondisi psikologis Anda.
         </p>
 
         <button
-          className="next-btn"
-          style={{ marginTop: "30px" }}
+          className="finish-btn"
           onClick={() => navigate("/hasil", { state: location.state })}
         >
-          Lanjutkan
+          Lanjutkan ke Hasil <ArrowRight size={18} />
         </button>
       </div>
 
-      <div className="logo-bottom">Vimind</div>
-
+      <div className="finish-logo">Vimind</div>
     </div>
   );
 }
-/*FINISH*/

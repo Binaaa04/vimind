@@ -294,30 +294,38 @@
 }
 
 /* ================================
-   MODALS
-================================ */
+   MODALS & OVERLAYS (PREMIUM LOOK)
+   ================================ */
 .overlay {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0,0,0,0.4);
+    background: rgba(15, 10, 30, 0.4);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 1000;
-    backdrop-filter: blur(3px);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    padding: 16px;
+    box-sizing: border-box;
 }
 
 .login-modal {
-    background: white;
-    padding: 30px;
-    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(138, 92, 255, 0.2);
+    padding: 40px 32px;
+    border-radius: 24px;
     text-align: center;
-    max-width: 350px;
-    width: 90%;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    max-width: 380px;
+    width: 100%;
+    box-shadow: 0 20px 45px rgba(138, 92, 255, 0.12), 
+                0 1px 3px rgba(0, 0, 0, 0.02);
+    box-sizing: border-box;
+    position: relative;
+    animation: modalFadeIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .feedback-modal {
@@ -327,56 +335,148 @@
     max-width: 400px;
 }
 
-.lock-icon {
-    font-size: 40px;
-    margin-bottom: 10px;
+.lock-icon-wrapper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 72px;
+    height: 72px;
+    background-color: #f3eeff;
+    color: #8a5cff;
+    border-radius: 50%;
+    margin-bottom: 24px;
+    position: relative;
+}
+
+.lock-icon-wrapper::after {
+    content: "";
+    position: absolute;
+    inset: -5px;
+    border-radius: 50%;
+    border: 1.5px dashed rgba(138, 92, 255, 0.4);
+    animation: rotateDashed 15s linear infinite;
 }
 
 .login-modal h2 {
     margin: 0 0 10px 0;
     color: #2b1b54;
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
 }
 
 .login-modal p {
-    color: #666;
-    font-size: 14px;
-    margin-bottom: 20px;
+    color: #5d537a;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 28px;
+    font-weight: 400;
 }
 
 .login-modal button {
     background: #8a5cff;
     color: white;
     border: none;
-    padding: 12px 20px;
+    padding: 0 20px;
     width: 100%;
+    height: 48px;
     border-radius: 50px;
     font-weight: 600;
     cursor: pointer;
     font-size: 15px;
-    margin-bottom: 10px;
-    transition: background-color 0.3s;
+    margin-bottom: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(138, 92, 255, 0.2);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-.login-modal button:hover {
+.login-modal button:hover:not(:disabled) {
     background: #7241eb;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 18px rgba(138, 92, 255, 0.3);
 }
 
 .login-modal button.back-home-btn {
     background: transparent !important;
     color: #8a5cff !important;
     border: 1.5px solid #8a5cff !important;
-    margin-top: 5px;
+    margin-top: 10px;
+    box-shadow: none !important;
 }
 
 .login-modal button.back-home-btn:hover {
-    background: rgba(138, 92, 255, 0.1) !important;
-    color: #7241eb !important;
+    background: rgba(138, 92, 255, 0.08) !important;
+    transform: translateY(-2px);
 }
 
 .guest-note {
-    font-size: 12px !important;
-    color: #999 !important;
-    margin: 0 !important;
+    font-size: 11px !important;
+    color: #8f85b0 !important;
+    margin: 14px 0 0 0 !important;
+    line-height: 1.4;
+}
+
+/* Animations */
+@keyframes modalFadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(20px) scale(0.98);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes rotateDashed {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* Modal Responsive overrides */
+@media (max-width: 576px) {
+    .login-modal {
+        padding: 32px 24px;
+        border-radius: 20px;
+    }
+    
+    .lock-icon-wrapper {
+        width: 64px;
+        height: 64px;
+        margin-bottom: 20px;
+    }
+    
+    .lock-icon-wrapper::after {
+        inset: -4px;
+    }
+
+    .login-modal h2 {
+        font-size: 1.35rem;
+    }
+
+    .login-modal p {
+        font-size: 0.88rem;
+        margin-bottom: 22px;
+    }
+
+    .login-modal button {
+        height: 44px !important;
+        font-size: 14px;
+    }
+    
+    .login-modal button.back-home-btn {
+        margin-top: 8px;
+    }
+    
+    .guest-note {
+        margin-top: 12px !important;
+    }
 }
 
 /* Modal Feedback Specifics */
@@ -485,22 +585,82 @@
    RESPONSIVE DESIGN
 ================================ */
 @media (max-width: 600px) {
+    .result-page {
+        padding: 16px 12px;
+    }
+
     .result-header {
         flex-direction: column;
         align-items: center;
         text-align: center;
+        padding-top: 20px;
+        padding-bottom: 20px;
+        padding-left: 10px;
+        padding-right: 10px;
+        max-width: 100%;
     }
-    
+
+    .header-info h1 {
+        max-width: 100%;
+        padding-right: 0;
+        font-size: 20px;
+    }
+
+    .result-badge {
+        width: 100%;
+        padding: 16px 12px;
+        box-sizing: border-box;
+        margin-top: 10px;
+    }
+
+    .result-badge h2 {
+        font-size: 18px;
+    }
+
     .header-actions {
-        margin-top: 20px;
+        margin: 20px auto 0 auto;
         flex-direction: row;
+        justify-content: center;
+        align-items: center;
     }
-    
+
+    .avatar {
+        width: 70px;
+        height: 70px;
+        font-size: 28px;
+    }
+
+    .result-card-container {
+        margin-top: 10px;
+    }
+
+    .result-card {
+        padding: 20px 16px;
+        margin-top: 15px;
+        margin-bottom: 20px;
+    }
+
+    .card-section h3 {
+        font-size: 16px;
+    }
+
+    .card-section p {
+        font-size: 14px;
+    }
+
     .result-footer {
         flex-direction: column;
+        gap: 10px;
+        margin-top: 15px;
     }
-    
-    .result-footer button {
-        width: 100%;
+
+    .result-footer button,
+    .dashboard-btn, .btn-secondary,
+    .next-btn, .btn-primary {
+        width: 100% !important;
+        max-width: none !important;
+        height: 48px !important;
+        min-height: 48px !important;
+        font-size: 13px;
     }
 }

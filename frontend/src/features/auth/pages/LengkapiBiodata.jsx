@@ -4,6 +4,7 @@ import "@/App.css";
 import "@/css/LoginCSS.css"; // Kita re-use styling dari Login Page
 import { supabase } from "@/services/supabaseClient";
 import { updateProfile, getProfile } from "@/features/auth/api";
+import { diagnose } from "@/features/detection/api";
 
 import logoLeft from "@/assets/logovimind.png";
 import logoTop from "@/assets/logovimind2.png";
@@ -16,6 +17,27 @@ const LengkapiBiodata = () => {
     birth_date: ""
   });
   const [email, setEmail] = useState("");
+
+  const syncPendingAnswers = async (userEmail) => {
+    const pendingAnswersRaw = sessionStorage.getItem("pending_answers");
+    if (pendingAnswersRaw) {
+      try {
+        const { data: { session } } = await supabase.auth.getSession();
+        const parsedAnswers = JSON.parse(pendingAnswersRaw);
+        const config = session?.access_token ? {
+          headers: {
+            Authorization: `Bearer ${session.access_token}`
+          }
+        } : {};
+        const diagRes = await diagnose(parsedAnswers, userEmail, 0, config);
+        sessionStorage.setItem("latest_diagnosis", JSON.stringify(diagRes.data));
+        sessionStorage.removeItem("pending_answers");
+        console.log("Biodata: Successfully synced pending diagnosis to DB.");
+      } catch (err) {
+        console.error("Biodata: Failed to sync pending diagnosis:", err);
+      }
+    }
+  };
 
   useEffect(() => {
     document.title = "Lengkapi Biodata | Vimind";
@@ -36,10 +58,10 @@ const LengkapiBiodata = () => {
         const res = await getProfile(session.user.email);
         // Jika birth_date sudah terisi, artinya gak usah kesini, lempar ke dashboard
         if (res.data?.birth_date) {
-            const pendingAnswersRaw = sessionStorage.getItem("pending_answers");
+            await syncPendingAnswers(session.user.email);
             const redirectAfterLogin = localStorage.getItem("redirectAfterLogin");
-            if (pendingAnswersRaw || redirectAfterLogin) {
-              if (redirectAfterLogin) localStorage.removeItem("redirectAfterLogin");
+            if (redirectAfterLogin) {
+              localStorage.removeItem("redirectAfterLogin");
               navigate("/hasil");
             } else {
               navigate("/dashboard");
@@ -86,12 +108,14 @@ const LengkapiBiodata = () => {
       // Simpan nickname di localstorage
       localStorage.setItem("nickname", form.name);
       
+      // Sinkronkan kuis pending ke database setelah profil terdaftar
+      await syncPendingAnswers(email);
+      
       // Lanjut ke hasil atau dashboard
-      const pendingAnswersRaw = localStorage.getItem("pending_answers");
       const redirectAfterLogin = localStorage.getItem("redirectAfterLogin");
       
-      if (pendingAnswersRaw || redirectAfterLogin) {
-        if (redirectAfterLogin) localStorage.removeItem("redirectAfterLogin");
+      if (redirectAfterLogin) {
+        localStorage.removeItem("redirectAfterLogin");
         navigate("/hasil");
       } else {
         navigate("/dashboard");

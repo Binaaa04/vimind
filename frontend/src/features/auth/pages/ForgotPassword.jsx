@@ -69,7 +69,7 @@ const ForgotPassword = () => {
 
           {/* TOMBOL KEMBALI DITEMPATKAN DI BAWAH, MIRIP TOMBOL KIRIMKAN */}
           <button
-            className="primary-btn forgot-btn secondary-style"
+            className="secondary-style"
             onClick={() => navigate("/login")}
           >
             Kembali

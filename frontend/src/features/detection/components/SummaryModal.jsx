@@ -9,7 +9,18 @@ export default function SummaryModal({ onClose }) {
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [userName, setUserName] = useState("");
+  const [isMobileView, setIsMobileView] = useState(false);
+  const [activeTab, setActiveTab] = useState("charts");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobileView(window.innerWidth <= 768);
+    };
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -226,156 +237,177 @@ export default function SummaryModal({ onClose }) {
           <button className="sm-close-x-btn" onClick={onClose} aria-label="Tutup modal">✕</button>
         </div>
 
+        {/* TABS FOR MOBILE */}
+        {isMobileView && (
+          <div className="sm-tabs-mobile">
+            <button 
+              className={`sm-tab-btn ${activeTab === "charts" ? "active" : ""}`}
+              onClick={() => setActiveTab("charts")}
+            >
+              📈 Kondisi & Tren
+            </button>
+            <button 
+              className={`sm-tab-btn ${activeTab === "history" ? "active" : ""}`}
+              onClick={() => setActiveTab("history")}
+            >
+              📜 Riwayat Lengkap
+            </button>
+          </div>
+        )}
+
         {/* BODY */}
         <div className="sm-body">
-          <div className="summary-gauge-container">
-            <div className="sm-chart-label">Kondisi Terakhir Anda</div>
-            
-            {/* 1. GAUGE GRAFIK */}
-            <div className="gauge-wrapper">
-              <div
-                className="gauge-graphic"
-                style={{
-                  background: latest 
-                    ? `conic-gradient(from 270deg at 50% 100%, 
-                        #9061f9 0deg, 
-                        #9061f9 ${(latest.percentage || 0) * 1.8}deg, 
-                        #cbd5e0 ${(latest.percentage || 0) * 1.8}deg, 
-                        #cbd5e0 180deg
-                      )`
-                    : `conic-gradient(from 270deg at 50% 100%, 
-                        #e2e8f0 0deg, 
-                        #e2e8f0 180deg
-                      )`
-                }}
-              />
-              <div className="gauge-inner-circle">
-                <span className="gauge-value" style={!latest ? { color: '#a0aec0' } : {}}>
-                  {latest ? `${Math.round(latest.percentage)}%` : "—"}
-                </span>
-                <span className="gauge-label">{latest ? "Risiko" : "Data Tes"}</span>
+          {(!isMobileView || activeTab === "charts") && (
+            <div className="summary-gauge-container">
+              <div className="sm-chart-label">Kondisi Terakhir Anda</div>
+              
+              {/* 1. GAUGE GRAFIK */}
+              <div className="gauge-wrapper">
+                <div
+                  className="gauge-graphic"
+                  style={{
+                    background: latest 
+                      ? `conic-gradient(from 270deg at 50% 100%, 
+                          #9061f9 0deg, 
+                          #9061f9 ${(latest.percentage || 0) * 1.8}deg, 
+                          #cbd5e0 ${(latest.percentage || 0) * 1.8}deg, 
+                          #cbd5e0 180deg
+                        )`
+                      : `conic-gradient(from 270deg at 50% 100%, 
+                          #e2e8f0 0deg, 
+                          #e2e8f0 180deg
+                        )`
+                  }}
+                />
+                <div className="gauge-inner-circle">
+                  <span className="gauge-value" style={!latest ? { color: '#a0aec0' } : {}}>
+                    {latest ? `${Math.round(latest.percentage)}%` : "—"}
+                  </span>
+                  <span className="gauge-label">{latest ? "Risiko" : "Data Tes"}</span>
+                </div>
+              </div>
+
+              {/* 2. CHART GRAFIK */}
+              <div className="gauge-text">
+                <div className="sm-chart-label sm-chart-label-trend">
+                  Tren Perkembangan
+                </div>
+                {loading ? (
+                  <p className="sm-empty-msg">Memuat data...</p>
+                ) : chartData.length < 2 ? (
+                  <p className="sm-empty-msg">
+                    <span className="sm-empty-icon">📈</span>
+                    Butuh minimal 2 data tes untuk melihat grafik perkembangan.
+                  </p>
+                ) : (
+                  <svg viewBox={`0 0 ${W} ${H}`} className="sm-svg" preserveAspectRatio="xMidYMid meet">
+                    {/* Y grid lines */}
+                    {yLines.map(val => {
+                      const y = padT + chartH - (val / 100) * chartH;
+                      return (
+                        <g key={val}>
+                          <line x1={padL} y1={y} x2={W - padR} y2={y} stroke="#E2E8F0" strokeWidth="1" strokeDasharray="4,3" />
+                          <text x={padL - 6} y={y + 4} fontSize="9" fill="#94A3B8" textAnchor="end">{val}%</text>
+                        </g>
+                      );
+                    })}
+
+                    {/* Gradient fill */}
+                    <defs>
+                      <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#8B5CF6" stopOpacity="0.3" />
+                        <stop offset="100%" stopColor="#8B5CF6" stopOpacity="0.02" />
+                      </linearGradient>
+                    </defs>
+                    <polygon
+                      points={`${points[0].x},${padT + chartH} ${polylinePoints} ${points[points.length - 1].x},${padT + chartH}`}
+                      fill="url(#chartGrad)"
+                    />
+
+                    {/* Line */}
+                    <polyline fill="none" stroke="#8B5CF6" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" points={polylinePoints} />
+
+                    {/* Data points */}
+                    {points.map((p, i) => (
+                      <circle key={i} cx={p.x} cy={p.y} r="4.5" fill="white" stroke="#8B5CF6" strokeWidth="2.5" />
+                    ))}
+
+                    {/* X-axis date labels */}
+                    {points.map((p, i) => {
+                      const step = Math.ceil(points.length / 5);
+                      if (i % step !== 0 && i !== points.length - 1) return null;
+                      
+                      let textAnchor = "middle";
+                      if (i === 0) textAnchor = "start";
+                      else if (i === points.length - 1) textAnchor = "end";
+
+                      return (
+                        <text key={i} x={p.x} y={H - 6} fontSize="9" fill="#64748B" textAnchor={textAnchor}>
+                          {formatChartDate(p.item.date)}
+                        </text>
+                      );
+                    })}
+                  </svg>
+                )}
               </div>
             </div>
+          )}
 
-            {/* 2. CHART GRAFIK */}
-            <div className="gauge-text">
-              <div className="sm-chart-label sm-chart-label-trend">
-                Tren Perkembangan
-              </div>
-              {loading ? (
-                <p className="sm-empty-msg">Memuat data...</p>
-              ) : chartData.length < 2 ? (
-                <p className="sm-empty-msg">
-                  <span className="sm-empty-icon">📈</span>
-                  Butuh minimal 2 data tes untuk melihat grafik perkembangan.
-                </p>
+          {(!isMobileView || activeTab === "history") && (
+            <div className="sm-history-list">
+              <h4>Riwayat Lengkap</h4>
+              {loading ? ( 
+                <p className="sm-empty-msg">Sedang mengambil riwayat...</p>
+              ) : history.length === 0 ? (
+                <div className="sm-empty-container">
+                  <p className="sm-empty-msg">Belum ada riwayat tes.</p>
+                  <button className="sm-mulai-btn" onClick={handleGoToDetail}>Mulai Tes Sekarang</button>
+                </div>
               ) : (
-                <svg viewBox={`0 0 ${W} ${H}`} className="sm-svg" preserveAspectRatio="xMidYMid meet">
-                  {/* Y grid lines */}
-                  {yLines.map(val => {
-                    const y = padT + chartH - (val / 100) * chartH;
-                    return (
-                      <g key={val}>
-                        <line x1={padL} y1={y} x2={W - padR} y2={y} stroke="#E2E8F0" strokeWidth="1" strokeDasharray="4,3" />
-                        <text x={padL - 6} y={y + 4} fontSize="9" fill="#94A3B8" textAnchor="end">{val}%</text>
-                      </g>
-                    );
-                  })}
-
-                  {/* Gradient fill */}
-                  <defs>
-                    <linearGradient id="chartGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#8B5CF6" stopOpacity="0.3" />
-                      <stop offset="100%" stopColor="#8B5CF6" stopOpacity="0.02" />
-                    </linearGradient>
-                  </defs>
-                  <polygon
-                    points={`${points[0].x},${padT + chartH} ${polylinePoints} ${points[points.length - 1].x},${padT + chartH}`}
-                    fill="url(#chartGrad)"
-                  />
-
-                  {/* Line */}
-                  <polyline fill="none" stroke="#8B5CF6" strokeWidth="2.5" strokeLinejoin="round" strokeLinecap="round" points={polylinePoints} />
-
-                  {/* Data points */}
-                  {points.map((p, i) => (
-                    <circle key={i} cx={p.x} cy={p.y} r="4.5" fill="white" stroke="#8B5CF6" strokeWidth="2.5" />
-                  ))}
-
-                  {/* X-axis date labels */}
-                  {points.map((p, i) => {
-                    const step = Math.ceil(points.length / 5);
-                    if (i % step !== 0 && i !== points.length - 1) return null;
-                    
-                    let textAnchor = "middle";
-                    if (i === 0) textAnchor = "start";
-                    else if (i === points.length - 1) textAnchor = "end";
-
-                    return (
-                      <text key={i} x={p.x} y={H - 6} fontSize="9" fill="#64748B" textAnchor={textAnchor}>
-                        {formatChartDate(p.item.date)}
-                      </text>
-                    );
-                  })}
-                </svg>
-              )}
-            </div>
-          </div>
-
-          {/* HISTORY LIST */}
-          <div className="sm-history-list">
-            <h4>Riwayat Lengkap</h4>
-            {loading ? ( 
-              <p className="sm-empty-msg">Sedang mengambil riwayat...</p>
-            ) : history.length === 0 ? (
-              <div className="sm-empty-container">
-                <p className="sm-empty-msg">Belum ada riwayat tes.</p>
-                <button className="sm-mulai-btn" onClick={handleGoToDetail}>Mulai Tes Sekarang</button>
-              </div>
-            ) : (
-              history.map((item, idx) => (
-                <div key={idx} className="sm-history-item">
-                  <div className="item-left">
-                    <div className="item-percentage-large">{Math.round(item.percentage)}%</div>
-                  </div>
-                  <div className="item-info">
-                    <div className="item-disease">{item.disease}</div>
-                    <div className="item-meta">
-                      <span className="item-level" style={{ 
-                        backgroundColor: `${levelColor(item.level)}15`, 
-                        color: levelColor(item.level),
-                        border: `1px solid ${levelColor(item.level)}40`
-                      }}>
-                        {item.level}
-                      </span>
-                      <span className="item-date">{formatDate(item.date)}</span>
+                history.map((item, idx) => (
+                  <div key={idx} className="sm-history-item">
+                    <div className="item-left">
+                      <div className="item-percentage-large">{Math.round(item.percentage)}%</div>
+                    </div>
+                    <div className="item-info">
+                      <div className="item-disease">{item.disease}</div>
+                      <div className="item-meta">
+                        <span className="item-level" style={{ 
+                          backgroundColor: `${levelColor(item.level)}15`, 
+                          color: levelColor(item.level),
+                          border: `1px solid ${levelColor(item.level)}40`
+                        }}>
+                          {item.level}
+                        </span>
+                        <span className="item-date">{formatDate(item.date)}</span>
+                      </div>
+                    </div>
+                    <div className="item-actions">
+                      <button 
+                        className="item-detail-btn" 
+                        onClick={() => navigate("/hasil", { 
+                          state: { 
+                            diagnosis: {
+                              top_result: {
+                                disease_name: item.disease,
+                                percentage: item.percentage,
+                                description: item.description,
+                                recommendations: item.recommendations
+                              }
+                            }
+                          } 
+                        })}
+                        title="Lihat Detail & Rekomendasi"
+                      >
+                        <span>Lihat Detail</span>
+                        <span>→</span>
+                      </button>
                     </div>
                   </div>
-                  <div className="item-actions">
-                    <button 
-                      className="item-detail-btn" 
-                      onClick={() => navigate("/hasil", { 
-                        state: { 
-                          diagnosis: {
-                            top_result: {
-                              disease_name: item.disease,
-                              percentage: item.percentage,
-                              description: item.description,
-                              recommendations: item.recommendations
-                            }
-                          }
-                        } 
-                      })}
-                      title="Lihat Detail & Rekomendasi"
-                    >
-                      <span>Lihat Detail</span>
-                      <span>→</span>
-                    </button>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
+                ))
+              )}
+            </div>
+          )}
         </div>
 
         {/* FOOTER */}

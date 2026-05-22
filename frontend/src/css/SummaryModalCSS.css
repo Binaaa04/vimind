@@ -14,6 +14,10 @@
   box-sizing: border-box;
 }
 
+.modal-overlay * {
+  box-sizing: border-box;
+}
+
 /* KARTU UTAMA */
 .sm-card {
   background: #f8fbff;
@@ -131,6 +135,9 @@
   grid-template-columns: 1fr 1fr;
   gap: clamp(16px, 4vw, 24px);
   overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Custom scrollbars for modal body */
@@ -432,13 +439,76 @@
 }
 
 /* ==========================================
+   MOBILE TABS
+   ========================================== */
+.sm-tabs-mobile {
+  display: flex;
+  background: #f1f5f9;
+  padding: 4px;
+  border-radius: 12px;
+  margin: 16px clamp(16px, 4vw, 24px) 0;
+  gap: 4px;
+  border: 1px solid #e2e8f0;
+}
+
+.sm-tab-btn {
+  flex: 1;
+  background: transparent !important;
+  background-color: transparent !important;
+  border: none !important;
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.sm-tab-btn.active {
+  background: white !important;
+  background-color: white !important;
+  color: #8b5cf6 !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
+
+.sm-tab-btn:hover:not(.active) {
+  background: rgba(139, 92, 246, 0.05) !important;
+  color: #7c3aed !important;
+}
+
+@media (min-width: 769px) {
+  .sm-tabs-mobile {
+    display: none;
+  }
+}
+
+/* ==========================================
    RESPONSIVE DESIGN (MEDIA QUERIES)
    ========================================== */
 
 /* Tablet & Mobile Layout */
 @media (max-width: 768px) {
   .sm-body {
-    grid-template-columns: 1fr;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(16px, 4vw, 24px);
+  }
+  
+  .summary-gauge-container {
+    width: 100%;
+    flex-shrink: 0;
+  }
+  
+  .sm-history-list {
+    max-height: none;
+    overflow-y: visible;
+    width: 100%;
+    flex-shrink: 0;
   }
   
   .sm-header {
@@ -468,24 +538,33 @@
     text-align: center;
     justify-content: center; /* Memastikan ikon & teks di tengah saat full-width */
   }
-  
-  .sm-history-list {
-    max-height: none;
-  }
 }
 
 /* Small Mobile Layout (Layar sangat sempit) */
 @media (max-width: 480px) {
   .sm-history-item {
-    flex-direction: column;
-    align-items: flex-start;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 12px;
+    align-items: center;
+    padding: 12px 14px;
+  }
+  
+  .item-left {
+    border-right: 1px solid #f1f5f9;
+    padding-right: 12px;
+  }
+  
+  .item-info {
+    padding-left: 0;
   }
   
   .item-actions {
+    grid-column: span 2;
     width: 100%;
-    flex-direction: row;
+    display: flex;
     justify-content: flex-end;
-    margin-top: 8px;
+    margin-top: 4px;
     padding-top: 8px;
     border-top: 1px dashed #e2e8f0;
   }

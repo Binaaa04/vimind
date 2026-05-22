@@ -4,6 +4,7 @@ import { supabase } from "@/services/supabaseClient";
 import { useAuth } from "@/shared/context/AuthContext";
 import { getProfile } from "@/features/auth/api";
 import { submitTestimonial, checkRating } from "@/features/home/api";
+import { Lock } from "lucide-react";
 
 import MoodModal from "@/features/detection/components/MoodModal";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
@@ -14,7 +15,7 @@ export default function Result() {
         document.title = "Hasil Tes | Vimind";
     }, []);
 
-    const { user, isAuthenticated, loading: authLoading } = useAuth();
+    const { user, isAuthenticated, isAdmin, loading: authLoading } = useAuth();
     const navigate = useNavigate();
     const location = useLocation();
     
@@ -22,6 +23,15 @@ export default function Result() {
     const [avatarUrl, setAvatarUrl] = useState("");
     const [showModal, setShowModal] = useState(false);
     const [loading, setLoading] = useState(false);
+    
+    // Detect screen width for responsive chart
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 600);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 600);
+        window.addEventListener("resize", handleResize);
+        return () => window.removeEventListener("resize", handleResize);
+    }, []);
 
     // Mood States
     const [showMoodModal, setShowMoodModal] = useState(false);
@@ -72,6 +82,11 @@ export default function Result() {
                     const profileRes = await getProfile(); // Uses JWT
                     setNickname(profileRes.data.name || user.email.split("@")[0]);
                     setAvatarUrl(profileRes.data.avatar_url || "");
+
+                    if (!isAdmin && (!profileRes.data || !profileRes.data.birth_date)) {
+                        navigate("/lengkapi-biodata", { replace: true });
+                        return;
+                    }
                 } catch (err) {
                     console.warn("Profile fetch error in Result");
                     const fallbackName = user.user_metadata?.full_name || user.email.split("@")[0];
@@ -98,6 +113,7 @@ export default function Result() {
                     setShowFeedbackModal(true);
                 }, 1000);
                 return () => clearTimeout(timer); 
+                // clean up
             }
         }
     }, [result, showModal, showMoodModal, isAuthenticated, hasRated, checkingRating]);
@@ -116,11 +132,6 @@ export default function Result() {
             </div>
         );
     }
-
-    const handleLogout = async () => {
-        await supabase.auth.signOut();
-        navigate("/login");
-    };
 
     const handleFeedbackSubmit = async () => {
         if (rating === 0 || comment.trim() === "") {
@@ -168,19 +179,6 @@ export default function Result() {
                         )}
                     </div>
                 </div>
-
-                <div className="header-actions">
-                    <div className="avatar">
-                        {avatarUrl ? (
-                            <img src={avatarUrl} alt="Avatar" />
-                        ) : (
-                            nickname ? nickname[0].toUpperCase() : "?"
-                        )}
-                    </div>
-                    {isAuthenticated && (
-                        <button className="logout-mini-btn" onClick={handleLogout}>Keluar</button>
-                    )}
-                </div>
             </div>
 
             {/* Blur hasil jika belum login ATAU (sudah login tapi belum rating & popup muncul) */}
@@ -197,7 +195,13 @@ export default function Result() {
                             <ResponsiveContainer width="100%" height={Math.max(chartData.length * 50 + 40, 120)}>
                                 <BarChart data={chartData} layout="vertical" margin={{ left: 10, right: 30, top: 10, bottom: 10 }}>
                                     <XAxis type="number" domain={[0, 100]} hide />
-                                    <YAxis type="category" dataKey="name" width={180} tick={{ fontSize: 12, fill: "#555" }} />
+                                    <YAxis 
+                                        type="category" 
+                                        dataKey="name" 
+                                        width={isMobile ? 110 : 180} 
+                                        tick={{ fontSize: isMobile ? 10 : 12, fill: "#555" }} 
+                                        tickFormatter={(value) => isMobile && value.length > 15 ? `${value.substring(0, 13)}...` : value}
+                                    />
                                     <Tooltip formatter={(val) => `${val.toFixed(1)}%`} />
                                     <Bar dataKey="score" fill="#8B5CF6" radius={[0, 6, 6, 0]} barSize={20} />
                                 </BarChart>
@@ -252,9 +256,11 @@ export default function Result() {
             {showModal && (
                 <div className="overlay">
                     <div className="login-modal">
-                        <div className="lock-icon">🔒</div>
+                        <div className="lock-icon-wrapper">
+                            <Lock size={32} strokeWidth={2} />
+                        </div>
                         <h2>Hasil Terkunci</h2>
-                        <p>Simpan hasil tes ini secara permanen dengan masuk ke akun kamu.</p>
+                        <p>Simpan hasil tes ini secara permanen dengan masuk ke akun Anda.</p>
                         <button
                             disabled={loading}
                             onClick={() => {
@@ -272,7 +278,7 @@ export default function Result() {
                         >
                             Kembali ke Beranda
                         </button>
-                        <p className="guest-note" style={{ marginTop: "12px" }}>Akurasi deteksi mental health bisa berubah seiring waktu.</p>
+                        <p className="guest-note">Akurasi deteksi mental health bisa berubah seiring waktu.</p>
                     </div>
                 </div>
             )}

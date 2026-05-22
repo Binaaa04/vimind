@@ -19,6 +19,32 @@ const DISEASE_LABELS = {
   9: "Anxiety Disorder",
 };
 
+// Helper untuk mengamankan data sebelum disimpan ke sessionStorage (Obfuscation + Caesar cipher + Base64)
+const encryptData = (data) => {
+  try {
+    const jsonStr = JSON.stringify(data);
+    // Lakukan rotasi karakter (+13) sederhana untuk menyamarkan isi string
+    const shifted = jsonStr.split("").map((c) => String.fromCharCode(c.charCodeAt(0) + 13)).join("");
+    // Encode ke Base64 secara UTF-8 safe
+    return btoa(unescape(encodeURIComponent(shifted)));
+  } catch (e) {
+    return "";
+  }
+};
+
+const decryptData = (cipher) => {
+  try {
+    if (!cipher) return null;
+    // Decode dari Base64 secara UTF-8 safe
+    const shifted = decodeURIComponent(escape(atob(cipher)));
+    // Kembalikan rotasi karakter (-13)
+    const original = shifted.split("").map((c) => String.fromCharCode(c.charCodeAt(0) - 13)).join("");
+    return JSON.parse(original);
+  } catch (e) {
+    return null;
+  }
+};
+
 export default function Detection() {
   useEffect(() => { document.title = "Tes Gejala | Vimind"; }, []);
 
@@ -132,8 +158,29 @@ export default function Detection() {
 
         const forceNewTest = location.state?.forceNewTest;
 
-        // Helper untuk memulihkan sesi dari backend cache
+        // Helper untuk memulihkan sesi dari cache lokal (sessionStorage) dan backend
         const tryRestoreCache = async () => {
+          // 1. Coba restore dari sessionStorage (Offline-friendly & Instan)
+          try {
+            const localSaved = sessionStorage.getItem("vimind_quiz_answers");
+            const localPage = sessionStorage.getItem("vimind_quiz_page");
+            const decryptedAnswers = decryptData(localSaved);
+            const decryptedPage = decryptData(localPage);
+
+            if (decryptedAnswers && Object.keys(decryptedAnswers).length > 0) {
+              const res = await getQuestions("all");
+              if (!ignore) {
+                setQuestions(res.data?.questions || res.data || []);
+                setSelectedAnswers(decryptedAnswers);
+                setCurrentPage(decryptedPage !== null ? parseInt(decryptedPage, 10) : 0);
+              }
+              return true;
+            }
+          } catch (e) {
+            console.error("Failed to restore from sessionStorage:", e);
+          }
+
+          // 2. Fallback: Coba restore dari backend cache (jika local storage kosong)
           try {
             const cached = await getTestSession(email, sid);
             if (cached.data?.exists && cached.data.answers && Object.keys(cached.data.answers).length > 0) {
@@ -142,8 +189,12 @@ export default function Detection() {
                 setQuestions(res.data?.questions || res.data || []);
                 setSelectedAnswers(cached.data.answers);
                 setCurrentPage(cached.data.current_page || 0);
+                
+                // Sinkronkan ke sessionStorage
+                sessionStorage.setItem("vimind_quiz_answers", encryptData(cached.data.answers));
+                sessionStorage.setItem("vimind_quiz_page", encryptData(cached.data.current_page || 0));
               }
-              return true; // Berhasil di-restore
+              return true;
             }
           } catch { }
           return false;
@@ -151,6 +202,8 @@ export default function Detection() {
 
         // ── "Deteksi Penyakit Baru" → hapus cache, mulai fresh ──
         if (forceNewTest === true) {
+          sessionStorage.removeItem("vimind_quiz_answers");
+          sessionStorage.removeItem("vimind_quiz_page");
           try { await deleteTestSession(email, sid); } catch { }
           if (!email) {
             // Refresh guest session ID untuk tes yang baru
@@ -211,9 +264,13 @@ export default function Detection() {
 
   useEffect(() => {
     if ((userEmail || sessionId) && Object.keys(selectedAnswers).length > 0) {
+      // Simpan langsung ke sessionStorage (instant & offline-safe)
+      sessionStorage.setItem("vimind_quiz_answers", encryptData(selectedAnswers));
+      sessionStorage.setItem("vimind_quiz_page", encryptData(currentPage));
+      
       debouncedSave();
     }
-  }, [selectedAnswers, currentPage, debouncedSave]);
+  }, [selectedAnswers, currentPage, debouncedSave, userEmail, sessionId]);
 
   // ============================================================
   // Helpers
@@ -276,7 +333,7 @@ export default function Detection() {
         sessionStorage.setItem("latest_diagnosis", JSON.stringify(result.data));
         sessionStorage.removeItem("pending_answers");
       } else {
-        sessionStorage.removeItem("latest_diagnosis");
+        sessionStorage.setItem("latest_diagnosis", JSON.stringify(result.data));
         sessionStorage.setItem("pending_answers", JSON.stringify(apiAnswers));
       }
 
@@ -285,6 +342,11 @@ export default function Detection() {
       // Hapus guest session ID
       sessionStorage.removeItem("guest_session_id");
       setRetryAnswers(null);
+      
+      // Hapus cache lokal (sessionStorage) setelah tes selesai
+      sessionStorage.removeItem("vimind_quiz_answers");
+      sessionStorage.removeItem("vimind_quiz_page");
+      
       navigate("/selesai", { state: { diagnosis: result.data, isGuest: !userEmail } });
     } catch (err) {
       console.error("Diagnosis failed:", err);
@@ -377,7 +439,7 @@ export default function Detection() {
               </h2>
 
               <div className="options-wrapper">
-                {/* Bagian Lingkaran di Atas */}
+                <div className="label-left">Setuju</div>
                 <div className="circles">
                   {[1, 2, 3, 4].map((i) => (
                     <div
@@ -387,12 +449,7 @@ export default function Detection() {
                     />
                   ))}
                 </div>
-
-                {/* Bagian Label di Bawah */}
-                <div className="labels-row">
-                  <div className="label-text">Setuju</div>
-                  <div className="label-text">Tidak Setuju</div>
-                </div>
+                <div className="label-right">Tidak Setuju</div>
               </div>
             </div>
           );
