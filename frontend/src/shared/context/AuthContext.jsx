@@ -60,6 +60,11 @@ export const AuthProvider = ({ children }) => {
     signOut: async () => {
       localStorage.removeItem('userRole');
       localStorage.removeItem('isLogin');
+      localStorage.removeItem('nickname');
+      localStorage.removeItem('avatar_url');
+      localStorage.removeItem('mood');
+      localStorage.removeItem('mood_date');
+      localStorage.removeItem('has_rated_test');
       sessionStorage.removeItem('latest_diagnosis');
       sessionStorage.removeItem('pending_answers');
       sessionStorage.removeItem('quiz_active');

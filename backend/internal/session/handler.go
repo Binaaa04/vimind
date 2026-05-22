@@ -57,12 +57,17 @@ func (h *Handler) DeleteTestSession(c *fiber.Ctx) error {
 
 func resolveKey(c *fiber.Ctx) string {
 	// Use authenticated email if available
-	if email, ok := c.Locals("user_email").(string); ok && email != "" {
-		return "email:" + email
+	authEmail, _ := c.Locals("user_email").(string)
+	if authEmail != "" {
+		return "email:" + authEmail
 	}
 	
+	// If querying for email, ensure it matches the authenticated user
 	if email := c.Query("email"); email != "" {
-		return "email:" + email
+		if authEmail == email {
+			return "email:" + authEmail
+		}
+		return ""
 	}
 	if sid := c.Query("session_id"); sid != "" {
 		return "sid:" + sid
