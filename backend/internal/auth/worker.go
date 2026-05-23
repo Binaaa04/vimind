@@ -48,17 +48,18 @@ func (p *WorkerPool) processTask(task ActivityTask) {
 		return
 	}
 
-	var lastIP string
-	err := p.repo.pool.QueryRow(context.Background(), "SELECT COALESCE(last_ip, '') FROM users WHERE email=$1", task.Email).Scan(&lastIP)
+	var lastIP, lastRegion string
+	err := p.repo.pool.QueryRow(context.Background(), "SELECT COALESCE(last_ip, ''), COALESCE(last_region, '') FROM users WHERE email=$1", task.Email).Scan(&lastIP, &lastRegion)
 	if err != nil {
 		log.Printf("[Worker] DB query error for %s: %v", task.Email, err)
 		return
 	}
 
-	log.Printf("[Worker] Current IP=%s, Last IP in DB=%s", task.IP, lastIP)
+	log.Printf("[Worker] Current IP=%s, Last IP in DB=%s, Last Region=%s", task.IP, lastIP, lastRegion)
 
 	region := ""
-	if task.IP != lastIP {
+	// Call geolocation if IP changed OR if region was never resolved
+	if task.IP != lastIP || lastRegion == "" {
 		client := &http.Client{Timeout: 5 * time.Second}
 		apiURL := "http://ip-api.com/json/" + task.IP
 		log.Printf("[Worker] Calling geolocation API: %s", apiURL)
