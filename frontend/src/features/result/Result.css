@@ -48,17 +48,16 @@
 .result-header {
     display: flex;
     justify-content: space-between; 
-    align-items: flex-start;
+    align-items: center;
     width: 100%;
     max-width: 1200px; 
     max-width: 90%; 
     margin: 0 auto; 
     padding-top: 60px;    
-    padding-bottom: 120px; 
+    padding-bottom: 40px; 
     padding-left: 40px;   
     padding-right: 40px;  
     box-sizing: border-box;
-
 }
 
 .header-info h1 {
@@ -80,7 +79,8 @@
 
 .result-badge span {
     font-size: 14px;
-    color: #64748b;
+    color: #000000;
+    font-weight: 600;
 }
 
 .result-badge h2 {
@@ -167,8 +167,8 @@
     border-radius: 16px;
     padding: 30px;
     box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-    margin-bottom: -50px;
-    margin-top: 80px;
+    margin-bottom: 30px;
+    margin-top: 20px;
 }
 
 .card-section {
@@ -236,7 +236,8 @@
     justify-content: center;
     align-items: center;
     gap: 15px;
-    margin-top: 20px;
+    margin-top: 30px;
+    margin-bottom: 40px;
     width: 100%;
 }
 
@@ -652,6 +653,7 @@
         flex-direction: column;
         gap: 10px;
         margin-top: 15px;
+        margin-bottom: 20px;
     }
 
     .result-footer button,

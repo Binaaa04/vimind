@@ -22,6 +22,10 @@ ViMind addresses this gap by providing an accessible, private, and intelligent p
 - Provides real-time mental health assistance using the latest test results as context.
 - Integrated deeply with the user dashboard for immediate support.
 
+### 🌤️ Daily Mood Tracker
+- **Emoji-Based Daily Check-in**: Users are prompted once a day to record their current mood (Sad 😭, Gloomy ☹️, Neutral 😐, Good 🙂, Happy 😁).
+- **Instant Mood Summary**: Provides an immediate visual indicator (Certainty Factor percentage gauge) and customized mental state feedback cards.
+
 ### 🌟 Feedback & Rating System
 - **Mandatory Rating (Hard-Lock)**: Users must rate the platform before viewing their diagnosis results for the first time, ensuring continuous and authentic feedback collection.
 - **User Comments**: Users can leave detailed comments (testimonials) after completing their assessment.
@@ -120,11 +124,11 @@ ViMind uses the Certainty Factor (CF) method, a classic expert system approach f
 <details>
 <summary><b>Click to expand Full API Documentation</b></summary>
 
-### 🔐 Security & Authorization (Admin)
-All endpoints under `/api/admin` require a security header for role-based authorization.
-- **Header**: `X-Admin-Email`
-- **Value**: An email registered with `role: 'admin'`.
-- **Logic**: Backend middleware verifies the role in the database before granting access.
+### 🔐 Security & Authorization (JWT & Roles)
+All protected endpoints require standard JWT authentication from Supabase.
+- **Header**: `Authorization: Bearer <supabase_jwt_token>`
+- **Logic**: Backend middleware parses the JWT token, verifies its signature, and extracts the authenticated user's email into request context.
+- **Admin Authorization**: Endpoints prefixed with `/api/admin` additionally require that the authenticated email is registered with the `admin` role in the database.
 
 ---
 
@@ -141,42 +145,60 @@ Analyzes Phase 1 answers and fetches follow-up questions.
 - **Response**: `{"questions": [...]}`
 
 #### `POST /api/diagnose`
-Final CF calculation and result saving.
-- **Body**: `{"answers": [...], "user_email": "...", "refined_disease_id": int}`
+Final Certainty Factor calculation and result saving.
+- **Body**: `{"answers": [...], "user_email": "...", "refined_disease_id": int}` (email resolved automatically via JWT if authenticated)
 
-#### `GET /api/faq` | `GET /api/banners` | `GET /api/testimonials`
+#### `GET /api/test-session` | `POST /api/test-session` | `DELETE /api/test-session`
+Saves, retrieves, or deletes temp screening answers in Session Cache for progress resilience.
+
+#### `GET /api/faq` | `GET /api/banners` | `GET /api/testimonials` | `GET /api/levels`
 Fetches dynamic content for public pages.
 
+#### `POST /api/chat`
+AI chatbot chat message endpoint.
+- **Body**: `{"messages": [{"role": "user"|"assistant", "content": "..."}]}`
+- **Response**: `{"reply": "..."}`
+
+#### `GET /api/check-rating`
+Checks if the user has rated the platform.
+- **Response**: `{"has_rated": bool}`
+
 #### `POST /api/testimonials` | `POST /api/account_feedbacks`
-User engagement and feedback submission.
+User exit survey and feedback submission.
 
 #### `GET /api/profile` | `POST /api/profile` | `DELETE /api/profile`
 User account and preference management.
 
+#### `GET /api/history`
+Retrieves past mental health screening results of the user.
+
 ---
 
-### 👑 Admin Management (Requires X-Admin-Email)
+### 👑 Admin Management (Requires JWT & Admin Role)
 
-#### `GET /api/admin/banners` | `POST /api/admin/banners`
-Full CRUD for dashboard promotions.
+#### `GET /api/admin/banners` | `POST /api/admin/banners` | `DELETE /api/admin/banners/:id`
+Full CRUD for dashboard promotions/banners.
 
-#### `GET /api/admin/faq` | `POST /api/admin/faq`
+#### `GET /api/admin/faq` | `POST /api/admin/faq` | `DELETE /api/admin/faq/:id`
 Full CRUD for landing page FAQs.
 
-#### `GET /api/admin/symptoms` | `PUT /api/admin/symptoms`
-Management of symptoms in the knowledge base.
+#### `GET /api/admin/symptoms` | `POST /api/admin/symptoms` | `DELETE /api/admin/symptoms/:id`
+Full CRUD for symptoms in the knowledge base.
 
-#### `GET /api/admin/rules` | `PUT /api/admin/rules`
-Direct management of Expert Weights (CF Values) and rule mappings.
+#### `GET /api/admin/diseases` | `POST /api/admin/diseases` | `DELETE /api/admin/diseases/:id`
+Full CRUD for diseases in the database.
+
+#### `GET /api/admin/rules` | `POST /api/admin/rules` | `DELETE /api/admin/rules/:id`
+Full CRUD for Expert Weights (CF Values) and rule mappings.
 
 #### `GET /api/admin/testimonials` | `PUT /api/admin/testimonials/:id/display`
 Moderation of user feedback for landing page visibility.
 
 #### `GET /api/admin/account_feedbacks`
-Tracking and analysis of user exit surveys (deletion reasons).
+Tracking and analysis of Exit Survey reasons (account deletion).
 
 #### `GET /api/admin/analytics` | `GET /api/admin/users`
-Aggregated statistics for the admin dashboard, including disease rates, demographic distributions, and comprehensive user lists.
+Aggregated statistics for the admin dashboard (weekly active users, demographics, regional logs) and the registered users list.
 
 </details>
 
@@ -193,6 +215,10 @@ Aggregated statistics for the admin dashboard, including disease rates, demograp
 *   **Implementation**: Injected via a `<script>` tag in `index.html`.
 *   **UI Optimization**: Custom CSS is applied to override the default Google Translate `iframe` positioning (fixed at `bottom-right`) to prevent layout shifting and overlap with the Admin Sidebar.
 
+### 🎨 CSS Scoping & Layout Isolation
+*   **Encapsulation**: Component styles are fully encapsulated (e.g., scoped modal sheets like `MoodResultModal.css`, `TestOptionsModal.css`) with unique class name prefixes to prevent global stylesheet conflicts (e.g., between result cards and dashboard modals).
+*   **Responsive Flow**: Ensures smooth transitions and precise flexbox layout alignments across both wide desktop monitors and narrow mobile viewports.
+
 ### 🌟 Feedback & Moderation Logic
 *   **Data Integrity**: Testimonials are stored with a default `is_displayed = false` status.
 *   **Filtering**: The public endpoint `/api/testimonials` uses a strict SQL filter (`WHERE is_displayed = true`) and a limit of 6 to optimize Landing Page performance (LCP).
@@ -208,7 +234,6 @@ Aggregated statistics for the admin dashboard, including disease rates, demograp
 
 ## 🚀 Future Development
 
-* 💬 AI Mental Health Chatbot
 * 📊 Advanced Mood Analytics
 * 🏥 Psychologist Integration (consultation booking)
 

@@ -165,19 +165,19 @@ export default function Result() {
             <div className="result-header">
                 <div className="header-info">
                     <h1>Mari Lihat Hasil Tesmu{nickname ? `, ${nickname}!` : ""}</h1>
-                    <div className="result-badge">
-                        {result ? (
-                            <>
-                                <span>Kamu Terdeteksi:</span>
-                                <h2>{result.disease_name}</h2>
-                                <div className="percentage-pill">
-                                    Akurasi: {(result.percentage || 0).toFixed(0)}%
-                                </div>
-                            </>
-                        ) : (
-                            <p>Data hasil tes tidak ditemukan.</p>
-                        )}
-                    </div>
+                </div>
+                <div className="result-badge">
+                    {result ? (
+                        <>
+                            <span>Kamu Terdeteksi:</span>
+                            <h2>{result.disease_name}</h2>
+                            <div className="percentage-pill">
+                                Akurasi: {(result.percentage || 0).toFixed(0)}%
+                            </div>
+                        </>
+                    ) : (
+                        <p>Data hasil tes tidak ditemukan.</p>
+                    )}
                 </div>
             </div>
 
