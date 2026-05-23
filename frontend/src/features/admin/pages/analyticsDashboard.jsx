@@ -69,6 +69,16 @@ const CustomPieTooltip = ({ active, payload }) => {
   );
 };
 
+const CustomRegionTooltip = ({ active, payload }) => {
+  if (!active || !payload?.length) return null;
+  return (
+    <div className="custom-tooltip">
+      <p className="label">{payload[0].payload.name}</p>
+      <p className="value">{payload[0].value} pengguna</p>
+    </div>
+  );
+};
+
 /* ========== Component ========== */
 const DashboardAnalytics = () => {
   const [data, setData] = useState(null);
@@ -108,6 +118,7 @@ const DashboardAnalytics = () => {
   const diseaseData = data.disease_list || [];
   const barChartData = [...diseaseData].reverse();
   const ageData = data.age_list || [];
+  const regionData = (data.region_list || []).slice().reverse();
 
   const deletedPercentage = data.total_users > 0
     ? ((data.deleted_accounts / data.total_users) * 100).toFixed(1)
@@ -242,6 +253,55 @@ const DashboardAnalytics = () => {
             <div className="pie-empty-state">
               <Activity size={40} />
               <span>Belum ada data umur pengguna</span>
+            </div>
+          )}
+        </div>
+
+        {/* Region Distribution Chart */}
+        <div className="chart-card chart-card-region">
+          <h3 className="chart-title">Distribusi Wilayah Pengguna</h3>
+          {regionData.length > 0 ? (
+            <div className="chart-wrapper">
+              <ResponsiveContainer width="100%" height={Math.max(220, regionData.length * 40)}>
+                <BarChart
+                  data={regionData}
+                  layout="vertical"
+                  margin={{ top: 0, right: 24, left: 0, bottom: 0 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f3f0ff" />
+                  <XAxis
+                    type="number"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: '#9ca3af', fontSize: 12 }}
+                    allowDecimals={false}
+                  />
+                  <YAxis
+                    dataKey="name"
+                    type="category"
+                    axisLine={false}
+                    tickLine={false}
+                    tick={{ fill: '#374151', fontSize: 12, fontWeight: 500 }}
+                    width={160}
+                    tickFormatter={formatYAxisTick}
+                  />
+                  <Tooltip content={<CustomRegionTooltip />} cursor={{ fill: 'rgba(139,92,246,0.06)' }} />
+                  <Bar dataKey="count" radius={[0, 6, 6, 0]} barSize={18}>
+                    {regionData.map((_, i) => (
+                      <Cell
+                        key={i}
+                        fill={i === regionData.length - 1 ? '#7c3aed' : '#a78bfa'}
+                      />
+                    ))}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          ) : (
+            <div className="region-empty-state">
+              <MapPin size={40} />
+              <span>Belum ada data wilayah pengguna</span>
+              <span className="region-empty-hint">Data wilayah akan terisi setelah aplikasi di-deploy</span>
             </div>
           )}
         </div>

@@ -86,6 +86,11 @@ type AgeStat struct {
 	Color string `json:"color"`
 }
 
+type RegionStat struct {
+	Name  string `json:"name"`
+	Count int    `json:"count"`
+}
+
 type AdminUser struct {
 	ID           int    `json:"user_id"`
 	Email        string `json:"email"`
@@ -109,4 +114,5 @@ type AnalyticsSummary struct {
 	TopRegion       string        `json:"top_region"`
 	DiseaseList     []DiseaseStat `json:"disease_list"`
 	AgeList         []AgeStat     `json:"age_list"`
+	RegionList      []RegionStat  `json:"region_list"`
 }

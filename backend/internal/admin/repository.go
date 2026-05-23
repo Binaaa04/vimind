@@ -470,6 +470,31 @@ func (r *Repository) GetDashboardAnalytics() (AnalyticsSummary, error) {
 		mu.Unlock()
 	}()
 
+	// Query 8: Region Distribution (Top 10)
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		rows, err := r.pool.Query(context.Background(), `
+			SELECT last_region, COUNT(*) as cnt FROM users
+			WHERE last_region IS NOT NULL AND last_region != ''
+			GROUP BY last_region ORDER BY cnt DESC LIMIT 10
+		`)
+		if err == nil {
+			defer rows.Close()
+			var list []RegionStat
+			for rows.Next() {
+				var name string
+				var count int
+				if err := rows.Scan(&name, &count); err == nil {
+					list = append(list, RegionStat{Name: name, Count: count})
+				}
+			}
+			mu.Lock()
+			summary.RegionList = list
+			mu.Unlock()
+		}
+	}()
+
 	wg.Wait()
 	return summary, nil
 }
