@@ -18,17 +18,24 @@
 /* ---------- KPI Cards ---------- */
 .kpi-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   gap: 16px;
   margin-bottom: 24px;
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 1200px) {
+  .kpi-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 850px) {
   .kpi-grid {
     grid-template-columns: repeat(2, 1fr);
   }
 }
-@media (max-width: 680px) {
+
+@media (max-width: 550px) {
   .kpi-grid {
     grid-template-columns: 1fr;
   }
@@ -96,15 +103,16 @@
   line-height: 1.2;
 }
 
-.kpi-value .weekly-badge {
-  font-size: 0.8rem;
+.weekly-badge {
+  font-size: 0.75rem;
   font-weight: 600;
   color: #8b5cf6;
   background: #f5f3ff;
-  padding: 2px 8px;
+  padding: 4px 10px;
   border-radius: 8px;
-  margin-left: 8px;
-  vertical-align: middle;
+  margin-top: 6px;
+  display: inline-block;
+  width: max-content;
 }
 
 .kpi-subtext {
@@ -122,21 +130,13 @@
 
 .stars {
   display: flex;
-  gap: 2px;
-  font-size: 15px;
+  gap: 3px;
+  align-items: center;
 }
 
-.star-filled {
-  color: #f59e0b;
-}
-
-.star-half {
-  color: #f59e0b;
-  opacity: 0.4;
-}
-
-.star-empty {
-  color: #e5e7eb;
+.star {
+  display: inline-block;
+  flex-shrink: 0;
 }
 
 /* ---------- Charts Section ---------- */

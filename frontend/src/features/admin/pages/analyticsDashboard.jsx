@@ -13,11 +13,40 @@ const renderStars = (rating) => {
   const hasHalf = rating - full >= 0.3;
   const stars = [];
   for (let i = 0; i < 5; i++) {
-    if (i < full) stars.push(<span key={i} className="star-filled">★</span>);
-    else if (i === full && hasHalf) stars.push(<span key={i} className="star-half">★</span>);
-    else stars.push(<span key={i} className="star-empty">★</span>);
+    if (i < full) {
+      stars.push(
+        <svg key={i} className="star star-filled" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#f59e0b">
+          <path d="M12 .587l3.668 7.431 8.2 1.191-5.934 5.787 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.132 9.209l8.2-1.191L12 .587z"/>
+        </svg>
+      );
+    } else if (i === full && hasHalf) {
+      stars.push(
+        <svg key={i} className="star star-half" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24">
+          <defs>
+            <linearGradient id={`starHalfGrad-${rating}`}>
+              <stop offset="50%" stopColor="#f59e0b" />
+              <stop offset="50%" stopColor="#e5e7eb" />
+            </linearGradient>
+          </defs>
+          <path fill={`url(#starHalfGrad-${rating})`} d="M12 .587l3.668 7.431 8.2 1.191-5.934 5.787 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.132 9.209l8.2-1.191L12 .587z"/>
+        </svg>
+      );
+    } else {
+      stars.push(
+        <svg key={i} className="star star-empty" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#e5e7eb">
+          <path d="M12 .587l3.668 7.431 8.2 1.191-5.934 5.787 1.4 8.168L12 18.896l-7.334 3.857 1.4-8.168L.132 9.209l8.2-1.191L12 .587z"/>
+        </svg>
+      );
+    }
   }
   return <div className="stars">{stars}</div>;
+};
+
+const formatYAxisTick = (tick) => {
+  if (tick && tick.length > 22) {
+    return `${tick.substring(0, 20)}...`;
+  }
+  return tick;
 };
 
 const CustomBarTooltip = ({ active, payload }) => {
@@ -87,7 +116,7 @@ const DashboardAnalytics = () => {
   /* how tall should the bar chart be? */
   const barHeight = Math.max(280, barChartData.length * 40);
   /* Y-axis label width — enough to fit names but not too wide */
-  const yAxisWidth = 160;
+  const yAxisWidth = 180;
 
   return (
     <div className="dashboard-container">
@@ -98,10 +127,8 @@ const DashboardAnalytics = () => {
         <div className="kpi-card">
           <div className="kpi-icon-wrapper"><Users size={20} className="kpi-icon" /></div>
           <p className="kpi-label">Total Pengguna</p>
-          <h2 className="kpi-value">
-            {data.total_users}
-            <span className="weekly-badge">{data.weekly_active} aktif minggu ini</span>
-          </h2>
+          <h2 className="kpi-value">{data.total_users}</h2>
+          <span className="weekly-badge">{data.weekly_active} aktif minggu ini</span>
         </div>
 
         <div className="kpi-card">
@@ -162,6 +189,7 @@ const DashboardAnalytics = () => {
                   tickLine={false}
                   tick={{ fill: '#374151', fontSize: 12, fontWeight: 500 }}
                   width={yAxisWidth}
+                  tickFormatter={formatYAxisTick}
                 />
                 <Tooltip content={<CustomBarTooltip />} cursor={{ fill: 'rgba(139,92,246,0.06)' }} />
                 <Bar dataKey="cases" radius={[0, 6, 6, 0]} barSize={18}>

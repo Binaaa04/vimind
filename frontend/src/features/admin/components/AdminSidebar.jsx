@@ -110,7 +110,7 @@ const AdminSidebar = ({ avatarUrl, nickname = "Admin" }) => {
           }
         >
           {/* Reuse dashboardIcon or testIcon styling, tapi kita pakai icon simpel dari svg atau text */}
-          <svg className="menu-icon-img" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: '20px', height: '20px', marginRight: '12px' }}>
+          <svg className="menu-icon-img" viewBox="0 0 24 24" fill="none" stroke="#000000" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
             <circle cx="9" cy="7" r="4"></circle>
             <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>

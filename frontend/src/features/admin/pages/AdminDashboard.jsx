@@ -11,13 +11,14 @@ import { adminGetBanners, adminUpsertBanner, adminDeleteBanner } from "@/feature
 import { getProfile } from "@/features/auth/api";
 import "./AdminDashboard.css";
 
-const BannerCard = ({ bannerData, index, onImageClick }) => {
+const BannerCard = ({ bannerData, index, onImageClick, onRefresh, onRemoveTemp }) => {
   const [linkUrl, setLinkUrl] = useState(bannerData?.link_url || "");
   const [imageUrl, setImageUrl] = useState(bannerData?.image_url || "");
   const [title, setTitle] = useState(bannerData?.title || "");
   const [isActive, setIsActive] = useState(bannerData?.is_active || false);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(!bannerData?.id);
   
   // State untuk modal konfirmasi hapus
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -46,15 +47,15 @@ const BannerCard = ({ bannerData, index, onImageClick }) => {
   const confirmDelete = async () => {
     setShowDeleteModal(false); // Tutup modal dulu
     
-    // FIX: Kalau belum disimpan di database, cukup refresh layar untuk menghapus card
+    // Kalau belum disimpan di database, cukup hapus card dari state
     if (!bannerData?.id) {
-      window.location.reload();
+      onRemoveTemp(index);
       return;
     }
 
     try {
       await adminDeleteBanner(bannerData.id);
-      window.location.reload();
+      onRefresh();
     } catch (err) {
       alert("Gagal menghapus banner.");
     }
@@ -66,7 +67,7 @@ const BannerCard = ({ bannerData, index, onImageClick }) => {
       await adminUpsertBanner(bannerPayload());
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
-      window.location.reload(); // Reload supaya dapat ID asli dari database
+      onRefresh();
     } catch (err) {
       console.error(err);
       alert("Gagal menyimpan banner. Coba periksa koneksi atau data!");
@@ -79,78 +80,129 @@ const BannerCard = ({ bannerData, index, onImageClick }) => {
     setIsActive(newState);
     try {
       await adminUpsertBanner({ ...bannerPayload(), is_active: newState });
+      onRefresh();
     } catch (_) { }
   };
 
   return (
-    <div className="banner-card">
-      <div className="banner-card-header">
-        <h3>Banner {index + 1} {isActive && <span className="status">✔ Aktif</span>}</h3>
-        {/* FIX: Tombol hapus selalu tampil memanggil handleDeleteClick */}
-        <button onClick={handleDeleteClick} className="delete-btn">
-          🗑 Hapus
-        </button>
-      </div>
-
-      <div className="input-row">
-        <input
-          type="text"
-          placeholder="Judul Banner"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className="input-title"
-        />
-        <input
-          type="text"
-          placeholder="Link URL (https://...)"
-          value={linkUrl}
-          onChange={(e) => setLinkUrl(e.target.value)}
-          className="input-url"
-        />
-        <input
-          type="text"
-          placeholder="Paste Link Gambar (https://...)"
-          value={imageUrl}
-          onChange={(e) => setImageUrl(e.target.value)}
-          className="input-url"
-        />
-        <button className="submit-btn" onClick={handleSubmit} disabled={saving}>
-          {saving ? "Menyimpan..." : saved ? "✔ Tersimpan" : "Submit"}
-        </button>
-      </div>
-
-      <div className="preview-box">
-        {imageUrl ? (
-          <>
-            <img
-              src={imageUrl}
-              alt="Preview Banner"
-              className="preview-image"
-              onClick={() => onImageClick(imageUrl)}
-              title="Klik untuk melihat ukuran penuh"
-              style={{ cursor: "zoom-in" }}
+    <div className={`banner-card-row ${isExpanded ? 'expanded' : ''}`}>
+      {/* HEADER ROW (Selalu Tampil) */}
+      <div className="banner-row-header" onClick={() => setIsExpanded(!isExpanded)}>
+        <div className="banner-row-info">
+          {imageUrl ? (
+            <img 
+              src={imageUrl} 
+              alt="Thumbnail" 
+              className="banner-mini-thumbnail" 
             />
-            <div className="preview-overlay">
-              <h2 className="preview-title">
-                {title || "IKI TEST"}
-              </h2>
-            </div>
-          </>
-        ) : (
-          <div className="preview-empty">
-            <span>🖼️ Preview Banner (Masukkan Link Gambar)</span>
+          ) : (
+            <div className="banner-mini-thumbnail-placeholder">🖼️</div>
+          )}
+          <div className="banner-title-sec">
+            <span className="banner-index">Banner {index + 1}</span>
+            <span className="banner-title-text">{title || "Banner Tanpa Judul"}</span>
           </div>
-        )}
+        </div>
 
-        <div className="action-btns">
+        <div className="banner-row-actions" onClick={(e) => e.stopPropagation()}>
+          <span className={`banner-status-badge ${isActive ? 'active' : 'inactive'}`}>
+            {isActive ? '✔ Aktif' : '🔴 Nonaktif'}
+          </span>
+
           <button
-            className={`status-btn ${isActive ? 'active' : 'inactive'}`}
+            className={`status-toggle-btn ${isActive ? 'active' : 'inactive'}`}
             onClick={() => handleToggle(!isActive)}
           >
-            {isActive ? '🔴 Nonaktifkan' : '🟢 Aktifkan'}
+            {isActive ? 'Nonaktifkan' : 'Aktifkan'}
+          </button>
+
+          <button onClick={handleDeleteClick} className="delete-btn">
+            🗑 Hapus
+          </button>
+
+          <button 
+            className={`banner-expand-btn ${isExpanded ? 'rotated' : ''}`}
+            onClick={() => setIsExpanded(!isExpanded)}
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
           </button>
         </div>
       </div>
+
+      {/* EXPANDED EDITOR PANEL */}
+      {isExpanded && (
+        <div className="banner-expanded-panel">
+          <div className="banner-editor-content">
+            <div className="banner-fields">
+              <div className="banner-field-group">
+                <label>Judul Banner</label>
+                <input
+                  type="text"
+                  placeholder="Judul Banner"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  className="input-title"
+                />
+              </div>
+
+              <div className="banner-field-group">
+                <label>Link Tujuan URL (https://...)</label>
+                <input
+                  type="text"
+                  placeholder="Link URL (https://...)"
+                  value={linkUrl}
+                  onChange={(e) => setLinkUrl(e.target.value)}
+                  className="input-url"
+                />
+              </div>
+
+              <div className="banner-field-group">
+                <label>Link File Gambar (https://...)</label>
+                <input
+                  type="text"
+                  placeholder="Paste Link Gambar (https://...)"
+                  value={imageUrl}
+                  onChange={(e) => setImageUrl(e.target.value)}
+                  className="input-url"
+                />
+              </div>
+
+              <button className="submit-btn" onClick={handleSubmit} disabled={saving}>
+                {saving ? "Menyimpan..." : saved ? "✔ Tersimpan" : "Submit Perubahan"}
+              </button>
+            </div>
+
+            <div className="banner-preview-wrapper">
+              <label>Preview Tampilan Banner:</label>
+              <div className="preview-box">
+                {imageUrl ? (
+                  <>
+                    <img
+                      src={imageUrl}
+                      alt="Preview Banner"
+                      className="preview-image"
+                      onClick={() => onImageClick(imageUrl)}
+                      title="Klik untuk melihat ukuran penuh"
+                      style={{ cursor: "zoom-in" }}
+                    />
+                    <div className="preview-overlay">
+                      <h2 className="preview-title">
+                        {title || "Judul Promosi"}
+                      </h2>
+                    </div>
+                  </>
+                ) : (
+                  <div className="preview-empty">
+                    <span>🖼️ Preview Banner (Masukkan Link Gambar)</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* MODAL KONFIRMASI HAPUS CUSTOM */}
       {showDeleteModal && (
@@ -191,6 +243,19 @@ const AdminDashboard = () => {
   const [adminAvatar, setAdminAvatar] = useState("");
   const [previewImage, setPreviewImage] = useState(null);
 
+  const fetchBanners = async () => {
+    try {
+      const res = await adminGetBanners();
+      setBanners(res.data || []);
+    } catch (err) {
+      console.error("Failed to fetch banners", err);
+    }
+  };
+
+  const handleRemoveTempBanner = (indexToRemove) => {
+    setBanners(prev => prev.filter((_, idx) => idx !== indexToRemove));
+  };
+
   useEffect(() => {
     const fetchAdminProfile = async () => {
       if (user?.email) {
@@ -204,14 +269,9 @@ const AdminDashboard = () => {
           console.warn("Could not fetch admin profile, using defaults.");
         }
 
-        try {
-          const res = await adminGetBanners();
-          setBanners(res.data || []);
-        } catch {
-          console.error("Failed to fetch banners");
-        } finally {
-          setLoadingBanners(false);
-        }
+        setLoadingBanners(true);
+        await fetchBanners();
+        setLoadingBanners(false);
       } else {
         setLoadingBanners(false);
       }
@@ -254,6 +314,8 @@ const AdminDashboard = () => {
                         bannerData={b}
                         index={i}
                         onImageClick={setPreviewImage}
+                        onRefresh={fetchBanners}
+                        onRemoveTemp={handleRemoveTempBanner}
                       />
                     ))}
                   </div>

@@ -7,6 +7,8 @@ const AdminFAQ = () => {
   const [loading, setLoading] = useState(true);
   const [savingIndex, setSavingIndex] = useState(null);
   const [draggedItemIndex, setDraggedItemIndex] = useState(null);
+  const [canDrag, setCanDrag] = useState(false);
+  const [expandedIndices, setExpandedIndices] = useState({});
   
   // State untuk mengontrol pop-up modal hapus (menyimpan index FAQ yang mau dihapus)
   const [deleteTarget, setDeleteTarget] = useState(null);
@@ -32,8 +34,20 @@ const AdminFAQ = () => {
     setFaq(updated);
   };
 
+  const toggleExpand = (index) => {
+    setExpandedIndices(prev => ({
+      ...prev,
+      [index]: !prev[index]
+    }));
+  };
+
   const handleAddNew = () => {
-    setFaq([...faq, { id: "", question: "", answer: "" }]);
+    const newFaq = [...faq, { id: "", question: "", answer: "" }];
+    setFaq(newFaq);
+    setExpandedIndices(prev => ({
+      ...prev,
+      [newFaq.length - 1]: true
+    }));
   };
 
   // Fungsi saat tombol hapus di kartu diklik (memunculkan modal)
@@ -109,83 +123,107 @@ const AdminFAQ = () => {
   if (loading) return <div className="faq-loading">Memuat data...</div>;
 
   return (
-    <div className="faq-container" style={{ height: "600px", overflowY: "auto", border: "transparent" }}>
+    <div className="faq-container">
       
-      {/* HEADER (Hanya Judul) */}
+      {/* HEADER (Judul + Tombol Tambah FAQ) */}
       <div className="faq-header">
         <div className="faq-header-text">
           <h2>Custom FAQ</h2>
-          <p>Kelola pertanyaan dan urutkan posisinya dengan menarik kartu di bawah.</p>
+          <p>Kelola pertanyaan dan urutkan posisinya dengan menarik drag handle di sebelah kiri.</p>
         </div>
+        <button className="faq-add-btn" onClick={handleAddNew}>
+          + Tambah FAQ
+        </button>
       </div>
 
-      {/* LAYOUT UTAMA: Kiri (Grid 3 Kartu) & Kanan (Tombol Sticky) */}
+      {/* LAYOUT UTAMA: List Baris Accordion */}
       <div className="faq-main-layout">
         
-        {/* LIST KARTU FAQ (GRID 3 KOLOM) */}
+        {/* LIST BARIS FAQ (VERTIKAL ACCORDION) */}
         <div className="faq-list">
           {faq.length === 0 ? (
             <p className="faq-empty">Belum ada data FAQ. Klik tambah untuk membuat.</p>
           ) : (
-            faq.map((item, index) => (
-              <div 
-                key={item.id || index} 
-                className={`faq-card ${draggedItemIndex === index ? "is-dragging" : ""}`}
-                draggable
-                onDragStart={(e) => onDragStart(e, index)}
-                onDragOver={(e) => onDragOver(e, index)}
-                onDragEnd={onDragEnd}
-              >
-                {/* AREA UNTUK DRAG (Atas Kartu) */}
-                <div className="faq-card-side-handle">
-                  <div className="drag-icon">⋮⋮</div>
-                </div>
-                
-                <div className="faq-card-content">
-                  <div className="faq-card-header">
-                    <span className="faq-number">Pertanyaan {index + 1}</span>
-                    <button className="faq-delete-btn" onClick={() => handleDeleteClick(index)}>
-                      Hapus
-                    </button>
-                  </div>
-
-                  <div className="faq-input-group">
+            faq.map((item, index) => {
+              const isExpanded = expandedIndices[index] || false;
+              return (
+                <div 
+                  key={item.id || index} 
+                  className={`faq-card-row ${draggedItemIndex === index ? "is-dragging" : ""}`}
+                  draggable={canDrag}
+                  onDragStart={(e) => onDragStart(e, index)}
+                  onDragOver={(e) => onDragOver(e, index)}
+                  onDragEnd={() => {
+                    onDragEnd();
+                    setCanDrag(false);
+                  }}
+                >
+                  {/* ACCORDION HEADER */}
+                  <div className="faq-row-header">
+                    {/* DRAG HANDLE */}
+                    <div 
+                      className="faq-drag-handle"
+                      onMouseDown={() => setCanDrag(true)}
+                      onMouseUp={() => setCanDrag(false)}
+                      onMouseLeave={() => setCanDrag(false)}
+                    >
+                      <div className="drag-icon">⋮⋮</div>
+                    </div>
+                    
+                    <span className="faq-number">FAQ {index + 1}</span>
+                    
                     <input
                       type="text"
-                      className="faq-input"
+                      className="faq-row-input"
                       placeholder="Apa pertanyaannya?"
                       value={item.question}
                       onChange={(e) => handleChange(index, "question", e.target.value)}
                     />
-
-                    <textarea
-                      className="faq-textarea"
-                      placeholder="Tuliskan jawabannya di sini..."
-                      value={item.answer}
-                      onChange={(e) => handleChange(index, "answer", e.target.value)}
-                    />
-
-                    <div className="faq-card-footer">
-                      <button
-                        className="faq-submit-btn"
-                        onClick={() => handleSubmit(index)}
-                        disabled={savingIndex === index}
-                      >
-                        {savingIndex === index ? "Menyimpan..." : "Simpan Perubahan"}
-                      </button>
-                    </div>
+                    
+                    <button 
+                      className={`faq-toggle-btn ${isExpanded ? "expanded" : ""}`} 
+                      onClick={() => toggleExpand(index)}
+                      title={isExpanded ? "Sembunyikan Jawaban" : "Tampilkan Jawaban"}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                      </svg>
+                    </button>
                   </div>
+                  
+                  {/* ACCORDION PANEL */}
+                  {isExpanded && (
+                    <div className="faq-row-panel">
+                      <div className="faq-panel-content">
+                        <div className="faq-textarea-group">
+                          <label className="faq-label">Jawaban:</label>
+                          <textarea
+                            className="faq-textarea"
+                            placeholder="Tuliskan jawabannya di sini..."
+                            value={item.answer}
+                            onChange={(e) => handleChange(index, "answer", e.target.value)}
+                          />
+                        </div>
+                        
+                        <div className="faq-panel-actions">
+                          <button
+                            className="faq-submit-btn"
+                            onClick={() => handleSubmit(index)}
+                            disabled={savingIndex === index}
+                          >
+                            {savingIndex === index ? "Menyimpan..." : "Simpan Perubahan"}
+                          </button>
+                          <button className="faq-delete-btn" onClick={() => handleDeleteClick(index)}>
+                            Hapus FAQ
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              </div>
-            ))
+              );
+            })
           )}
-        </div>
-
-        {/* TOMBOL TAMBAH (DIBUNGKUS WRAPPER STICKY AGAR BULLETPROOF) */}
-        <div className="faq-sticky-wrapper">
-          <button className="faq-sticky-btn" onClick={handleAddNew}>
-            + Tambah FAQ
-          </button>
         </div>
 
       </div>
