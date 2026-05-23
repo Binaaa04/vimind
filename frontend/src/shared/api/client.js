@@ -2,7 +2,7 @@ import axios from "axios";
 import { supabase } from "@/services/supabaseClient";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:8080",
+  baseURL: import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8080",
 });
 
 let currentToken = null;
