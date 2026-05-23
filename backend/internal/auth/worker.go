@@ -60,7 +60,7 @@ func (p *WorkerPool) processTask(task ActivityTask) {
 	region := ""
 	if task.IP != lastIP {
 		client := &http.Client{Timeout: 5 * time.Second}
-		apiURL := "https://ipapi.co/" + task.IP + "/json/"
+		apiURL := "http://ip-api.com/json/" + task.IP
 		log.Printf("[Worker] Calling geolocation API: %s", apiURL)
 		resp, err := client.Get(apiURL)
 		if err != nil {
@@ -69,15 +69,15 @@ func (p *WorkerPool) processTask(task ActivityTask) {
 			defer resp.Body.Close()
 			log.Printf("[Worker] Geolocation API status: %d", resp.StatusCode)
 			var result struct {
-				City   string `json:"city"`
-				Region string `json:"region"`
-				Error  bool   `json:"error"`
-				Reason string `json:"reason"`
+				City       string `json:"city"`
+				RegionName string `json:"regionName"`
+				Status     string `json:"status"`
+				Message    string `json:"message"`
 			}
 			if json.NewDecoder(resp.Body).Decode(&result) == nil {
-				log.Printf("[Worker] Geolocation result: city=%s region=%s error=%v reason=%s", result.City, result.Region, result.Error, result.Reason)
-				if result.City != "" {
-					region = result.City + ", " + result.Region
+				log.Printf("[Worker] Geolocation result: city=%s region=%s status=%s message=%s", result.City, result.RegionName, result.Status, result.Message)
+				if result.Status == "success" && result.City != "" {
+					region = result.City + ", " + result.RegionName
 				}
 			}
 		}
