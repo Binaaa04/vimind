@@ -61,9 +61,10 @@ ViMind addresses this gap by providing an accessible, private, and intelligent p
 
 Make sure you have installed:
 
-- Node.js (v18+)
-- Go (v1.20+)
+- Node.js (v22+)
+- Go (v1.25+)
 - Git
+- Docker & Docker Compose (for production deployment)
 
 ### 🔧 Backend Setup (Go - Fiber)
 
@@ -77,6 +78,9 @@ Create a `.env` file inside `backend/`:
 ```env
 DATABASE_URL=postgresql://...
 GEMINI_API_KEY=your_api_key_here
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_JWKS_JSON={"keys":[...]}
+FRONTEND_URL=http://localhost:5173
 ```
 
 ### 🎨 Frontend Setup (React - Vite)
@@ -90,9 +94,84 @@ Create a `.env` file inside `frontend/`:
 
 ```env
 VITE_API_BASE_URL=http://127.0.0.1:8080
-VITE_SUPABASE_URL=https://...
-VITE_SUPABASE_ANON_KEY=...
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your_anon_key
 ```
+
+---
+
+## 🐳 Production Deployment (Docker Compose)
+
+### Architecture
+
+```
+Client → Nginx (Host - SSL/443) → Frontend Container (Nginx - :80) → Backend Container (Fiber - :8080)
+```
+
+### 1. Environment Configuration
+
+Create a `.env` file in the project root:
+
+```env
+DATABASE_URL=postgresql://...
+GEMINI_API_KEY=your_api_key
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_JWKS_JSON={"keys":[...]}
+FRONTEND_URL=https://yourdomain.com
+VITE_API_BASE_URL=
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your_anon_key
+```
+
+> **Note**: `VITE_API_BASE_URL` should be left empty (`""`) because the frontend Nginx container proxies `/api` requests directly to the backend container.
+
+### 2. Build & Run
+
+```bash
+docker compose build --no-cache
+docker compose up -d
+```
+
+### 3. Domain & SSL Setup (Nginx + Certbot)
+
+Install Nginx and Certbot on the host machine:
+
+```bash
+sudo apt update && sudo apt install -y nginx certbot python3-certbot-nginx
+```
+
+Create an Nginx site config at `/etc/nginx/sites-available/yourdomain`:
+
+```nginx
+server {
+    listen 80;
+    server_name yourdomain.com;
+
+    location / {
+        proxy_pass http://localhost:8000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+```
+
+Enable and activate SSL:
+
+```bash
+sudo ln -s /etc/nginx/sites-available/yourdomain /etc/nginx/sites-enabled/
+sudo nginx -t && sudo systemctl restart nginx
+sudo certbot --nginx -d yourdomain.com
+```
+
+### 4. SEO
+
+The project includes `robots.txt` and `sitemap.xml` in `frontend/public/` for search engine optimization. After deployment, submit your sitemap via [Google Search Console](https://search.google.com/search-console).
 
 ---
 
