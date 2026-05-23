@@ -4,6 +4,7 @@ import { supabase } from "@/services/supabaseClient";
 import { useAuth } from "@/shared/context/AuthContext";
 import { getProfile } from "@/features/auth/api";
 import { submitTestimonial, checkRating } from "@/features/home/api";
+import { getHistory } from "@/features/detection/api";
 import { Lock } from "lucide-react";
 
 import MoodModal from "@/features/detection/components/MoodModal";
@@ -23,6 +24,8 @@ export default function Result() {
     const [avatarUrl, setAvatarUrl] = useState("");
     const [showModal, setShowModal] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [fetchedDiagnosis, setFetchedDiagnosis] = useState(null);
+    const [fetchingHistory, setFetchingHistory] = useState(false);
     
     // Detect screen width for responsive chart
     const [isMobile, setIsMobile] = useState(window.innerWidth < 600);
@@ -49,7 +52,36 @@ export default function Result() {
     // Get data from location state (Passed from DetectionQuestion)
     const stateDiagnosis = location.state?.diagnosis;
     const storedDiagnosis = JSON.parse(sessionStorage.getItem("latest_diagnosis"));
-    const diagnosis = stateDiagnosis || storedDiagnosis;
+    const diagnosis = stateDiagnosis || storedDiagnosis || fetchedDiagnosis;
+
+    // Auto-fetch latest test result from backend for authenticated users with no session data
+    useEffect(() => {
+        const fetchLatestFromHistory = async () => {
+            if (isAuthenticated && !authLoading && !stateDiagnosis && !storedDiagnosis) {
+                setFetchingHistory(true);
+                try {
+                    const res = await getHistory();
+                    if (res.data && res.data.length > 0) {
+                        const latest = res.data[0]; // history is DESC, first = latest
+                        setFetchedDiagnosis({
+                            top_result: {
+                                disease_name: latest.disease,
+                                description: latest.description,
+                                percentage: latest.percentage,
+                                recommendations: latest.recommendations,
+                            },
+                            all_results: null,
+                        });
+                    }
+                } catch (err) {
+                    console.warn("Failed to fetch history for result page:", err);
+                } finally {
+                    setFetchingHistory(false);
+                }
+            }
+        };
+        fetchLatestFromHistory();
+    }, [isAuthenticated, authLoading]);
 
     useEffect(() => {
         const checkShouldShowMood = () => {
@@ -119,6 +151,24 @@ export default function Result() {
     }, [result, showModal, showMoodModal, isAuthenticated, hasRated, checkingRating]);
 
     if (!result) {
+        // Show loading while fetching history or checking auth
+        if (fetchingHistory || authLoading) {
+            return (
+                <div className="not-found-container">
+                    <div style={{
+                        width: '40px',
+                        height: '40px',
+                        border: '4px solid #e9ddff',
+                        borderTop: '4px solid #8a5cff',
+                        borderRadius: '50%',
+                        animation: 'spin 1s linear infinite',
+                        margin: '0 auto 16px'
+                    }} />
+                    <style>{`@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }`}</style>
+                    <p className="not-found-desc">Memuat data hasil tes...</p>
+                </div>
+            );
+        }
         return (
             <div className="not-found-container">
                 <h2 className="not-found-title">Data Hasil Tes Tidak Ditemukan</h2>
