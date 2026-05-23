@@ -5,6 +5,7 @@ import "sync"
 type TestSession struct {
 	Answers     map[string]int `json:"answers"`
 	CurrentPage int            `json:"current_page"`
+	IsRefined   bool           `json:"is_refined"`
 }
 
 type Cache struct {

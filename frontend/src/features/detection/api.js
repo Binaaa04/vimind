@@ -22,14 +22,14 @@ export const getHistory = (email = "") => {
 
 export const getLevels = () => api.get("/api/levels");
 
-export const saveTestSession = (email = "", sessionId = "", answers, currentPage) => {
+export const saveTestSession = (email = "", sessionId = "", answers, currentPage, isRefined = false) => {
   let url = "/api/test-session";
   const params = [];
   if (email) params.push(`email=${email}`);
   if (sessionId) params.push(`session_id=${sessionId}`);
   if (params.length > 0) url += `?${params.join("&")}`;
   
-  return api.post(url, { answers, current_page: currentPage });
+  return api.post(url, { answers, current_page: currentPage, is_refined: isRefined });
 };
 
 export const getTestSession = (email = "", sessionId = "") => {

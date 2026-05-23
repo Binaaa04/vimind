@@ -187,6 +187,9 @@ const Dashboard = () => {
       localStorage.removeItem("mood");
       localStorage.removeItem("mood_date");
       sessionStorage.removeItem("vivi_chat");
+      sessionStorage.removeItem("vimind_quiz_answers");
+      sessionStorage.removeItem("vimind_quiz_page");
+      sessionStorage.removeItem("vimind_quiz_mode");
       setShowLogoutModal(false);
       navigate("/login");
     } catch (error) {

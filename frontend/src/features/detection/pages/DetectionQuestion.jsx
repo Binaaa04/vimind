@@ -164,15 +164,23 @@ export default function Detection() {
           try {
             const localSaved = sessionStorage.getItem("vimind_quiz_answers");
             const localPage = sessionStorage.getItem("vimind_quiz_page");
+            const localMode = sessionStorage.getItem("vimind_quiz_mode");
             const decryptedAnswers = decryptData(localSaved);
             const decryptedPage = decryptData(localPage);
+            const decryptedMode = decryptData(localMode);
 
             if (decryptedAnswers && Object.keys(decryptedAnswers).length > 0) {
-              const res = await getQuestions("all");
+              const isRefined = decryptedMode === true;
+              const res = await getQuestions(isRefined ? "refined" : "all", [], email);
               if (!ignore) {
                 setQuestions(res.data?.questions || res.data || []);
                 setSelectedAnswers(decryptedAnswers);
                 setCurrentPage(decryptedPage !== null ? parseInt(decryptedPage, 10) : 0);
+                if (isRefined) {
+                  setIsRefinedMode(true);
+                  const { history_disease_id } = res.data;
+                  if (history_disease_id > 0) setHistoryDiseaseID(history_disease_id);
+                }
               }
               return true;
             }
@@ -184,15 +192,22 @@ export default function Detection() {
           try {
             const cached = await getTestSession(email, sid);
             if (cached.data?.exists && cached.data.answers && Object.keys(cached.data.answers).length > 0) {
-              const res = await getQuestions("all");
+              const isRefined = cached.data.is_refined === true;
+              const res = await getQuestions(isRefined ? "refined" : "all", [], email);
               if (!ignore) {
                 setQuestions(res.data?.questions || res.data || []);
                 setSelectedAnswers(cached.data.answers);
                 setCurrentPage(cached.data.current_page || 0);
+                if (isRefined) {
+                  setIsRefinedMode(true);
+                  const { history_disease_id } = res.data;
+                  if (history_disease_id > 0) setHistoryDiseaseID(history_disease_id);
+                }
                 
                 // Sinkronkan ke sessionStorage
                 sessionStorage.setItem("vimind_quiz_answers", encryptData(cached.data.answers));
                 sessionStorage.setItem("vimind_quiz_page", encryptData(cached.data.current_page || 0));
+                sessionStorage.setItem("vimind_quiz_mode", encryptData(isRefined));
               }
               return true;
             }
@@ -204,6 +219,8 @@ export default function Detection() {
         if (forceNewTest === true) {
           sessionStorage.removeItem("vimind_quiz_answers");
           sessionStorage.removeItem("vimind_quiz_page");
+          sessionStorage.removeItem("vimind_quiz_mode");
+          setIsRefinedMode(false);
           try { await deleteTestSession(email, sid); } catch { }
           if (!email) {
             // Refresh guest session ID untuk tes yang baru
@@ -258,19 +275,20 @@ export default function Detection() {
     if (!userEmail && !sessionId) return;
     if (saveTimer.current) clearTimeout(saveTimer.current);
     saveTimer.current = setTimeout(() => {
-      saveTestSession(userEmail, sessionId, selectedAnswers, currentPage).catch(() => { });
+      saveTestSession(userEmail, sessionId, selectedAnswers, currentPage, isRefinedMode).catch(() => { });
     }, 800);
-  }, [userEmail, sessionId, selectedAnswers, currentPage]);
+  }, [userEmail, sessionId, selectedAnswers, currentPage, isRefinedMode]);
 
   useEffect(() => {
     if ((userEmail || sessionId) && Object.keys(selectedAnswers).length > 0) {
       // Simpan langsung ke sessionStorage (instant & offline-safe)
       sessionStorage.setItem("vimind_quiz_answers", encryptData(selectedAnswers));
       sessionStorage.setItem("vimind_quiz_page", encryptData(currentPage));
+      sessionStorage.setItem("vimind_quiz_mode", encryptData(isRefinedMode));
       
       debouncedSave();
     }
-  }, [selectedAnswers, currentPage, debouncedSave, userEmail, sessionId]);
+  }, [selectedAnswers, currentPage, isRefinedMode, debouncedSave, userEmail, sessionId]);
 
   // ============================================================
   // Helpers
@@ -346,6 +364,7 @@ export default function Detection() {
       // Hapus cache lokal (sessionStorage) setelah tes selesai
       sessionStorage.removeItem("vimind_quiz_answers");
       sessionStorage.removeItem("vimind_quiz_page");
+      sessionStorage.removeItem("vimind_quiz_mode");
       
       navigate("/selesai", { state: { diagnosis: result.data, isGuest: !userEmail } });
     } catch (err) {

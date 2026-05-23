@@ -42,6 +42,7 @@ func (h *Handler) GetTestSession(c *fiber.Ctx) error {
 		"exists":       true,
 		"answers":      session.Answers,
 		"current_page": session.CurrentPage,
+		"is_refined":   session.IsRefined,
 	})
 }
 

@@ -69,6 +69,9 @@ export const AuthProvider = ({ children }) => {
       sessionStorage.removeItem('pending_answers');
       sessionStorage.removeItem('quiz_active');
       sessionStorage.removeItem('quiz_draft');
+      sessionStorage.removeItem('vimind_quiz_answers');
+      sessionStorage.removeItem('vimind_quiz_page');
+      sessionStorage.removeItem('vimind_quiz_mode');
       await supabase.auth.signOut();
     },
   };
