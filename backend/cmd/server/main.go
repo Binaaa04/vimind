@@ -22,8 +22,9 @@ func main() {
 	defer db.Close()
 
 	app := fiber.New(fiber.Config{
-		BodyLimit:   50 * 1024 * 1024,
-		ProxyHeader: "X-Forwarded-For",
+		BodyLimit:          50 * 1024 * 1024,
+		ProxyHeader:        "X-Forwarded-For",
+		EnableIPValidation: true,
 	})
 
 	app.Use(recover.New())
