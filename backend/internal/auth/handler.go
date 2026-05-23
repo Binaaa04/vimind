@@ -1,6 +1,9 @@
 package auth
 
 import (
+	"log"
+	"strings"
+
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -11,6 +14,27 @@ type Handler struct {
 
 func NewHandler(repo *Repository, worker *WorkerPool) *Handler {
 	return &Handler{repo: repo, worker: worker}
+}
+
+func getRealIP(c *fiber.Ctx) string {
+	// Try X-Forwarded-For header first (standard for reverse proxies)
+	if xff := c.Get("X-Forwarded-For"); xff != "" {
+		// X-Forwarded-For can contain multiple IPs separated by comma (client, proxy1, proxy2)
+		// We want the first one (the client IP)
+		parts := strings.Split(xff, ",")
+		if len(parts) > 0 {
+			ip := strings.TrimSpace(parts[0])
+			if ip != "" {
+				return ip
+			}
+		}
+	}
+	// Try X-Real-IP header next
+	if xrip := c.Get("X-Real-IP"); xrip != "" {
+		return xrip
+	}
+	// Fallback to Fiber's default IP detection
+	return c.IP()
 }
 
 func (h *Handler) GetProfile(c *fiber.Ctx) error {
@@ -25,8 +49,13 @@ func (h *Handler) GetProfile(c *fiber.Ctx) error {
 		return c.Status(404).JSON(fiber.Map{"error": "User not found"})
 	}
 
+	realIP := getRealIP(c)
+
+	// Debug logs to inspect headers and resolved IP
+	log.Printf("[DEBUG IP] Resolved IP: %s | c.IP(): %s | X-Forwarded-For: %s | X-Real-IP: %s", realIP, c.IP(), c.Get("X-Forwarded-For"), c.Get("X-Real-IP"))
+
 	// Submit task to worker pool instead of raw goroutine
-	h.worker.Submit(email, c.IP())
+	h.worker.Submit(email, realIP)
 
 	return c.JSON(fiber.Map{
 		"id":         id,
