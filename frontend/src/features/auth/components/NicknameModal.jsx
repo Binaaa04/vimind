@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import "@/css/NicknameCSS.css";
+import "./NicknameModal.css";
 import confetti from "canvas-confetti";
 
 const NicknameModal = ({ isOpen, onClose, onSave }) => {

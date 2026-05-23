@@ -1,4 +1,4 @@
-import "@/css/NicknameSuccessModal.css";
+import "./NicknameSuccessModal.css";
 
 const NicknameSuccessModal = ({ isOpen, onClose }) => {
   if (!isOpen) return null;

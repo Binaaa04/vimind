@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Users, Search, Shield, User } from 'lucide-react';
 import { adminGetUsers } from '@/features/admin/api';
-import '@/css/AdminUsers.css';
+import './AdminUsers.css';
 
 const AdminUsers = () => {
   const [users, setUsers] = useState([]);

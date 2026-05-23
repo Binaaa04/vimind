@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import "@/css/LogoutCSS.css";
+import "./LogoutModal.css";
 
 const LogoutModal = ({ isOpen, onClose, onConfirm }) => {
   const [isClosing, setIsClosing] = useState(false);

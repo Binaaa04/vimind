@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import "@/App.css";
-import "@/css/LoginCSS.css"; // Kita re-use styling dari Login Page
+import "./Login.css"; // Kita re-use styling dari Login Page
 import { supabase } from "@/services/supabaseClient";
 import { updateProfile, getProfile } from "@/features/auth/api";
 import { diagnose } from "@/features/detection/api";

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import illustration from "@/assets/logovimind.png";
 import logo from "@/assets/logovimind2.png";
-import "@/css/ResetPasswordCSS.css"
+import "./ResetPassword.css";
 
 import { supabase } from "@/services/supabaseClient";
 

@@ -4,7 +4,7 @@ import {
   adminGetSymptoms, adminUpsertSymptom, adminDeleteSymptom,
   adminGetDiseases, adminUpsertDisease, adminDeleteDisease,
 } from "@/features/admin/api";
-import "@/css/AdminTest.css";
+import "./AdminTest.css";
 
 const AdminTest = () => {
   const [rules, setRules] = useState([]);

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "@/services/supabaseClient";
 import { getHistory } from "@/features/detection/api";
 import logo from '@/assets/logovimind2.png';
-import "@/css/SummaryModalCSS.css";
+import "./SummaryModal.css";
 
 export default function SummaryModal({ onClose }) {
   const [history, setHistory] = useState([]);

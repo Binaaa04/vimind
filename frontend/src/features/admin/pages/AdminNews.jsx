@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { adminGetNews, adminUpsertNews, adminDeleteNews } from "@/features/admin/api";
-import "@/css/AdminDashboard.css";
+import "./AdminDashboard.css";
 
 const ArticleCard = ({ article, onRefresh }) => {
   const [loading, setLoading] = useState(false);

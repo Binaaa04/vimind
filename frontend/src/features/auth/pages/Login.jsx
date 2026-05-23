@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useEffect } from "react";
 import "@/App.css";
-import "@/css/LoginCSS.css";
+import "./Login.css";
 
 import logoLeft from "@/assets/logovimind.png";
 import logoTop from "@/assets/logovimind2.png";

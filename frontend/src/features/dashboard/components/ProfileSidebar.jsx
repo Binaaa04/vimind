@@ -1,4 +1,4 @@
-import "@/css/ProfileSidebar.css";
+import "./ProfileSidebar.css";
 import logo from "@/assets/logovimind2.png";
 import { useNavigate } from "react-router-dom";
 import { useRef, useState } from "react";

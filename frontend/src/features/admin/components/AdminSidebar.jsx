@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import "@/css/AdminSidebar.css";
+import "./AdminSidebar.css";
 import logo from "@/assets/logovimind2.png";
 import logoSmall from "@/assets/logo.png";
 import arrowVector from "@/assets/arrowVector.svg";

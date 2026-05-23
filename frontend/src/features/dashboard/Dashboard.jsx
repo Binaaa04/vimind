@@ -14,7 +14,7 @@ import { sendChatMessage } from "@/features/dashboard/api";
 import logo from "@/assets/logovimind2.png";
 
 import chatbotIcon from "@/assets/chatbot.png";
-import "@/css/DashboardCSS.css"; 
+import "./Dashboard.css"; 
 
 const Dashboard = () => {
   const { user, isAdmin, signOut } = useAuth();

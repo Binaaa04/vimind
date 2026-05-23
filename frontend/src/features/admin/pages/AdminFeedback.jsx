@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { adminGetTestimonials, adminUpdateTestimonialDisplay, adminGetAccountFeedbacks } from "@/features/admin/api";
-import "@/css/AdminFeedback.css";
+import "./AdminFeedback.css";
 
 const AdminFeedback = () => {
   const [testimonials, setTestimonials] = useState([]);

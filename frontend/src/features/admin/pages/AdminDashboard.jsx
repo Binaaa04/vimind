@@ -9,7 +9,7 @@ import AdminFeedback from "@/features/admin/pages/AdminFeedback";
 import AdminUsers from "@/features/admin/pages/AdminUsers";
 import { adminGetBanners, adminUpsertBanner, adminDeleteBanner } from "@/features/admin/api";
 import { getProfile } from "@/features/auth/api";
-import "@/css/AdminDashboard.css";
+import "./AdminDashboard.css";
 
 const BannerCard = ({ bannerData, index, onImageClick }) => {
   const [linkUrl, setLinkUrl] = useState(bannerData?.link_url || "");

@@ -1,4 +1,4 @@
-import "@/css/MoodModalCSS.css";
+import "./MoodModal.css";
 
 const MoodModal = ({ onSelect, onClose }) => {
   const moods = ["😭", "☹️", "😐", "🙂", "😁"];

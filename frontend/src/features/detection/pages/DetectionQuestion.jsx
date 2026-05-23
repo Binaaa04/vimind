@@ -2,7 +2,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { getQuestions, diagnose, saveTestSession, getTestSession, deleteTestSession } from "@/features/detection/api";
 import { supabase } from "@/services/supabaseClient";
-import "@/css/DetectionQuestionCSS.css";
+import "./DetectionQuestion.css";
 
 // ============================================================
 // Fallback label penyakit (sesuaikan dengan disease_id kamu)

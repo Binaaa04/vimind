@@ -1,7 +1,7 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { supabase } from "@/services/supabaseClient";
-import "@/css/DetectionIntroCSS.css";
+import "./DetectionIntro.css";
 
 export default function DetectionIntro() {
   const [hasSession, setHasSession] = useState(false);

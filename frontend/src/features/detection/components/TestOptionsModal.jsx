@@ -1,5 +1,5 @@
 import React from "react";
-import "@/css/TestOptionsModalCSS.css";
+import "./TestOptionsModal.css";
 
 const TestOptionsModal = ({ onResume, onNewTest, onClose }) => {
   return (

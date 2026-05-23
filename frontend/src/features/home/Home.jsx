@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
-import "@/css/HomeCSS.css";
+import "./Home.css";
 import { getPublicFAQ, getPublicTestimonials } from "@/features/home/api";
 import logo from "@/assets/logovimind2.png";
 import heroImg from "@/assets/BgLanding.svg";

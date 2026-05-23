@@ -5,7 +5,7 @@ import {
   PieChart, Pie, Cell, Legend
 } from 'recharts';
 import api from "@/shared/api/client";
-import '@/css/analyticsDashboard.css';
+import './analyticsDashboard.css';
 
 /* ---------- helpers ---------- */
 const renderStars = (rating) => {

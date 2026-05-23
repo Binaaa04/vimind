@@ -1,7 +1,7 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect } from "react";
 import { CheckCircle2, ArrowRight } from "lucide-react";
-import "@/css/FinishCSS.css";
+import "./Finish.css";
 
 export default function Finish() {
   useEffect(() => {

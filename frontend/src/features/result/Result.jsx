@@ -8,7 +8,7 @@ import { Lock } from "lucide-react";
 
 import MoodModal from "@/features/detection/components/MoodModal";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
-import "../../css/Result.css";
+import "./Result.css";
 
 export default function Result() {
     useEffect(() => {

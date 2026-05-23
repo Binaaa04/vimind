@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { adminGetFAQ, adminUpsertFAQ, adminDeleteFAQ } from "@/features/admin/api";
-import "@/css/adminFAQ.css";
+import "./AdminFAQ.css";
 
 const AdminFAQ = () => {
   const [faq, setFaq] = useState([]);
