@@ -41,27 +41,41 @@ func (p *WorkerPool) worker() {
 }
 
 func (p *WorkerPool) processTask(task ActivityTask) {
+	log.Printf("[Worker] Processing task: email=%s ip=%s", task.Email, task.IP)
+
 	if task.Email == "" || task.IP == "" || task.IP == "127.0.0.1" || task.IP == "::1" {
+		log.Printf("[Worker] Skipping: email or IP invalid (ip=%s)", task.IP)
 		return
 	}
 
 	var lastIP string
 	err := p.repo.pool.QueryRow(context.Background(), "SELECT COALESCE(last_ip, '') FROM users WHERE email=$1", task.Email).Scan(&lastIP)
 	if err != nil {
+		log.Printf("[Worker] DB query error for %s: %v", task.Email, err)
 		return
 	}
+
+	log.Printf("[Worker] Current IP=%s, Last IP in DB=%s", task.IP, lastIP)
 
 	region := ""
 	if task.IP != lastIP {
 		client := &http.Client{Timeout: 5 * time.Second}
-		resp, err := client.Get("https://ipapi.co/" + task.IP + "/json/")
-		if err == nil {
+		apiURL := "https://ipapi.co/" + task.IP + "/json/"
+		log.Printf("[Worker] Calling geolocation API: %s", apiURL)
+		resp, err := client.Get(apiURL)
+		if err != nil {
+			log.Printf("[Worker] Geolocation API error: %v", err)
+		} else {
 			defer resp.Body.Close()
+			log.Printf("[Worker] Geolocation API status: %d", resp.StatusCode)
 			var result struct {
 				City   string `json:"city"`
 				Region string `json:"region"`
+				Error  bool   `json:"error"`
+				Reason string `json:"reason"`
 			}
 			if json.NewDecoder(resp.Body).Decode(&result) == nil {
+				log.Printf("[Worker] Geolocation result: city=%s region=%s error=%v reason=%s", result.City, result.Region, result.Error, result.Reason)
 				if result.City != "" {
 					region = result.City + ", " + result.Region
 				}
@@ -69,10 +83,14 @@ func (p *WorkerPool) processTask(task ActivityTask) {
 		}
 	}
 
+	// Always save IP, and save region if available
 	if region != "" {
-		_, _ = p.repo.pool.Exec(context.Background(), "UPDATE users SET last_active_at = CURRENT_TIMESTAMP, last_ip = $1, last_region = $2 WHERE email = $3", task.IP, region, task.Email)
+		_, err = p.repo.pool.Exec(context.Background(), "UPDATE users SET last_active_at = CURRENT_TIMESTAMP, last_ip = $1, last_region = $2 WHERE email = $3", task.IP, region, task.Email)
+		log.Printf("[Worker] Updated IP + region for %s: ip=%s region=%s err=%v", task.Email, task.IP, region, err)
 	} else {
-		_, _ = p.repo.pool.Exec(context.Background(), "UPDATE users SET last_active_at = CURRENT_TIMESTAMP WHERE email = $1", task.Email)
+		// Still save the IP even if region detection failed
+		_, err = p.repo.pool.Exec(context.Background(), "UPDATE users SET last_active_at = CURRENT_TIMESTAMP, last_ip = $1 WHERE email = $2", task.IP, task.Email)
+		log.Printf("[Worker] Updated IP (no region) for %s: ip=%s err=%v", task.Email, task.IP, err)
 	}
 }
 
