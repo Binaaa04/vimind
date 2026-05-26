@@ -1,13 +1,11 @@
 describe("Guest Diagnosis Flow", () => {
   function answerQuestions() {
-    // klik semua circle pertama tiap soal
     cy.get(".circles").each(($group) => {
       cy.wrap($group).find(".circle").first().click({ force: true });
     });
 
     cy.wait(500);
 
-    // cek tombol next
     cy.get("body").then(($body) => {
       if ($body.text().includes("Halaman Selanjutnya")) {
         cy.contains("Halaman Selanjutnya").should("not.be.disabled").click();
@@ -28,7 +26,6 @@ describe("Guest Diagnosis Flow", () => {
     cy.contains("Lanjutkan ke Hasil").click();
     cy.contains("Masuk Sekarang").click();
 
-    // login
     cy.contains("Login");
 
     cy.get('input[type="email"]').type("sabrinarahmadini60@gmail.com");

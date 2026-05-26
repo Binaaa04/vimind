@@ -4,14 +4,12 @@ Cypress.on("uncaught:exception", (err, runnable) => {
 
 describe("Tracking new Diagnosis Flow", () => {
   function answerQuestions() {
-    // klik semua circle pertama tiap soal
     cy.get(".circles").each(($group) => {
       cy.wrap($group).find(".circle").eq(2).click({ force: true });
     });
 
     cy.wait(500);
 
-    // cek tombol next
     cy.get("body").then(($body) => {
       if ($body.text().includes("Halaman Selanjutnya")) {
         cy.contains("Halaman Selanjutnya").should("not.be.disabled").click();
