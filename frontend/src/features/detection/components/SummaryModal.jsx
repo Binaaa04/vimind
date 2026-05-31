@@ -222,6 +222,8 @@ export default function SummaryModal({ onClose }) {
       </html>
     `); 
     printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
   };
 
   return (

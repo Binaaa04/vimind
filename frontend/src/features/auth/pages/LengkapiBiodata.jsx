@@ -17,6 +17,11 @@ const LengkapiBiodata = () => {
     birth_date: ""
   });
   const [email, setEmail] = useState("");
+  const [notification, setNotification] = useState({ message: "", type: "" });
+
+  const showNotification = (message, type = "error") => {
+    setNotification({ message, type });
+  };
 
   const syncPendingAnswers = async (userEmail) => {
     const pendingAnswersRaw = sessionStorage.getItem("pending_answers");
@@ -91,8 +96,10 @@ const LengkapiBiodata = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setNotification({ message: "", type: "" });
+
     if (!form.name || !form.birth_date) {
-      alert("Nama dan tanggal lahir wajib diisi!");
+      showNotification("Nama dan tanggal lahir wajib diisi!", "error");
       return;
     }
     setLoading(true);
@@ -111,18 +118,19 @@ const LengkapiBiodata = () => {
       // Sinkronkan kuis pending ke database setelah profil terdaftar
       await syncPendingAnswers(email);
       
-      // Lanjut ke hasil atau dashboard
-      const redirectAfterLogin = localStorage.getItem("redirectAfterLogin");
-      
-      if (redirectAfterLogin) {
-        localStorage.removeItem("redirectAfterLogin");
-        navigate("/hasil");
-      } else {
-        navigate("/dashboard");
-      }
+      showNotification("Biodata berhasil disimpan!", "success");
+      setTimeout(() => {
+        const redirectAfterLogin = localStorage.getItem("redirectAfterLogin");
+        if (redirectAfterLogin) {
+          localStorage.removeItem("redirectAfterLogin");
+          navigate("/hasil");
+        } else {
+          navigate("/dashboard");
+        }
+      }, 1500);
     } catch (err) {
       console.error(err);
-      alert("Gagal menyimpan biodata: " + err.message);
+      showNotification("Gagal menyimpan biodata: " + err.message, "error");
     } finally {
       setLoading(false);
     }
@@ -146,6 +154,13 @@ const LengkapiBiodata = () => {
           </p>
 
           <form onSubmit={handleSubmit} className="login-form">
+            {notification.message && (
+              <div className={`auth-notification ${notification.type}`} style={{ marginBottom: "20px" }}>
+                <span>{notification.type === "error" ? "⚠️" : "✓"}</span>
+                <span>{notification.message}</span>
+              </div>
+            )}
+
             <div style={{ textAlign: "left", width: "100%", marginBottom: "5px", color: "#5b4a78", fontSize: "14px", fontWeight: "600" }}>
               Nama Lengkap / Panggilan
             </div>

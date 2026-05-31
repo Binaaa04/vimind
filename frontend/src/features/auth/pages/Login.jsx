@@ -1,8 +1,8 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useState } from "react";
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import "@/App.css";
 import "./Login.css";
+import { Eye, EyeOff } from "lucide-react";
 
 import logoLeft from "@/assets/logovimind.png";
 import logoTop from "@/assets/logovimind2.png";
@@ -11,27 +11,29 @@ import { getProfile, updateProfile } from "@/features/auth/api";
 import { useAuth } from "@/shared/context/AuthContext";
 
 const Login = () => {
-
   const navigate = useNavigate();
   const { setRole } = useAuth();
+  
   useEffect(() => {
     document.title = "Login | Vimind";
   }, []);
+
   const [form, setForm] = useState({
     email: "",
     password: ""
   });
 
   const [loading, setLoading] = useState(false);
-
-  // 1. STATE BARU UNTUK SHOW/HIDE PASSWORD
   const [showPassword, setShowPassword] = useState(false);
+  const [notification, setNotification] = useState({ message: "", type: "" });
+
+  const showNotification = (message, type = "error") => {
+    setNotification({ message, type });
+  };
 
   const handleGoogleLogin = async () => {
     try {
       const redirectAfterLogin = localStorage.getItem("redirectAfterLogin");
-      // If guest came from result page, redirect directly to /hasil after Google login
-      // Supabase will attach the session token as a hash in the URL
       const redirectTo = redirectAfterLogin
         ? window.location.origin + redirectAfterLogin
         : window.location.origin + "/dashboard";
@@ -44,7 +46,7 @@ const Login = () => {
       if (error) throw error;
     } catch (error) {
       console.error("Google login error:", error.message);
-      alert("Gagal login dengan Google: " + error.message);
+      showNotification("Gagal login dengan Google: " + error.message, "error");
     }
   };
 
@@ -57,9 +59,10 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setNotification({ message: "", type: "" });
 
     if (!form.email || !form.password) {
-      alert("Email dan password wajib diisi");
+      showNotification("Email dan password wajib diisi", "error");
       return;
     }
 
@@ -86,19 +89,16 @@ const Login = () => {
         setRole(userRole);
       } catch (err) {
         console.warn("Profile fetch failed:", err?.response?.status || err.message);
-        // Check if we have a stored role from a previous session
         const storedRole = localStorage.getItem("userRole");
         if (storedRole === "admin") {
           userRole = "admin";
           setRole("admin");
         }
-        // If profile fetch fails but user is not admin, try to auto-create
         if (userRole !== "admin") {
           try {
             const fallbackName = data.user?.user_metadata?.full_name || form.email.split("@")[0];
             await updateProfile(form.email, fallbackName, "", "");
             console.log("User auto-created in backend.");
-            // Try fetching profile again after creation
             try {
               const retryRes = await getProfile();
               profileData = retryRes.data;
@@ -112,7 +112,6 @@ const Login = () => {
         }
       }
 
-      // Check if there's a pending redirect (e.g., from guest result page)
       const redirectAfterLogin = localStorage.getItem("redirectAfterLogin");
       const pendingAnswersRaw = sessionStorage.getItem("pending_answers");
 
@@ -120,7 +119,6 @@ const Login = () => {
         if (redirectAfterLogin) localStorage.removeItem("redirectAfterLogin");
         navigate("/admin");
       } else if (!profileData || !profileData.birth_date) {
-        // If profile doesn't exist or birth_date is missing, redirect to complete biodata
         navigate("/lengkapi-biodata");
       } else {
         if (redirectAfterLogin || pendingAnswersRaw) {
@@ -132,15 +130,14 @@ const Login = () => {
       }
     } catch (error) {
       console.error("Login error:", error.message);
-      alert("Gagal login: " + error.message);
+      showNotification("Gagal login: " + error.message, "error");
     } finally {
       setLoading(false);
     }
   };
 
-  // Fungsi untuk kembali ke Landing Page
   const handleBack = () => {
-    navigate("/"); // Arahkan ke rute beranda / landing page
+    navigate("/");
   };
 
   return (
@@ -155,7 +152,6 @@ const Login = () => {
         {/* RIGHT FORM */}
         <div className="card-right">
 
-          {/* 👇 TOMBOL KEMBALI SEKARANG DI DALAM CARD-RIGHT 👇 */}
           <div className="back-button-container">
             <button onClick={handleBack} className="back-btn">
               <span className="back-icon">←</span> Kembali
@@ -169,6 +165,12 @@ const Login = () => {
           </p>
 
           <form onSubmit={handleLogin} className="login-form">
+            {notification.message && (
+              <div className={`auth-notification ${notification.type}`}>
+                <span>{notification.type === "error" ? "⚠️" : "✓"}</span>
+                <span>{notification.message}</span>
+              </div>
+            )}
 
             <input
               name="email"
@@ -178,11 +180,10 @@ const Login = () => {
               onChange={handleChange}
             />
 
-            {/* 2. WRAPPER UNTUK INPUT PASSWORD & ICON MATA */}
             <div className="password-wrapper">
               <input
                 name="password"
-                type={showPassword ? "text" : "password"} // Logika ubah tipe input
+                type={showPassword ? "text" : "password"}
                 placeholder="Password"
                 className="input-field"
                 onChange={handleChange}
@@ -190,9 +191,9 @@ const Login = () => {
               <span
                 className="eye-icon"
                 onClick={() => setShowPassword(!showPassword)}
-                style={{ cursor: "pointer" }}
+                style={{ cursor: "pointer", display: "flex", alignItems: "center" }}
               >
-                {showPassword ? "🙈" : "👁️"}
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </span>
             </div>
 

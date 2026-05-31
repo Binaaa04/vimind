@@ -439,10 +439,22 @@ export default function Detection() {
         </div>
       )}
 
+      {/* PROGRESS BAR */}
+      <div className="progress-bar">
+        <div className="progress-fill" style={{ width: `${progressPercent}%` }} />
+      </div>
+
       {/* TOMBOL KELUAR */}
       <button className="back-btn" onClick={handleExit}>Keluar</button>
 
       <div className="question-container">
+        {/* PHASE INDICATOR */}
+        {currentGroup.disease_name && (
+          <div className="phase-indicator">
+            {currentGroup.disease_name} — Bagian {currentGroup.part} dari {currentGroup.totalParts} (Halaman {currentPage + 1} dari {totalPages})
+          </div>
+        )}
+
         {/* DAFTAR SOAL — dibatasi 5 soal sesuai chunking */}
         {currentQuestions.map((q, idx) => {
           const questionNumber = ((currentGroup.part - 1) * 5) + idx + 1;
@@ -458,9 +470,9 @@ export default function Detection() {
               </h2>
 
               <div className="options-wrapper">
-                <div className="label-left">Setuju</div>
+                <div className="label-left">Tidak Setuju</div>
                 <div className="circles">
-                  {[1, 2, 3, 4].map((i) => (
+                  {[4, 3, 2, 1].map((i) => (
                     <div
                       key={i}
                       className={`circle ${selectedAnswers[compositeKey] === i ? "active" : ""}`}
@@ -468,7 +480,7 @@ export default function Detection() {
                     />
                   ))}
                 </div>
-                <div className="label-right">Tidak Setuju</div>
+                <div className="label-right">Setuju</div>
               </div>
             </div>
           );

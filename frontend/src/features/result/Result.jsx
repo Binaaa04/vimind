@@ -143,9 +143,8 @@ export default function Result() {
             if (isAuthenticated && !hasRated) {
                 const timer = setTimeout(() => {
                     setShowFeedbackModal(true);
-                }, 1000);
+                }, 8000); // Tunda 8 detik agar user sempat membaca hasil
                 return () => clearTimeout(timer); 
-                // clean up
             }
         }
     }, [result, showModal, showMoodModal, isAuthenticated, hasRated, checkingRating]);
@@ -231,8 +230,8 @@ export default function Result() {
                 </div>
             </div>
 
-            {/* Blur hasil jika belum login ATAU (sudah login tapi belum rating & popup muncul) */}
-            <div className={`result-card-container ${(!isAuthenticated || (isAuthenticated && !hasRated)) ? "content-blur" : ""}`}>
+            {/* Blur hasil hanya jika belum login (guest) */}
+            <div className={`result-card-container ${!isAuthenticated ? "content-blur" : ""}`}>
                 <div className="result-card">
                     <div className="card-section">
                         <h3>Deskripsi Kondisi</h3>
@@ -383,22 +382,12 @@ export default function Result() {
                                         {submittingFeedback ? 'Mengirim...' : 'Kirim Ulasan'}
                                     </button>
                                     
-                                    {/* Sembunyikan tombol "Nanti Saja" jika user login & belum rating (Wajib!), tapi tampilkan tombol Ke Dashboard sebagai alternatif keluar */}
-                                    {(!isAuthenticated || hasRated) ? (
-                                        <button
-                                            className="btn-later"
-                                            onClick={() => setShowFeedbackModal(false)}
-                                        >
-                                            Nanti Saja
-                                        </button>
-                                    ) : (
-                                        <button
-                                            className="btn-later"
-                                            onClick={() => navigate("/dashboard")}
-                                        >
-                                            Ke Dashboard
-                                        </button>
-                                    )}
+                                    <button
+                                        className="btn-later"
+                                        onClick={() => setShowFeedbackModal(false)}
+                                    >
+                                        Nanti Saja
+                                    </button>
                                 </div>
                             </>
                         ) : (

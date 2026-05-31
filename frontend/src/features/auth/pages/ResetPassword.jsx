@@ -3,13 +3,11 @@ import { useNavigate } from "react-router-dom";
 import illustration from "@/assets/logovimind.png";
 import logo from "@/assets/logovimind2.png";
 import "./ResetPassword.css";
+import { Eye, EyeOff } from "lucide-react";
 
 import { supabase } from "@/services/supabaseClient";
 
 const ResetPassword = () => {
-  useEffect(() => {
-    document.title = "Reset Password | Vimind";
-  }, []);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -21,6 +19,11 @@ const ResetPassword = () => {
     password: "",
     confirm: ""
   });
+  const [notification, setNotification] = useState({ message: "", type: "" });
+
+  useEffect(() => {
+    document.title = "Reset Password | Vimind";
+  }, []);
 
   // Check if user has active session
   useEffect(() => {
@@ -31,6 +34,10 @@ const ResetPassword = () => {
     checkSession();
   }, []);
 
+  const showNotification = (message, type = "error") => {
+    setNotification({ message, type });
+  };
+
   const handleChange = (e) => {
     setForm({
       ...form,
@@ -40,14 +47,27 @@ const ResetPassword = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setNotification({ message: "", type: "" });
 
     if (!form.password || !form.confirm) {
-      alert("Semua field wajib diisi");
+      showNotification("Semua field wajib diisi", "error");
       return;
     }
 
     if (form.password !== form.confirm) {
-      alert("Password tidak sama");
+      showNotification("Password tidak sama", "error");
+      return;
+    }
+
+    // Password strength check
+    if (form.password.length < 8) {
+      showNotification("Password baru minimal harus 8 karakter!", "error");
+      return;
+    }
+    const hasLetter = /[a-zA-Z]/.test(form.password);
+    const hasNumber = /\d/.test(form.password);
+    if (!hasLetter || !hasNumber) {
+      showNotification("Password baru harus mengandung kombinasi huruf dan angka.", "error");
       return;
     }
 
@@ -59,15 +79,17 @@ const ResetPassword = () => {
 
       if (error) throw error;
 
-      alert("Password berhasil diubah!");
-      if (isLoggedIn) {
-        navigate("/dashboard");
-      } else {
-        navigate("/reset-success");
-      }
+      showNotification("Password berhasil diubah!", "success");
+      setTimeout(() => {
+        if (isLoggedIn) {
+          navigate("/dashboard");
+        } else {
+          navigate("/reset-success");
+        }
+      }, 2000);
     } catch (error) {
       console.error("Update password error:", error.message);
-      alert("Gagal mengubah password: " + error.message);
+      showNotification("Gagal mengubah password: " + error.message, "error");
     } finally {
       setLoading(false);
     }
@@ -96,6 +118,12 @@ const ResetPassword = () => {
           <img src={logo} alt="logo" className="reset-logo" />
 
           <form onSubmit={handleSubmit} className="reset-form">
+            {notification.message && (
+              <div className={`auth-notification ${notification.type}`} style={{ marginBottom: "20px" }}>
+                <span>{notification.type === "error" ? "⚠️" : "✓"}</span>
+                <span>{notification.message}</span>
+              </div>
+            )}
             
             {/* WRAPPER TEXT FIELD */}
             <div className="input-group">
@@ -108,12 +136,12 @@ const ResetPassword = () => {
                   value={form.password}
                   onChange={handleChange}
                 />
-                <span className="eye-icon" onClick={() => setShowPass(!showPass)}>
-                  {showPass ? "🙈" : "👁️"}
+                <span className="eye-icon" onClick={() => setShowPass(!showPass)} style={{ display: "flex", alignItems: "center" }}>
+                  {showPass ? <EyeOff size={20} /> : <Eye size={20} />}
                 </span>
               </div>
 
-              <div className="password-wrapper">
+              <div className="password-wrapper" style={{ marginTop: "12px" }}>
                 <input
                   type={showConf ? "text" : "password"}
                   name="confirm"
@@ -122,8 +150,8 @@ const ResetPassword = () => {
                   value={form.confirm}
                   onChange={handleChange}
                 />
-                <span className="eye-icon" onClick={() => setShowConf(!showConf)}>
-                  {showConf ? "🙈" : "👁️"}
+                <span className="eye-icon" onClick={() => setShowConf(!showConf)} style={{ display: "flex", alignItems: "center" }}>
+                  {showConf ? <EyeOff size={20} /> : <Eye size={20} />}
                 </span>
               </div>
             </div>
