@@ -7,6 +7,7 @@ import { Eye, EyeOff } from "lucide-react";
 import illustration from "@/assets/logovimind.png";
 import logo from "@/assets/logovimind2.png";
 import { supabase } from "@/services/supabaseClient";
+import { updateProfile } from "@/features/auth/api";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -90,10 +91,26 @@ const Register = () => {
       if (error) throw error;
 
       console.log("Register success:", data);
-      showNotification("Pendaftaran berhasil! Silakan cek email kamu untuk verifikasi.", "success");
-      setTimeout(() => {
-        navigate("/success");
-      }, 3000);
+
+      if (data.session) {
+        localStorage.setItem("isLogin", "true");
+        localStorage.setItem("userRole", "user");
+        try {
+          await updateProfile(form.email, form.name, "", "");
+          console.log("User auto-created in backend during signup.");
+        } catch (dbErr) {
+          console.error("Failed to auto-create user during signup:", dbErr);
+        }
+        showNotification("Pendaftaran berhasil!", "success");
+        setTimeout(() => {
+          navigate("/lengkapi-biodata");
+        }, 1500);
+      } else {
+        showNotification("Pendaftaran berhasil! Silakan cek email kamu untuk verifikasi.", "success");
+        setTimeout(() => {
+          navigate("/success");
+        }, 3000);
+      }
     } catch (error) {
       console.error("Register error:", error.message);
       showNotification("Gagal mendaftar: " + error.message, "error");

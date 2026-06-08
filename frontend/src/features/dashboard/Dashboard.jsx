@@ -93,7 +93,24 @@ const Dashboard = () => {
             navigate("/lengkapi-biodata", { replace: true });
           }
         } catch (err) {
-          console.error("Profile fetch error:", err);
+          console.error("Profile fetch error, attempting to auto-create:", err);
+          if (!isAdmin) {
+            try {
+              const fallbackName = user.user_metadata?.full_name || user.email.split("@")[0];
+              const avatar = user.user_metadata?.avatar_url || "";
+              await updateProfile(user.email, fallbackName, avatar, "");
+              localStorage.setItem("nickname", fallbackName);
+              if (avatar) {
+                localStorage.setItem("avatar_url", avatar);
+              } else {
+                localStorage.removeItem("avatar_url");
+              }
+              console.log("User auto-created in backend during OAuth login.");
+              navigate("/lengkapi-biodata", { replace: true });
+            } catch (createErr) {
+              console.error("Failed to auto-create user during OAuth login:", createErr);
+            }
+          }
         } finally {
           setIsProfileLoading(false);
         }
