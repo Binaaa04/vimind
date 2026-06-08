@@ -10,7 +10,7 @@ import NicknameSuccessModal from "@/features/auth/components/NicknameSuccessModa
 import LogoutModal from "@/shared/components/LogoutModal";
 import TestOptionsModal from "@/features/detection/components/TestOptionsModal";
 import { getProfile, updateProfile } from "@/features/auth/api";
-import { sendChatMessage } from "@/features/dashboard/api";
+import { sendChatMessage, getBanners } from "@/features/dashboard/api";
 import logo from "@/assets/logovimind2.png";
 
 import chatbotIcon from "@/assets/chatbot.png";
@@ -119,9 +119,8 @@ const Dashboard = () => {
 
     const fetchBanners = async () => {
       try {
-        const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/banners`);
-        const data = await response.json();
-        setBanners(data);
+        const response = await getBanners();
+        setBanners(response.data);
       } catch (err) {
         console.error("Failed to fetch banners:", err);
       }

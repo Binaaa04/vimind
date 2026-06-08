@@ -177,9 +177,9 @@ func getKeyFunc(jwtSecret string) jwt.Keyfunc {
 	}
 }
 
-func AuthRequired() fiber.Handler {
-	jwtSecret := os.Getenv("JWT_SECRET")
+var initKeysOnce sync.Once
 
+func initializeKeys() {
 	// Method 1: Try SUPABASE_JWKS_JSON env var (direct JSON, no network needed)
 	jwksJSON := os.Getenv("SUPABASE_JWKS_JSON")
 	if jwksJSON != "" {
@@ -227,11 +227,16 @@ func AuthRequired() fiber.Handler {
 	hasKeys := len(cachedKeys) > 0
 	cachedKeysMu.RUnlock()
 
+	jwtSecret := os.Getenv("JWT_SECRET")
 	if !hasKeys && jwtSecret == "" {
 		log.Println("WARNING: No JWKS keys loaded and no JWT_SECRET set. Auth will fail!")
 		log.Println("Set SUPABASE_JWKS_JSON or SUPABASE_URL or JWT_SECRET in your .env")
 	}
+}
 
+func AuthRequired() fiber.Handler {
+	initKeysOnce.Do(initializeKeys)
+	jwtSecret := os.Getenv("JWT_SECRET")
 	keyFunc := getKeyFunc(jwtSecret)
 
 	return func(c *fiber.Ctx) error {
@@ -277,6 +282,7 @@ func AuthRequired() fiber.Handler {
 }
 
 func OptionalAuth() fiber.Handler {
+	initKeysOnce.Do(initializeKeys)
 	jwtSecret := os.Getenv("JWT_SECRET")
 	keyFunc := getKeyFunc(jwtSecret)
 

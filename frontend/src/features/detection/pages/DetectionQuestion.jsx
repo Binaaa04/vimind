@@ -449,9 +449,9 @@ export default function Detection() {
 
       <div className="question-container">
         {/* PHASE INDICATOR */}
-        {currentGroup.disease_name && (
+        {totalPages > 0 && (
           <div className="phase-indicator">
-            {currentGroup.disease_name} — Bagian {currentGroup.part} dari {currentGroup.totalParts} (Halaman {currentPage + 1} dari {totalPages})
+            Bagian {currentGroup.part} dari {currentGroup.totalParts} (Halaman {currentPage + 1} dari {totalPages})
           </div>
         )}
 
