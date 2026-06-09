@@ -27,3 +27,8 @@ Thumbs.db
 # Personal AI Agent Config (Antigravity CLI)
 .agents/
 .antigravitycli/
+
+# Cypress Environment Files
+cypress.env.json
+frontend/cypress.env.json
+

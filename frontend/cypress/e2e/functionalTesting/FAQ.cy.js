@@ -6,9 +6,16 @@ describe("FAQ Management", () => {
 
     cy.contains("Sign In").click();
 
-    cy.get('input[type="email"]').type("admin@vimind.com");
+    const email = Cypress.env("ADMIN_EMAIL") || "admin@vimind.com";
+    const password = Cypress.env("ADMIN_PASSWORD");
 
-    cy.get('input[type="password"]').type("adminvimind123");
+    cy.get('input[type="email"]').type(email);
+
+    if (password) {
+      cy.get('input[type="password"]').type(password);
+    } else {
+      throw new Error("ADMIN_PASSWORD is not set in Cypress environment variables");
+    }
 
     cy.contains("Login").click();
 
